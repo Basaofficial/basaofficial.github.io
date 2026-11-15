@@ -137,7 +137,7 @@ function unRender(v,newIds,hideTop){
  $('#unColor').textContent=UN_COL[v.color]||'';
  let st;if(v.phase==='over')st=`🏆 ${esc(v.players.find(p=>p.id===v.winner).name)} pobjeđuje!`;
  else if(myTurn)st=v.pend?`Na tebe je <b>+${v.pend}</b> – složi ili vuci`:v.drawn!=null?'Izvukao/la si kartu – odigraj je ili dalje':'<b>Tvoj red!</b> Odigraj kartu ili vuci';
- else st=`Na potezu: <b>${esc(cur.name)}</b>${cur.bot?' 🤖':''}`;
+ else st='';
  $('#unSt').innerHTML=st;
  const H=$('#unHand');
  if(v.hand){const n=v.hand.length;H.classList.toggle('many',n>8);H.classList.toggle('lots',n>13);

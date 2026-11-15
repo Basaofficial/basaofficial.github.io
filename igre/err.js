@@ -1,0 +1,3 @@
+// prikaz grešaka na ekranu (da korisnik može javiti šta ne radi)
+window.addEventListener('error',e=>{try{const t=document.getElementById('toast');if(!t)return;t.textContent='⚠️ Greška: '+(e.message||'nepoznata')+(e.filename?' ('+e.filename.split('/').pop().split('?')[0]+':'+e.lineno+')':'');t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),9000)}catch(_){}});
+window.addEventListener('unhandledrejection',e=>{try{const t=document.getElementById('toast');if(!t)return;t.textContent='⚠️ Greška: '+((e.reason&&e.reason.message)||e.reason);t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),9000)}catch(_){}});
