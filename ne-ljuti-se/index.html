@@ -187,6 +187,19 @@ select option{background:#2a1d12}
 .spin{display:inline-block;width:14px;height:14px;border:2px solid var(--gold);border-right-color:transparent;border-radius:50%;animation:rot .8s linear infinite;vertical-align:-2px}
 @keyframes rot{to{transform:rotate(360deg)}}
 .menu .btn{margin-top:10px}
+#names{position:absolute;inset:0;pointer-events:none;z-index:2}
+.nlab{position:absolute;max-width:33%;font-size:max(10px,calc(var(--bw)*.03));font-weight:800;color:#2a1c10;background:rgba(255,250,238,.92);
+ border:2px solid var(--c);border-radius:999px;padding:.18em .6em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:0 2px 5px rgba(0,0,0,.35);transition:.25s}
+.nlab.act{background:var(--c);color:#fff;text-shadow:0 1px 2px #0008;box-shadow:0 0 0 2px #fff,0 0 14px var(--c);transform:scale(1.08)}
+.nlab.me::after{content:" (ti)";font-weight:600;opacity:.75}
+.pl .cds{display:flex;gap:3px}
+.pl .cds i{width:12px;height:12px;border-radius:50%}
+.rdy{font-size:12px;padding:3px 8px;border-radius:8px;background:rgba(255,255,255,.1);color:var(--muted);white-space:nowrap}
+.rdy.y{background:rgba(61,220,106,.2);color:#7dff9f}
+.pl.offp{opacity:.45}
+#count{background:rgba(0,0,0,.5)}
+.cnum{font-size:min(40vw,200px);font-weight:900;color:var(--gold);text-shadow:0 8px 0 #0008,0 0 40px rgba(233,180,76,.6);animation:cpop .9s ease-out}
+@keyframes cpop{0%{transform:scale(2.2);opacity:0}25%{transform:scale(1);opacity:1}85%{opacity:1}100%{transform:scale(.8);opacity:.2}}
 </style>
 </head>
 <body>
@@ -217,7 +230,7 @@ select option{background:#2a1d12}
   <div class="codebox"><div class="lbl" id="lLbl">Kod sobe</div><div class="code" id="lCode">····</div></div>
   <button class="ib" id="lShare">📤</button>
  </div>
- <div class="card"><h3>Igrači</h3><div id="lPlayers"></div></div>
+ <div class="card"><h3>🛋️ Čekaonica</h3><div id="lPlayers"></div></div>
  <div class="card"><h3>Način igre</h3><select id="lMode"></select><div id="lSeats"></div></div>
  <div class="card"><h3>Pravila</h3><div id="lRules"></div>
   <label class="l">⏱ Vrijeme za potez</label>
@@ -225,7 +238,9 @@ select option{background:#2a1d12}
  </div>
  <div style="width:100%;max-width:460px">
   <button class="btn" id="bStart">▶ Počni igru</button>
-  <p class="muted" id="lWait" style="text-align:center;display:none"><span class="spin"></span> Čekamo da domaćin pokrene igru…</p>
+  <button class="btn" id="bReady" style="display:none"></button>
+  <button class="btn sec" id="bStartBots" style="display:none">🤖 Počni odmah (prazna mjesta igra bot)</button>
+  <p class="muted" id="lWait" style="text-align:center;display:none"></p>
  </div>
 </section>
 
@@ -238,7 +253,7 @@ select option{background:#2a1d12}
   <button class="ib" id="gHelp">?</button>
  </div>
  <div class="prow"><div class="chip" data-s="0"></div><div class="chip" data-s="1"></div></div>
- <div class="board-wrap"><div class="board-in"><div id="boardSvg"></div><div id="layer"></div></div></div>
+ <div class="board-wrap"><div class="board-in"><div id="boardSvg"></div><div id="names"></div><div id="layer"></div></div></div>
  <div class="prow"><div class="chip" data-s="3"></div><div class="chip" data-s="2"></div></div>
  <div class="ctrl">
   <div class="dice-wrap" id="dw"><div class="dice" id="dice"></div></div>
@@ -274,6 +289,7 @@ select option{background:#2a1d12}
 
 <canvas id="confetti"></canvas>
 <div id="toast"></div>
+<div class="ovl" id="count"><div class="cnum" id="cnum">3</div></div>
 
 <script id="logic">
 // ================= GAME LOGIC (pure) =================
@@ -536,9 +552,7 @@ function boardSVG(R){
   <polygon points="55,55 50.8,50.8 50.8,59.2" fill="${COLORS[0].hex}"/><polygon points="55,55 50.8,50.8 59.2,50.8" fill="${COLORS[1].hex}"/>
   <polygon points="55,55 59.2,50.8 59.2,59.2" fill="${COLORS[2].hex}"/><polygon points="55,55 50.8,59.2 59.2,59.2" fill="${COLORS[3].hex}"/>
   <circle cx="55" cy="55" r="1.4" fill="#f6e7c5"/>`;
- o+=`<text x="27" y="27.6" font-size="2.6" fill="#6b5232" opacity=".55" text-anchor="middle" font-family="Georgia,serif" font-style="italic" transform="rotate(-45 27 27)">Ne ljuti se</text>
-  <text x="83" y="83.6" font-size="2.6" fill="#6b5232" opacity=".55" text-anchor="middle" font-family="Georgia,serif" font-style="italic" transform="rotate(-45 83 83)">čovječe</text>`;
- return o+'</svg>';
+return o+'</svg>';
 }
 // dice
 const PIPS={1:[5],2:[1,9],3:[1,5,9],4:[1,3,7,9],5:[1,3,5,7,9],6:[1,3,4,6,7,9]};
@@ -602,6 +616,9 @@ function renderHUD(st){
   ch.innerHTML=`<div class="av">${esc(s.av)}</div><div class="info"><div class="nm">${esc(s.name)}${s.owner===me&&App.role!=='local'?' <em>(ti)</em>':''}${team}</div>
    <div class="sub">${s.fin?`🏆 ${s.fin}. u cilju`:`🏠 ${home} · 🏁 ${fin}/4${s.owner==='bot'?' · bot':''}${off?' · <b class="offl">offline</b>':''}`}</div></div><div class="tbar"><i></i></div>`;
  }
+ $('#names').innerHTML=st.seats.filter(s=>s.active).map(s=>{const L=s.i===0||s.i===3,T=s.i<2;
+  const st2=(L?'left':'right')+':1.4%;'+(T?'top:19%':'bottom:25%');
+  return `<div class="nlab${st.turn===s.i&&st.phase!=='over'?' act':''}${s.owner===me&&App.role!=='local'?' me':''}" style="--c:${COLORS[s.i].hex};${st2}">${esc(s.av)} ${esc(s.name)}${s.fin?' 🏆':''}</div>`}).join('');
  const cur=st.seats[st.turn],my=mine(st)&&App.pending<=1,canRoll=my&&st.phase==='roll',canMove=my&&st.phase==='move';
  let main,sub=st.msg||'';
  if(st.phase==='over')main='🏁 Kraj igre';
@@ -701,10 +718,16 @@ function hostMsg(c,d){
   const nick=String(d.nick||'Gost').slice(0,14),av=String(d.av||'🙂').slice(0,4);
   App.lobby.players[id]={nick,av,online:true};
   if(isNew&&!App.game)autoAssign(App.lobby);
+  if(App.game){const g=App.game;g.seats.forEach(s=>{if(s.active&&s.owner===id){s.name=nick;s.av=av}});
+   if(!g.seats.some(s=>s.active&&s.owner===id)&&g.phase!=='over'){const grp=MODES[g.mode].groups.find(gr=>gr.every(i=>g.seats[i].owner==='bot'));
+    if(grp){grp.forEach(i=>{g.seats[i].owner=id;g.seats[i].name=nick;g.seats[i].av=av;App.lobby.seatCfg[i]={owner:id,name:''}});
+     addLog(g,`👋 ${nick} preuzima ${grp.map(i=>COLORS[i].name).join(' i ')} od bota!`)}}}
   toast(`${av} ${nick} ${isNew?'je ušao/la u sobu':'se vratio/la'}`);sfx.join();
   try{c.send({t:'lobby',lb:App.lobby});c.send({t:'state',st:App.game?JSON.parse(JSON.stringify(App.game)):null})}catch(e){}
   bcastLobby();if($('#sLobby').classList.contains('on'))renderLobby();if(App.game)afterChange();return}
- if(!c._cid)return;hostAction(c._cid,d);
+ if(!c._cid)return;
+ if(d.t==='ready'){const p=App.lobby.players[c._cid];if(p){p.ready=!!d.v;if(p.ready){sfx.pop();toast(`✅ ${p.nick} je spreman/na!`)}bcastLobby();if($('#sLobby').classList.contains('on'))renderLobby()}return}
+ hostAction(c._cid,d);
 }
 function hostClosed(c){const id=c._cid;if(!id||App.conns.get(id)!==c)return;App.conns.delete(id);
  const p=App.lobby&&App.lobby.players[id];if(p){p.online=false;toast(`⚠️ ${p.nick} je izgubio/la vezu…`)}
@@ -747,6 +770,7 @@ function guestMsg(d){
  if(d.t==='lobby'){App.lobby=d.lb;if(!App.st){if(!$('#sLobby').classList.contains('on'))showScreen('sLobby');renderLobby()}else renderHUD(App.st)}
  if(d.t==='state'){if(d.st)onState(d.st);else{App.st=null;App.shown=null;hideWin();showScreen('sLobby');renderLobby()}}
  if(d.t==='react')showReact(d);
+ if(d.t==='count')countdown();
  if(d.t==='bye'){toast('Domaćin je zatvorio sobu.');leave(true)}
 }
 function act(t,extra){
@@ -771,9 +795,12 @@ function renderLobby(){
  $('#lCode').innerHTML=local?'📱':(lb.code?esc(lb.code):'<span class="spin"></span>');
  $('#lShare').style.visibility=local?'hidden':'visible';
  const ps=Object.entries(lb.players);
+ const seatsOf=id=>M.seats.filter(i=>lb.seatCfg[i].owner===id);
  $('#lPlayers').innerHTML=local?'<p class="muted" style="margin:0">Igrate na ovom mobitelu i dodajete ga jedno drugom. Bilo koju boju možeš dati botu 🤖.</p>':
-  ps.map(([id,p])=>`<div class="pl"><span class="pav">${esc(p.av)}</span><b>${esc(p.nick)}</b>${id===lb.host?'<span class="tag">domaćin</span>':''}${id===App.me.id?'<span class="tag">ti</span>':''}<span class="ondot ${p.online?'y':''}"></span></div>`).join('')+
-  (ps.length<2&&isHost?`<p class="muted">Pošalji kod <b style="color:var(--gold)">${esc(lb.code||'…')}</b> ili link (📤 gore desno) da ti se neko pridruži. Prazna mjesta igra bot.</p>`:'');
+  ps.map(([id,p])=>{const cs=seatsOf(id);return `<div class="pl${p.online?'':' offp'}"><span class="pav">${esc(p.av)}</span><b>${esc(p.nick)}</b>
+   <span class="cds">${cs.map(i=>`<i style="background:${COLORS[i].hex}"></i>`).join('')}</span>${id===App.me.id?'<span class="tag">ti</span>':''}
+   <span style="margin-left:auto"></span>${id===lb.host?'<span class="rdy y">👑 domaćin</span>':!p.online?'<span class="rdy">offline</span>':!cs.length?'<span class="rdy">👀 gleda</span>':p.ready?'<span class="rdy y">✅ spreman/na</span>':'<span class="rdy">⏳ nije spreman/na</span>'}</div>`}).join('')+
+  (ps.length<2?`<p class="muted" style="margin-bottom:0"><span class="spin"></span> Čekam da neko uđe… Pošalji kod <b style="color:var(--gold)">${esc(lb.code||'…')}</b> ili link preko 📤 gore desno.</p>`:'');
  const ms=$('#lMode');ms.innerHTML=Object.entries(MODES).map(([k,m])=>`<option value="${k}"${k===lb.mode?' selected':''}>${m.label}</option>`).join('');ms.disabled=!isHost;
  const opts=local?[[App.me.id,'👤 Čovjek'],['bot','🤖 Bot']]:[...ps.map(([id,p])=>[id,p.av+' '+p.nick]),['bot','🤖 Bot']];
  $('#lSeats').innerHTML=M.seats.map(i=>{const sc=lb.seatCfg[i];const tm=M.teams?`<small>${M.groups.length===2?'Strana':'Tim'} ${M.sides[i]===0?'A':'B'}</small>`:'';
@@ -782,8 +809,22 @@ function renderLobby(){
   ${local&&sc.owner!=='bot'?`<input data-sname="${i}" maxlength="14" value="${esc(sc.name)}" placeholder="${esc(App.me.nick)}">`:''}</div>`}).join('');
  $('#lRules').innerHTML=RULES.map(r=>`<label class="rule"><input type="checkbox" data-rule="${r.k}"${lb.rules[r.k]?' checked':''}${isHost?'':' disabled'}><span class="sw"></span><span class="rt"><b>${r.t}</b><small>${r.d}</small></span></label>`).join('');
  const tt=$('#lTime');tt.value=String(lb.rules.turnTime||0);tt.disabled=!isHost;
- $('#bStart').style.display=isHost?'':'none';$('#lWait').style.display=isHost?'none':'';
+ const rs=readyState(lb),bs=$('#bStart'),bb=$('#bStartBots'),br=$('#bReady'),w=$('#lWait');
+ bs.style.display=isHost?'':'none';br.style.display=isHost?'none':'';bb.style.display='none';w.style.display=isHost?'none':'';
+ if(isHost){
+  if(local){bs.disabled=false;bs.textContent='▶ Počni igru'}
+  else if(!rs.guests.length){bs.disabled=true;bs.textContent='⏳ Čekam igrače…';bb.style.display=''}
+  else if(rs.ready<rs.guests.length){bs.disabled=true;bs.textContent=`⏳ Čekam da svi budu spremni (${rs.ready}/${rs.guests.length})`;bb.style.display='';bb.textContent='▶ Počni svejedno'}
+  else{bs.disabled=false;bs.textContent='▶ Svi su spremni – počni igru!'}
+ }else{
+  const me=lb.players[App.me.id],mySeats=M.seats.filter(i=>lb.seatCfg[i].owner===App.me.id);
+  if(!mySeats.length){br.style.display='none';w.innerHTML='👀 Domaćin ti još nije dao boju – možeš gledati igru.'}
+  else{br.className=me&&me.ready?'btn sec':'btn';br.textContent=me&&me.ready?'❌ Ipak nisam spreman/na':'✅ Spreman/na sam!';
+   w.innerHTML=me&&me.ready?'<span class="spin"></span> Čekamo da domaćin pokrene igru…':'Igraš sa: '+mySeats.map(i=>COLORS[i].name).join(' + ')}
+ }
 }
+function readyState(lb){const M=MODES[lb.mode];const owners=[...new Set(M.seats.map(i=>lb.seatCfg[i].owner))].filter(o=>o!=='bot'&&o!==lb.host);
+ return {guests:owners,ready:owners.filter(id=>lb.players[id]&&lb.players[id].online&&lb.players[id].ready).length}}
 function lobbyChanged(){LS.set('settings',{mode:App.lobby.mode,rules:App.lobby.rules});bcastLobby()}
 $('#sLobby').addEventListener('change',e=>{
  if(App.role==='guest'||!App.lobby)return;const t=e.target,lb=App.lobby;
@@ -795,14 +836,21 @@ $('#sLobby').addEventListener('change',e=>{
  lobbyChanged();renderLobby();
 });
 $('#sLobby').addEventListener('input',e=>{const t=e.target;if(t.dataset.sname!==undefined&&App.lobby)App.lobby.seatCfg[+t.dataset.sname].name=t.value.trim().slice(0,14)});
-function startGame(){
- const lb=App.lobby;if(!lb)return;
+function startGame(force){
+ const lb=App.lobby;if(!lb||App.starting)return;
  if(App.role==='host'&&!lb.code){toast('Soba se još otvara…');return}
- const seatCfg=[0,1,2,3].map(i=>({owner:lb.seatCfg[i].owner,name:seatName(lb,i),av:seatAv(lb,i)}));
- clearTimeout(App.H.timer);App.H={};App.game=mkState({mode:lb.mode,rules:lb.rules,seatCfg});
- wake();afterChange();
+ if(App.role==='host'&&!force){const rs=readyState(lb);if(!rs.guests.length||rs.ready<rs.guests.length){toast('Čekamo da svi budu spremni');return}}
+ App.starting=true;bcast({t:'count'});
+ countdown(()=>{App.starting=false;if(App.lobby!==lb||!App.role)return;
+  const seatCfg=[0,1,2,3].map(i=>({owner:lb.seatCfg[i].owner,name:seatName(lb,i),av:seatAv(lb,i)}));
+  clearTimeout(App.H.timer);App.H={};App.game=mkState({mode:lb.mode,rules:lb.rules,seatCfg});
+  wake();afterChange()});
 }
-function backToLobby(){if(App.role==='guest')return;clearTimeout(App.H.timer);App.game=null;App.st=null;App.shown=null;App.H={};
+function countdown(cb){hideWin();ovl('count',true);const n=$('#cnum');let k=3;
+ const tick=()=>{n.textContent=k>0?k:'🎲';n.style.animation='none';void n.offsetWidth;n.style.animation='';
+  if(k>0){tone(660,.15,'sine',.15);vib(30)}else{tone(990,.3,'triangle',.18);vib(80)}
+  if(k-->0)setTimeout(tick,850);else setTimeout(()=>{ovl('count',false);cb&&cb()},650)};tick()}
+function backToLobby(){if(App.role==='guest')return;clearTimeout(App.H.timer);Object.values(App.lobby.players).forEach(p=>p.ready=false);bcastLobby();App.game=null;App.st=null;App.shown=null;App.H={};
  bcast({t:'state',st:null});hideWin();ovl('menu',false);showScreen('sLobby');renderLobby();saveGame()}
 function leave(silent){
  App.leaving=true;clearTimeout(App.H.timer);clearTimeout(App.rj);
@@ -836,7 +884,10 @@ $('#bResume').onclick=()=>{
  if(App.game){wake();afterChange()}else{showScreen('sLobby');renderLobby()}
 };
 $('#lBack').onclick=()=>leave();
-$('#bStart').onclick=startGame;
+$('#bStart').onclick=()=>startGame(false);
+$('#bStartBots').onclick=()=>startGame(true);
+$('#bReady').onclick=()=>{const p=App.lobby&&App.lobby.players[App.me.id];const v=!(p&&p.ready);if(p)p.ready=v;renderLobby();
+ if(App.conn&&App.conn.open)App.conn.send({t:'ready',v});else toast('Nema veze s domaćinom…');if(v){sfx.pop();vib(30)}};
 
 // ---------- GAME EVENTS ----------
 $('#dw').onclick=()=>{const st=App.st;if(!st||App.pending>0)return;if(mine(st)&&st.phase==='roll'){ac();act('roll')}
@@ -861,7 +912,7 @@ $('#mQuit').onclick=()=>{if(confirm('Sigurno želiš izaći iz igre?'))leave()};
 $('#mShare').onclick=()=>{ovl('menu',false);share()};
 $('#mHelp').onclick=()=>{ovl('menu',false);openHelp()};
 $('#gHelp').onclick=openHelp;$('#hClose').onclick=()=>ovl('help',false);
-$('#wClose').onclick=hideWin;$('#wLobby').onclick=backToLobby;$('#wAgain').onclick=()=>{hideWin();startGame()};
+$('#wClose').onclick=hideWin;$('#wLobby').onclick=backToLobby;$('#wAgain').onclick=()=>{hideWin();startGame(true)};
 $('#lShare').onclick=share;
 function share(){const code=App.lobby&&App.lobby.code;if(!code)return;
  const url=location.href.split('#')[0]+'#'+code,text=`Hajde da igramo Ne ljuti se čovječe! 🎲 Kod sobe: ${code}`;
