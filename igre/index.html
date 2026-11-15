@@ -311,6 +311,75 @@ select option{background:#111}
 .room-i .rn{flex:1;min-width:0}
 .room-i .rn b{display:block;font-size:14.5px}.room-i .rn small{color:var(--muted);font-size:12px}
 .room-i .btn{width:auto;margin:0;padding:9px 16px;font-size:14px}
+/* ---------- JEDNA! ---------- */
+#lGames{grid-template-columns:repeat(3,1fr);gap:8px}#lGames .gcard{padding:12px 9px}#lGames .gcard b{font-size:13.5px}#lGames .gcard .gi{font-size:26px}
+#sUno{--uw:min(96vw,560px);height:100vh;gap:6px;padding-top:calc(env(safe-area-inset-top) + 6px);padding-bottom:calc(env(safe-area-inset-bottom) + 8px);overflow:hidden}
+@supports (height:100dvh){#sUno{height:100dvh}}
+#sUno .topbar{width:var(--uw)}
+.untm{font-size:13px;font-weight:800;color:var(--g);min-height:16px}.untm.low{color:var(--red)}
+.ucard{--w:62px;--cc:#7cff01;width:var(--w);height:calc(var(--w)*1.5);border-radius:calc(var(--w)*.16);flex:none;position:relative;
+ background:radial-gradient(120% 90% at 30% 12%,#1e1e1e,#080808 60%,#030303);border:2px solid var(--cc);color:var(--cc);font-weight:900;display:grid;place-items:center;overflow:hidden;
+ box-shadow:0 6px 14px rgba(0,0,0,.85),0 0 10px color-mix(in srgb,var(--cc) 28%,transparent),inset 0 0 18px color-mix(in srgb,var(--cc) 12%,transparent)}
+.ucard::before{content:"";position:absolute;inset:7%;border-radius:calc(var(--w)*.11);border:1px solid color-mix(in srgb,var(--cc) 30%,transparent)}
+.ucard::after{content:"";position:absolute;left:-30%;top:-60%;width:80%;height:120%;background:linear-gradient(115deg,rgba(255,255,255,.09),transparent 60%);transform:rotate(18deg);pointer-events:none}
+.ucard.r{--cc:#ff3b5c}.ucard.y{--cc:#ffd23f}.ucard.g{--cc:#3ddc84}.ucard.b{--cc:#3d8bff}.ucard.w{--cc:#e6e6e6}
+.ucard .cv{font-size:calc(var(--w)*.5);line-height:1;font-style:italic;letter-spacing:-.04em;text-shadow:0 0 14px color-mix(in srgb,var(--cc) 65%,transparent)}
+.ucard .k{position:absolute;font-size:calc(var(--w)*.19);line-height:1;font-style:italic}.ucard .k.tl{top:8%;left:12%}.ucard .k.br{bottom:8%;right:12%;transform:rotate(180deg)}
+.ucard .wh{width:60%;aspect-ratio:1;border-radius:50%;background:conic-gradient(#ff3b5c 0 25%,#ffd23f 0 50%,#3ddc84 0 75%,#3d8bff 0);display:grid;place-items:center;color:#fff;
+ font-size:calc(var(--w)*.26);font-style:italic;text-shadow:0 1px 4px #000,0 0 6px #000;box-shadow:0 0 0 2px #000,0 0 14px rgba(255,255,255,.18)}
+.ucard.back{--cc:#7cff01;background:repeating-linear-gradient(45deg,#0c0c0c 0 5px,#050505 5px 10px);border-color:#2e4a10}
+.ucard.back::before{inset:12%;border-color:rgba(124,255,1,.35);display:grid}
+.ucard.back::after{content:"#B";left:0;top:0;width:100%;height:100%;transform:none;display:grid;place-items:center;font-family:var(--hand);font-size:calc(var(--w)*.42);color:var(--g);
+ text-shadow:0 0 10px rgba(124,255,1,.6);background:none;font-weight:400}
+.unops{width:var(--uw);display:flex;justify-content:space-around;gap:6px;flex:none;min-height:96px}
+.uop{flex:1;max-width:120px;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;--c:#7cff01}
+.uop b{font-size:12.5px;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.uop .avw .av::after{display:none}
+.uop.act .avw .av{border-color:var(--g);box-shadow:0 0 14px rgba(124,255,1,.35)}
+.uop .unb{position:absolute;left:50%;bottom:-6px;transform:translateX(-50%);font-size:9px;font-weight:900;background:var(--g);color:#000;border-radius:6px;padding:1px 5px;white-space:nowrap}
+.uop .unb.warn{background:var(--red);color:#fff;left:auto;right:-4px;top:-4px;bottom:auto;transform:none}
+.fan{display:flex;align-items:center;height:20px}
+.fan i{width:11px;height:16px;border-radius:2px;background:repeating-linear-gradient(45deg,#111 0 2px,#060606 2px 4px);border:1px solid #2e4a10;margin-left:-5px;box-shadow:0 1px 2px #000}
+.fan i:first-child{margin-left:0}.fan small{margin-left:6px;font-weight:800;font-size:12px;color:#ddd}
+.untable{width:var(--uw);height:clamp(150px,25vh,230px);flex:none;position:relative;display:flex;align-items:center;justify-content:center;gap:clamp(22px,8vw,48px)}
+.untable::before{content:"";position:absolute;inset:2% 4%;border-radius:50%;border:1px solid #151515;background:radial-gradient(closest-side,color-mix(in srgb,var(--cur,#7cff01) 9%,transparent),transparent);transition:background .5s}
+.undir{position:absolute;width:min(78%,250px);aspect-ratio:1;left:50%;top:50%;transform:translate(-50%,-50%);color:#2a2a2a;animation:spinr 9s linear infinite;pointer-events:none}
+.undir.rev{animation-direction:reverse}.undir svg{width:100%;height:100%}.undir.rev svg{transform:scaleX(-1)}
+@keyframes spinr{to{transform:translate(-50%,-50%) rotate(360deg)}}
+.undeck{position:relative;cursor:pointer;z-index:1}
+.undeck .ucard{--w:66px;box-shadow:2px 2px 0 #0a0a0a,4px 4px 0 #1a2a0a,6px 6px 0 #0a0a0a,8px 8px 14px #000}
+.undeck.can .ucard{animation:ring2 1.1s ease-in-out infinite;border-color:var(--g)}
+.undeck span{position:absolute;bottom:-20px;left:0;right:0;text-align:center;font-size:11px;color:#666}
+.undisc{position:relative;width:74px;height:111px;z-index:1}
+#unDisc{position:absolute;inset:0}
+#unDisc .ul{position:absolute;inset:0;transform:rotate(var(--r))}#unDisc .ul .ucard{--w:74px}
+#unDisc .ul:not(.top){filter:brightness(.55)}#unDisc .top.hid{opacity:0}
+.undisc::after{content:"";position:absolute;inset:-12px;border-radius:18px;box-shadow:0 0 30px color-mix(in srgb,var(--cur) 55%,transparent);pointer-events:none;transition:box-shadow .5s}
+.uncol{position:absolute;bottom:-22px;left:-20px;right:-20px;text-align:center;font-size:11px;font-weight:800;color:var(--cur);letter-spacing:.1em;text-transform:uppercase}
+.unpend{position:absolute;right:6%;top:8%;font-size:26px;font-weight:900;color:var(--red);text-shadow:0 0 14px rgba(255,45,85,.6);opacity:0;transition:.3s}.unpend.on{opacity:1;animation:pulse .6s infinite alternate}
+.unst{width:var(--uw);text-align:center;font-size:14.5px;color:#ccc;min-height:20px;flex:none}.unst b{color:#fff}
+.unhand{width:var(--uw);overflow-x:auto;overflow-y:visible;scrollbar-width:none;flex:none;padding:20px 0 4px}
+.unhand::-webkit-scrollbar{display:none}
+.unhand .inner{display:flex;width:max-content;margin:0 auto;padding:0 26px}
+.unhand .ucard{--w:64px;margin:0 -12px;cursor:pointer;transition:transform .18s,filter .2s,margin .2s}
+.unhand.many .ucard{margin:0 -19px}.unhand.lots .ucard{margin:0 -24px}
+.unhand .ucard.ok{transform:translateY(-14px);z-index:2}
+.unhand .ucard.no{filter:brightness(.4) saturate(.6)}
+.unhand .ucard.drawn{transform:translateY(-18px);outline:2px solid var(--g);outline-offset:2px}
+.unhand .ucard.new{animation:cin .5s cubic-bezier(.2,1.2,.4,1)}
+@keyframes cin{from{transform:translateY(-140px) scale(.6) rotate(-25deg);opacity:0}}
+.ucard.shake{animation:shake .4s}
+.unbtns{width:var(--uw);display:flex;gap:8px;flex:none}.unbtns .btn{margin:0;padding:11px 8px;font-size:15px}
+.unbtns #unUnoB{font-family:var(--hand);font-size:20px;font-weight:400;animation:pulse .55s infinite alternate}
+#sUno .gchat{width:var(--uw);min-height:70px}
+.unpick{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.unpick button{aspect-ratio:1.3;border-radius:18px;border:2px solid var(--cc);background:radial-gradient(circle at 30% 20%,color-mix(in srgb,var(--cc) 30%,#000),#050505);color:var(--cc);font-weight:900;font-size:16px;cursor:pointer;box-shadow:0 0 16px color-mix(in srgb,var(--cc) 30%,transparent)}
+.unfly{position:fixed;left:0;top:0;z-index:960;pointer-events:none}
+.unshout{position:fixed;left:50%;top:40%;transform:translate(-50%,-50%);z-index:970;pointer-events:none;text-align:center;font-family:var(--hand);font-size:min(18vw,90px);color:var(--g);
+ text-shadow:0 0 30px rgba(124,255,1,.8),0 4px 0 #000;opacity:0;white-space:nowrap}
+.unshout small{display:block;font-family:-apple-system,Segoe UI,Roboto,sans-serif;font-size:16px;color:#fff;text-shadow:0 2px 6px #000;font-weight:800}
+.unshout.on{animation:shout 1.6s cubic-bezier(.2,1.3,.4,1)}
+@keyframes shout{0%{opacity:0;transform:translate(-50%,-50%) scale(.3) rotate(-12deg)}18%{opacity:1;transform:translate(-50%,-50%) scale(1.1) rotate(-4deg)}30%{transform:translate(-50%,-50%) scale(1) rotate(-4deg)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-60%) scale(.95) rotate(-4deg)}}
 /* profile */
 .pf-h{display:flex;gap:14px;align-items:center;margin-bottom:12px}
 .pf-av{flex:none;width:72px;height:72px;border-radius:50%;display:grid;place-items:center;font-size:38px;background:#080808;border:2px solid var(--c,var(--g));box-shadow:0 0 20px color-mix(in srgb,var(--c,#7cff01) 40%,transparent)}
@@ -456,6 +525,7 @@ select option{background:#111}
    <div class="games" id="lGames">
     <div class="gcard" data-game="ludo"><div class="gi">🎲</div><b>Ne ljuti se</b><small>2–4 igrača</small></div>
     <div class="gcard" data-game="sketch"><div class="gi">🎨</div><b>Crtaj &amp; pogađaj</b><small>2–5 igrača</small></div>
+    <div class="gcard" data-game="uno"><div class="gi">🃏</div><b>Jedna!</b><small>UNO pravila · 2–5</small></div>
    </div>
    <div class="summary" id="lSum"></div>
    <button class="btn ghost" id="lSet">⚙️ Postavke igre</button>
@@ -498,6 +568,30 @@ select option{background:#111}
  <div class="cin"><input id="skIn" maxlength="60" placeholder="Pogodi riječ…" autocomplete="off" autocapitalize="off" spellcheck="false"><button id="skGo">➤</button></div>
 </section>
 
+<!-- JEDNA! (UNO) -->
+<section id="sUno" class="screen">
+ <div class="topbar">
+  <button class="ib hb" data-menu><i></i></button>
+  <div class="mid"><div class="skr" id="unInfo"></div><div class="untm" id="unTimeMe"></div></div>
+  <button class="ib" id="unHelp">?</button>
+ </div>
+ <div class="unops" id="unOps"></div>
+ <div class="untable" id="unTable">
+  <div class="undir" id="unDir"><svg viewBox="0 0 100 100"><defs><marker id="ah" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
+   <path d="M50 6 A44 44 0 0 1 94 50" fill="none" stroke="currentColor" stroke-width="1.2" marker-end="url(#ah)"/><path d="M50 94 A44 44 0 0 1 6 50" fill="none" stroke="currentColor" stroke-width="1.2" marker-end="url(#ah)"/></svg></div>
+  <div class="undeck" id="unDeck"><div class="ucard back"></div><span id="unDeckN"></span></div>
+  <div class="undisc"><div id="unDisc"></div><span class="uncol" id="unColor"></span></div>
+  <div class="unpend" id="unPend"></div>
+ </div>
+ <div class="unst" id="unSt"></div>
+ <div class="unhand" id="unHand"></div>
+ <div class="unbtns"><button class="btn" id="unDrawB">🂠 Vuci</button><button class="btn ghost" id="unPassB">Dalje ➜</button><button class="btn fill" id="unUnoB">JEDNA!</button><button class="btn red" id="unCatchB">Uhvati! 😈</button></div>
+ <div class="gchat"><div class="feed" id="unFeed"></div>
+  <div class="cbar" data-chat="room"><button class="eb">😀</button><input id="unIn" maxlength="120" placeholder="Poruka…" autocomplete="off"><button class="sb">➤</button></div></div>
+</section>
+<div class="ovl" id="unPick"><div class="panel" style="max-width:340px"><h2 style="text-align:center">Izaberi boju</h2><div class="unpick">
+ <button data-col="r" style="--cc:#ff3b5c">Crvena</button><button data-col="y" style="--cc:#ffd23f">Žuta</button><button data-col="g" style="--cc:#3ddc84">Zelena</button><button data-col="b" style="--cc:#3d8bff">Plava</button></div></div></div>
+<div id="unShout" class="unshout"></div>
 <div id="diceHome" style="display:none"><div class="dice-wrap" id="dw"><div class="dice" id="dice"></div></div></div>
 
 <!-- DRAWER -->
@@ -534,6 +628,7 @@ select option{background:#111}
 <script src="words.js"></script>
 <script src="app.js"></script>
 <script src="sketch.js"></script>
+<script src="uno.js"></script>
 <script src="global.js"></script>
 </body>
 </html>
