@@ -189,9 +189,9 @@ function renderHUD(st){
  let main,sub=st.msg||'';
  if(st.phase==='over')main='🏁 Kraj igre';
  else if(cur.owner===me){main=canRoll?(App.role==='local'?`${cur.name}, baci kockicu! 🎲`:'Ti si na potezu – baci! 🎲'):canMove?`${App.role==='local'?cur.name+': i':'I'}zaberi figuru (${st.die})`:(st.phase==='pause'?`${cur.name} – ${st.die}`:'…')}
- else main=cur.owner==='bot'?`🤖 ${cur.name} razmišlja…`:`Na potezu: ${cur.name}`;
+ else main='';
  if(canMove&&!sub)sub='Dodirni figuru koja svijetli';if(canRoll&&!sub)sub='Dodirni kockicu';
- $('#stMain').textContent=main;$('#stSub').textContent=sub;
+ $('#stMain').textContent=main;$('#stSub').textContent=sub;$('#sGame .ctrl').style.visibility=main||sub?'visible':'hidden';
  $('#dw').classList.toggle('can',canRoll);
  Object.values(App.pel).forEach(e=>e.classList.remove('can'));$$('#layer .target').forEach(e=>e.remove());
  if(canMove){const L=$('#layer');st.legal.forEach(m=>{const e=App.pel[st.turn+'-'+m.p];if(e)e.classList.add('can');
