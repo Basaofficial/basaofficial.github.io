@@ -73,36 +73,35 @@ document.addEventListener('click',e=>{const c=e.target.closest('[data-close]');i
  s+=`<linearGradient id="lg${i}" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="${c.dark}"/><stop offset=".3" stop-color="${c.light}"/><stop offset=".55" stop-color="${c.hex}"/><stop offset="1" stop-color="${c.dark}"/></linearGradient>
  <radialGradient id="rg${i}" cx=".38" cy=".32" r=".75"><stop offset="0" stop-color="#fff"/><stop offset=".18" stop-color="${c.light}"/><stop offset=".6" stop-color="${c.hex}"/><stop offset="1" stop-color="${c.dark}"/></radialGradient>`});
  $('#pawnDefs').innerHTML=s})();
-function pawnSVG(i){const dk=COLORS[i].dark;return `<div class="pawn"><svg viewBox="0 0 40 56">
- <ellipse cx="20" cy="48.5" rx="14.5" ry="5" fill="${dk}"/>
- <path d="M5.5 46.5Q5.5 42 12 41Q16 33 16.6 25.5L23.4 25.5Q24 33 28 41Q34.5 42 34.5 46.5Q34.5 50.5 20 50.8Q5.5 50.5 5.5 46.5Z" fill="url(#lg${i})" stroke="${dk}" stroke-width=".8"/>
- <path d="M9 45.5Q20 49 31 45.5" stroke="#fff" stroke-opacity=".3" fill="none" stroke-width="1.1"/>
- <ellipse cx="20" cy="25.6" rx="7.4" ry="2.6" fill="url(#lg${i})" stroke="${dk}" stroke-width=".7"/>
- <circle cx="20" cy="14.8" r="9.4" fill="url(#rg${i})" stroke="${dk}" stroke-width=".8"/>
- <ellipse cx="16.6" cy="10.6" rx="3.3" ry="2.2" fill="#fff" opacity=".6"/></svg></div>`}
+const PAWN_IMG={};
+function mute(hex,k){const n=[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16));const g=(n[0]+n[1]+n[2])/3;return '#'+n.map(v=>Math.round(v*(1-k)+g*k*.85).toString(16).padStart(2,'0')).join('')}
+function pawnImg(i){if(!PAWN_IMG[i])PAWN_IMG[i]=PAWN3D.render(mute(COLORS[i].hex,.14),128);return PAWN_IMG[i]}
+function pawnHTML(i){return `<div class="pr"><div class="pawn"><img src="${pawnImg(i)}" alt="" draggable="false"></div></div>`}
+(function pawnVars(){const pw=1.1/.88*.86,ph=pw*PAWN3D.ASPECT,L=$('#layer');
+ L.style.setProperty('--pw',(pw*100)+'%');L.style.setProperty('--ph',(ph*100)+'%');L.style.setProperty('--pl',((1-pw)/2*100)+'%');
+ L.style.setProperty('--pt',((.5-PAWN3D.ANCHOR*ph)*100)+'%');L.style.setProperty('--pa',(PAWN3D.ANCHOR*100)+'%')})();
 function boardSVG(R){
  const C=v=>v*10+5;let o=`<svg viewBox="0 0 110 110" xmlns="http://www.w3.org/2000/svg"><defs>
  <radialGradient id="bgg" cx=".5" cy=".5" r=".75"><stop offset="0" stop-color="#101010"/><stop offset="1" stop-color="#030303"/></radialGradient>
  <radialGradient id="fld" cx=".4" cy=".35" r=".75"><stop offset="0" stop-color="#262626"/><stop offset=".7" stop-color="#121212"/><stop offset="1" stop-color="#070707"/></radialGradient>
- ${COLORS.map((c,i)=>`<radialGradient id="cf${i}" cx=".4" cy=".35" r=".75"><stop offset="0" stop-color="${c.light}"/><stop offset=".6" stop-color="${c.hex}"/><stop offset="1" stop-color="${c.dark}"/></radialGradient>`).join('')}
+ ${COLORS.map((c,i)=>`<radialGradient id="cf${i}" cx=".4" cy=".35" r=".75"><stop offset="0" stop-color="${mute(c.hex,.25)}"/><stop offset="1" stop-color="${c.dark}"/></radialGradient>`).join('')}
  <filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="1.1"/></filter>
  </defs><rect width="110" height="110" fill="url(#bgg)"/>`;
- [[0,0],[9,0],[9,9],[0,9]].forEach(([qx,qy],i)=>{o+=`<rect x="${qx*10+1}" y="${qy*10+1}" width="18" height="18" rx="4.5" fill="${COLORS[i].hex}" opacity=".07"/>
-  <rect x="${qx*10+1}" y="${qy*10+1}" width="18" height="18" rx="4.5" fill="none" stroke="${COLORS[i].hex}" stroke-width=".7" opacity=".9" filter="url(#glow)"/>
-  <rect x="${qx*10+1}" y="${qy*10+1}" width="18" height="18" rx="4.5" fill="none" stroke="${COLORS[i].hex}" stroke-width=".45"/>`});
- o+=`<polygon points="${TRACK.map(c=>C(c[0])+','+C(c[1])).join(' ')}" fill="none" stroke="#7cff01" stroke-opacity=".22" stroke-width=".9" stroke-linejoin="round"/>`;
+ [[0,0],[9,0],[9,9],[0,9]].forEach(([qx,qy],i)=>{o+=`<rect x="${qx*10+1}" y="${qy*10+1}" width="18" height="18" rx="4.5" fill="#0c0c0c" stroke="#232323" stroke-width=".5"/>
+  <rect x="${qx*10+1}" y="${qy*10+1}" width="18" height="18" rx="4.5" fill="none" stroke="${COLORS[i].hex}" stroke-width=".35" opacity=".45"/>`});
+ o+=`<polygon points="${TRACK.map(c=>C(c[0])+','+C(c[1])).join(' ')}" fill="none" stroke="#fff" stroke-opacity=".08" stroke-width=".8" stroke-linejoin="round"/>`;
  for(let i=0;i<4;i++){const a=TRACK[(START[i]+39)%40],b=FINISH[i][3];o+=`<line x1="${C(a[0])}" y1="${C(a[1])}" x2="${C(b[0])}" y2="${C(b[1])}" stroke="${COLORS[i].hex}" stroke-width=".9" opacity=".5"/>`}
  const field=(x,y,fill,stroke,sw)=>`<circle cx="${C(x)}" cy="${C(y)}" r="4.1" fill="${fill}" stroke="${stroke||'#2c2c2c'}" stroke-width="${sw||.5}"/>`;
- const star=(x,y)=>{let p='';for(let k=0;k<10;k++){const r=k%2?1.1:2.6,a=-Math.PI/2+k*Math.PI/5;p+=(C(x)+r*Math.cos(a)).toFixed(2)+','+(C(y)+r*Math.sin(a)).toFixed(2)+' '}return `<polygon points="${p}" fill="#7cff01" opacity=".9" filter="url(#glow)"/><polygon points="${p}" fill="#c9ff8a"/>`};
+ const star=(x,y)=>{let p='';for(let k=0;k<10;k++){const r=k%2?1.1:2.6,a=-Math.PI/2+k*Math.PI/5;p+=(C(x)+r*Math.cos(a)).toFixed(2)+','+(C(y)+r*Math.sin(a)).toFixed(2)+' '}return `<polygon points="${p}" fill="#7cff01" opacity=".55"/>`};
  TRACK.forEach((c,idx)=>{const si=START.indexOf(idx);o+=field(c[0],c[1],si>=0?`url(#cf${si})`:'url(#fld)',si>=0?COLORS[si].light:null);
   if(si>=0)o+=`<circle cx="${C(c[0])}" cy="${C(c[1])}" r="2.5" fill="none" stroke="#fff" stroke-width=".6" opacity=".7"/>`;
   if(R.safeFields&&SAFE.has(idx)&&si<0)o+=star(c[0],c[1]);
   if(R.safeFields&&si>=0)o+=`<circle cx="${C(c[0])}" cy="${C(c[1])}" r="1" fill="#fff" opacity=".85"/>`});
- for(let i=0;i<4;i++){FINISH[i].forEach(c=>{o+=field(c[0],c[1],`url(#cf${i})`,COLORS[i].light,.4)+`<circle cx="${C(c[0])}" cy="${C(c[1])}" r="1.4" fill="#fff" opacity=".3"/>`});
-  HOME[i].forEach(c=>{o+=field(c[0],c[1],'#080808',COLORS[i].hex,.9)})}
+ for(let i=0;i<4;i++){FINISH[i].forEach(c=>{o+=field(c[0],c[1],'url(#fld)',COLORS[i].hex,.7)+`<circle cx="${C(c[0])}" cy="${C(c[1])}" r="1.5" fill="${COLORS[i].hex}" opacity=".55"/>`});
+  HOME[i].forEach(c=>{o+=field(c[0],c[1],'#070707','#2a2a2a',.6)})}
  o+=`<rect x="50.3" y="50.3" width="9.4" height="9.4" rx="1.2" fill="#000" stroke="#7cff01" stroke-opacity=".35" stroke-width=".4"/>
-  <polygon points="55,55 50.9,50.9 50.9,59.1" fill="${COLORS[0].hex}"/><polygon points="55,55 50.9,50.9 59.1,50.9" fill="${COLORS[1].hex}"/>
-  <polygon points="55,55 59.1,50.9 59.1,59.1" fill="${COLORS[2].hex}"/><polygon points="55,55 50.9,59.1 59.1,59.1" fill="${COLORS[3].hex}"/>
+  <g opacity=".6"><polygon points="55,55 50.9,50.9 50.9,59.1" fill="${COLORS[0].hex}"/><polygon points="55,55 50.9,50.9 59.1,50.9" fill="${COLORS[1].hex}"/>
+  <polygon points="55,55 59.1,50.9 59.1,59.1" fill="${COLORS[2].hex}"/><polygon points="55,55 50.9,59.1 59.1,59.1" fill="${COLORS[3].hex}"/></g>
   <circle cx="55" cy="55" r="1.5" fill="#000" stroke="#7cff01" stroke-width=".5"/>`;
  return o+'</svg>';
 }
@@ -124,14 +123,14 @@ function buildGame(st){
  const R=$('#rot');R.style.transform=`rotate(${App.rot*90}deg)`;R.style.setProperty('--ra',`${-App.rot*90}deg`);
  $('#boardSvg').innerHTML=boardSVG(st.rules);const L=$('#layer');L.innerHTML='';App.pel={};
  st.seats.forEach(s=>{if(!s.active)return;s.pieces.forEach((r,p)=>{const d=document.createElement('div');d.className='piece';d.dataset.s=s.i;d.dataset.p=p;
-  d.innerHTML=`<div class="pr">${pawnSVG(s.i)}</div>`;L.appendChild(d);App.pel[s.i+'-'+p]=d})});
+  d.innerHTML=pawnHTML(s.i);L.appendChild(d);App.pel[s.i+'-'+p]=d})});
  $('#diceHome').appendChild($('#dw'));
  $$('.chip').forEach(ch=>{const c=+ch.dataset.c,s=(c-App.rot+4)%4;ch.dataset.s=s;
   ch.innerHTML=`<div class="avw"><svg viewBox="0 0 48 48"><circle class="trk" cx="24" cy="24" r="22"/><circle class="tmr" cx="24" cy="24" r="22"/></svg><div class="av"></div></div>
    <div class="info"><div class="nm"></div><div class="sub"></div></div><div class="dslot"></div>`});
  setDice(st.die||1,false);hideWin();showScreen('sGame');
  $('#gRoom').innerHTML=App.role==='local'?'📱 Lokalna igra':`<span class="net${App.netOk===false?' bad':''}" id="gNet"></span>SOBA <b>${esc(App.code||'')}</b>`;
- $('#gChat').style.display=App.role==='local'?'none':'';
+ $('.gchat').style.display=App.role==='local'?'none':'';renderChat();
 }
 function layout(st){
  const g={};st.seats.forEach(s=>{if(!s.active)return;s.pieces.forEach((r,p)=>{const c=cellOf(s.i,r,p),k=c[0]+','+c[1];(g[k]=g[k]||[]).push({s:s.i,p,c})})});
@@ -198,7 +197,6 @@ function renderHUD(st){
  if(canMove){const L=$('#layer');st.legal.forEach(m=>{const e=App.pel[st.turn+'-'+m.p];if(e)e.classList.add('can');
   const c=cellOf(st.turn,m.to,m.p),t=document.createElement('div');t.className='target';t.dataset.p=m.p;
   t.style.left=((c[0]+.5)/11*100)+'%';t.style.top=((c[1]+.5)/11*100)+'%';L.appendChild(t)})}
- $('#gLog').innerHTML=st.log.slice(0,8).map(l=>`<div>${esc(l)}</div>`).join('');
 }
 function showWin(st){
  const rk=st.ranking||computeRanking(st),w=rk[0],mySeats=st.seats.filter(s=>s.active&&s.owner===App.me.id).map(s=>s.i);
@@ -212,7 +210,7 @@ function showWin(st){
 function winButtons(){const host=App.role!=='guest';$('#win .btn.ghost').textContent=App.skv?'Pogledaj crtež':'Pogledaj ploču';$('#wAgain').style.display=host?'':'none';$('#wLobby').style.display=host?'':'none';$('#wWait').style.display=host?'none':''}
 function hideWin(){ovl('win',false)}
 function confetti(){const c=$('#confetti'),x=c.getContext('2d');c.width=innerWidth*devicePixelRatio;c.height=innerHeight*devicePixelRatio;x.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
- const cols=['#7cff01','#ff2d55','#ffd60a','#2f7bff','#fff'];
+ const cols=['#7cff01','#ffffff','#a6ff5c','#d0d0d0','#5fcf00'];
  const P=[];for(let i=0;i<170;i++)P.push({x:innerWidth/2+(Math.random()-.5)*80,y:innerHeight*.35,vx:(Math.random()-.5)*12,vy:-Math.random()*13-4,r:Math.random()*6+3,c:cols[i%5],a:Math.random()*6,va:(Math.random()-.5)*.4});
  const t0=performance.now();(function f(t){x.clearRect(0,0,innerWidth,innerHeight);P.forEach(p=>{p.vy+=.32;p.vx*=.99;p.x+=p.vx;p.y+=p.vy;p.a+=p.va;x.save();x.translate(p.x,p.y);x.rotate(p.a);x.fillStyle=p.c;x.fillRect(-p.r/2,-p.r/4,p.r,p.r/2);x.restore()});
   if(t-t0<4500)requestAnimationFrame(f);else x.clearRect(0,0,innerWidth,innerHeight)})(t0)}
@@ -230,32 +228,28 @@ function showReact(m){
  setTimeout(()=>b.remove(),2900);return true;
 }
 function onChat(m){
- if(App.chat.some(x=>x.id===m.id))return;App.chat.push(m);if(App.chat.length>100)App.chat.shift();
- const open=onScreen('sSketch')||$('#chatP').classList.contains('on');
- if(!open&&m.from!==App.me.id&&!m.sys){App.unread++;updBadge()}
- renderChat();
- if(!m.sys&&m.from!==App.me.id&&!$('#chatP').classList.contains('on')){if(!showReact({from:m.from,e:m.text})&&!onScreen('sSketch'))toast(`${m.av} ${m.nick}: ${m.text}`,3000)}
- if(!m.sys)sfx.pop();if(m.from!==App.me.id&&!m.sys)vib(15);
+ if(App.chat.some(x=>x.id===m.id))return;App.chat.push(m);if(App.chat.length>100)App.chat.shift();renderChat();
+ if(!m.sys&&m.from!==App.me.id){showReact({from:m.from,e:m.text});sfx.pop();vib(15)}
 }
-function updBadge(){$$('.cbtn .badge').forEach(b=>{b.textContent=App.unread>9?'9+':App.unread;b.classList.toggle('on',App.unread>0)})}
-function msgColor(id){const st=App.st;const s=seatOfPlayer(st,id);if(s&&onScreen('sGame'))return COLORS[s.i].light;
- const ids=App.lobby?Object.keys(App.lobby.players):[];const pal=['#7cff01','#ff8aa0','#ffd60a','#9cc2ff','#c792ff','#5ef2e0'];return pal[Math.max(0,ids.indexOf(id))%pal.length]}
+function updBadge(){}
+function feedHTML(list){const me=App.me.id;return list.slice(-60).map(m=>m.sys?`<div class="fm sys ${m.sys}">${esc(m.text)}</div>`:
+ `<div class="fm${m.from===me?' me':''}${isEmoji(m.text)?' big':''}"><span class="fa">${esc(m.av)}</span><b>${esc(m.nick)}</b><span class="ft">${esc(m.text)}</span></div>`).join('')}
+function fillFeed(el,list,empty){const atBottom=el.scrollHeight-el.scrollTop-el.clientHeight<60;el.innerHTML=feedHTML(list)||`<div class="fm sys">${empty}</div>`;if(atBottom||!el._init){el.scrollTop=el.scrollHeight;el._init=1}}
 function renderChat(){
- const me=App.me.id;
- if($('#chatP').classList.contains('on')){
-  const L=$('#chList');L.innerHTML=App.chat.length?App.chat.map(m=>{
-   if(m.sys)return `<div class="sysm ${m.sys==='rose'?'rose':m.sys==='priv'?'priv':''}">${esc(m.text)}</div>`;
-   const big=isEmoji(m.text),tm=new Date(m.ts).toLocaleTimeString('bs',{hour:'2-digit',minute:'2-digit'});
-   return `<div class="msg${m.from===me?' me':''}${big?' big':''}" style="--mc:${msgColor(m.from)}"><span class="ma">${esc(m.av)}</span><div class="mb">${m.from===me?'':`<div class="mn">${esc(m.nick)}<span class="mtime">${tm}</span></div>`}<div class="mt">${esc(m.text)}</div></div></div>`}).join('')
-   :'<div class="sysm">Još nema poruka – pozdravi ekipu! 👋</div>';
-  L.scrollTop=L.scrollHeight;
-  const ps=App.lobby?Object.values(App.lobby.players).filter(p=>p.online).length:0;$('#chWho').textContent=ps?`${ps} online`:'';
- }
- if(onScreen('sSketch')){const L=$('#skChat');L.innerHTML=App.chat.slice(-60).map(m=>m.sys?`<div class="gm ${m.sys==='priv'?'priv':m.sys==='rose'?'rose':'sys'}">${esc(m.text)}</div>`:
-  `<div class="gm" style="--mc:${msgColor(m.from)}"><b>${esc(m.av)} ${esc(m.nick)}:</b>${esc(m.text)}</div>`).join('');L.scrollTop=L.scrollHeight}
+ if(onScreen('sLobby'))fillFeed($('#lFeed'),App.chat,'Pozdravi ekipu u sobi 👋');
+ if(onScreen('sGame'))fillFeed($('#gFeed'),App.chat,'Chat sobe – piši ovdje 💬');
+ if(onScreen('sSketch'))fillFeed($('#skChat'),App.chat,'Pogađaj ovdje ✍️');
 }
-function openChat(){App.unread=0;updBadge();ovl('chatP',true);renderChat();setTimeout(()=>{const L=$('#chList');L.scrollTop=L.scrollHeight},50)}
 function sendChat(t){t=String(t||'').trim();if(!t)return;act('chat',{text:t})}
+$('#emoE').innerHTML=EMOJIS.map(e=>`<button>${e}</button>`).join('');$('#emoP').innerHTML=PHRASES.map(e=>`<button>${esc(e)}</button>`).join('');
+function chatSend(bar,text){text=String(text||'').trim();if(!text)return;if(bar.dataset.chat==='global'){if(typeof gChat==='function')gChat(text)}else sendChat(text)}
+document.addEventListener('click',e=>{
+ const eb=e.target.closest('.cbar .eb');const pop=$('#emoPop');
+ if(eb){const bar=eb.closest('.cbar');if(pop.parentNode!==bar||!pop.classList.contains('on')){bar.appendChild(pop);pop.classList.add('on')}else pop.classList.remove('on');return}
+ const pb=e.target.closest('#emoPop button');if(pb){chatSend(pop.parentNode,pb.textContent);pop.classList.remove('on');return}
+ const sb=e.target.closest('.cbar .sb');if(sb){const bar=sb.closest('.cbar'),inp=bar.querySelector('input');chatSend(bar,inp.value);inp.value='';pop.classList.remove('on');return}
+ if(!e.target.closest('#emoPop'))pop.classList.remove('on')});
+document.addEventListener('keydown',e=>{if(e.key!=='Enter')return;const inp=e.target.closest&&e.target.closest('.cbar input');if(!inp)return;e.preventDefault();chatSend(inp.closest('.cbar'),inp.value);inp.value=''});
 function rosesTotal(r){let n=0;for(const k in (r||{}))n+=(r[k]|0);return n}
 function mergeRoses(a,b){const o=Object.assign({},a||{});for(const k in (b||{}))o[k]=Math.max(o[k]|0,b[k]|0);return o}
 function cleanRoses(r){const o={};if(!r||typeof r!=='object')return o;Object.keys(r).slice(0,40).forEach(k=>{const v=Math.min(99999,Math.max(0,r[k]|0));if(v)o[String(k).slice(0,14)]=v});return o}
@@ -271,7 +265,7 @@ function openProfile(id,seat){
  if(seat!=null&&st){const s=st.seats[seat];name=s.name;av=s.av;color=COLORS[seat].hex;id=s.owner!=='bot'?s.owner:null}
  const p=id&&lb&&lb.players[id];if(!p&&seat==null)return;
  if(seat==null){name=p.nick;av=p.av}
- App.profId=id;App.profSeat=seat;
+ App.profId=id;App.profSeat=seat;App.profSrc='room';
  $('#prof .panel').style.setProperty('--c',color);$('#pfAv').textContent=av;$('#pfName').textContent=name;
  const parts=[];if(seat!=null)parts.push(COLORS[seat].name);if(id===lb.host&&App.role!=='local')parts.push('👑 domaćin');if(id===App.me.id&&App.role!=='local')parts.push('ti');if(seat!=null&&st.seats[seat].owner==='bot')parts.push('🤖 bot');
  if(p&&!p.online)parts.push('offline');$('#pfSub').textContent=parts.join(' · ');
@@ -311,7 +305,7 @@ function autoAssign(lb){
 }
 function bcast(m,except){App.conns.forEach((c,id)=>{if(id===except)return;try{if(c.open)c.send(m)}catch(e){}})}
 function sendTo(id,m){if(id===App.me.id)return false;const c=App.conns.get(id);if(c&&c.open)try{c.send(m);return true}catch(e){}return false}
-function bcastLobby(){if(App.role==='host')bcast({t:'lobby',lb:App.lobby});saveGame();if(onScreen('sLobby'))renderLobby()}
+function bcastLobby(){if(App.role==='host')bcast({t:'lobby',lb:App.lobby});saveGame();if(onScreen('sLobby'))renderLobby();if(typeof gAnnounce==='function')gAnnounce()}
 function saveGame(){if(App.role==='host'||App.role==='local')LS.set('save',{role:App.role,lobby:App.lobby,game:App.game,code:App.code,ts:Date.now()})}
 function sysAll(text,kind){const m={id:uid(),sys:kind||'all',text,ts:Date.now()};bcast({t:'chat',m});onChat(m)}
 function sysTo(id,text,kind){const m={id:uid(),sys:kind||'priv',text,ts:Date.now()};if(id===App.me.id)onChat(m);else sendTo(id,{t:'chat',m})}
@@ -392,7 +386,7 @@ function hostClosed(c){const id=c._cid;if(!id||App.conns.get(id)!==c)return;App.
 function hostOpen(code){
  if(typeof Peer==='undefined'){toast('Online dio se nije učitao – provjeri internet i osvježi stranicu.',4000);return false}
  App.code=code;const pr=new Peer(PEER_PREFIX+code,{config:ICE,debug:0});App.peer=pr;
- pr.on('open',()=>{if(App.peer!==pr)return;App.lobby.code=code;App.code=code;setNet(true);renderLobby();if(onScreen('sGame'))$('#gRoom').innerHTML=`<span class="net" id="gNet"></span>SOBA <b>${code}</b>`;saveGame()});
+ pr.on('open',()=>{if(App.peer!==pr)return;App.lobby.code=code;App.code=code;setNet(true);renderLobby();if(typeof gAnnounce==='function')gAnnounce(true);if(onScreen('sGame'))$('#gRoom').innerHTML=`<span class="net" id="gNet"></span>SOBA <b>${code}</b>`;saveGame()});
  pr.on('connection',c=>{c.on('data',d=>hostMsg(c,d));c.on('close',()=>hostClosed(c));c.on('error',()=>hostClosed(c))});
  pr.on('disconnected',()=>{setNet(false);setTimeout(()=>{if(App.peer===pr&&!pr.destroyed)try{pr.reconnect()}catch(e){}},1500)});
  pr.on('error',e=>{if(App.peer!==pr)return;
@@ -470,7 +464,7 @@ function renderLobby(){
  const lb=App.lobby;if(!lb)return;const isHost=App.role!=='guest',local=App.role==='local',M=MODES[lb.mode];
  $('#lLbl').textContent=local?'Lokalna igra':'Kod sobe';
  $('#lCode').innerHTML=local?'📱':(lb.code?esc(lb.code):'<span class="spin"></span>');
- $('#lShare').style.visibility=local?'hidden':'visible';$('#lChat').style.visibility=local?'hidden':'visible';
+ $('#lShare').style.visibility=local?'hidden':'visible';$('#lChatC').style.display=local?'none':'';renderChat();
  const ps=Object.entries(lb.players);const onl=ps.filter(([,p])=>p.online).length;
  $('#lPh').textContent=local?'Igrači':`Igrači ${onl}/${MAXP}`;
  const seatsOf=id=>lb.game==='ludo'?M.seats.filter(i=>lb.seatCfg[i].owner===id):[];
@@ -553,6 +547,7 @@ function startGame(force){
  if(lb.game==='sketch'&&Object.values(lb.players).filter(p=>p.online).length<2){toast('Za crtanje trebaju bar 2 igrača 🎨');return}
  App.starting=true;bcast({t:'count'});ovl('settings',false);
  countdown(()=>{App.starting=false;if(App.lobby!==lb||!App.role)return;
+  if(typeof gAnnounce==='function')setTimeout(gAnnounce,300);
   if(lb.game==='sketch'){skStart();return}
   const seatCfg=[0,1,2,3].map(i=>({owner:lb.seatCfg[i].owner,name:seatName(lb,i),av:seatAv(lb,i)}));
   clearTimeout(App.H.timer);App.H={};App.game=mkState({mode:lb.mode,rules:lb.rules,seatCfg});wake();afterChange()});
@@ -566,11 +561,12 @@ function backToLobby(){if(App.role==='guest'||!App.lobby)return;clearTimeout(App
  App.game=null;App.sk=null;App.H={};Object.entries(App.lobby.players).forEach(([id,p])=>{if(id!==App.lobby.host)p.ready=false});
  bcast({t:'back'});bcastLobby();toLobbyView();saveGame()}
 function leave(){
+ if(App.role==='host'&&App.lobby&&App.lobby.code&&typeof gSend==='function')gSend({t:'g_room_del',code:App.lobby.code});
  App.leaving=true;clearTimeout(App.H.timer);clearTimeout(App.rj);if(typeof skStop==='function')skStop();
  if(App.role==='host')bcast({t:'bye'});
  const pr=App.peer;setTimeout(()=>{try{App.conns.forEach(c=>c.close())}catch(e){}App.conns.clear();try{pr&&pr.destroy()}catch(e){}},300);
  Object.assign(App,{peer:null,conn:null,role:null,game:null,st:null,shown:null,sk:null,skv:null,lobby:null,H:{},code:'',chat:[],unread:0});
- updBadge();['chatP','prof','settings','win','drawer'].forEach(i=>ovl(i,false));
+ ['prof','settings','win','drawer'].forEach(i=>ovl(i,false));
  LS.del('save');showScreen('sHome');renderHome();
 }
 
@@ -581,7 +577,6 @@ function openDrawer(){
  let h=`<div class="logo done" style="width:190px;margin-bottom:12px">${logoSVG()}</div>`;
  if(inRoom){
   if(App.role!=='local')h+=it('📤','Pozovi u sobu','share','g');
-  if(App.role!=='local')h+=it('💬','Chat','chat');
   h+=it('⚙️',host?'Postavke igre':'Postavke (pregled)','settings');
   if(inGame&&host)h+=it('🏠','Nazad u sobu','lobby');
   h+=it('📖','Pravila igre','help');
@@ -595,7 +590,7 @@ function openDrawer(){
 $('#dpanel').addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(!b)return;const a=b.dataset.act;
  if(a==='snd'){SFX.on=!SFX.on;LS.set('snd',SFX.on);sndBtns();if(SFX.on)sfx.pop();openDrawer();return}
  ovl('drawer',false);
- if(a==='share')share();else if(a==='chat')openChat();else if(a==='settings')openSettings();else if(a==='lobby')backToLobby();else if(a==='help')openHelp();
+ if(a==='share')share();else if(a==='settings')openSettings();else if(a==='lobby')backToLobby();else if(a==='help')openHelp();
  else if(a==='quit'){if(confirm(App.role==='host'?'Zatvoriti sobu za sve?':'Sigurno želiš izaći?'))leave()}});
 function sndBtns(){$('#hSnd').textContent=SFX.on?'🔊':'🔇'}
 
@@ -607,10 +602,11 @@ function renderHome(){
  const sv=LS.get('save',null),b=$('#bResume');
  if(sv&&Date.now()-sv.ts<8*3600e3&&(sv.role==='guest'||sv.game)){b.style.display='';b.textContent=sv.role==='guest'?`↩ Vrati se u sobu ${sv.code}`:sv.role==='local'?'↩ Nastavi lokalnu igru':`↩ Nastavi igru (soba ${sv.code})`}
  else b.style.display='none';
+ if(typeof gRender==='function')gRender();
 }
-function saveNick(){const n=$('#nick').value.trim().slice(0,14);if(!n){toast('Upiši svoj nadimak 🙂');$('#nick').focus();return false}App.me.nick=n;LS.set('me',App.me);return true}
+function saveNick(){const n=$('#nick').value.trim().slice(0,14);if(!n){toast('Upiši svoj nadimak 🙂');$('#nick').focus();return false}const ch=n!==App.me.nick;App.me.nick=n;LS.set('me',App.me);if(typeof gOnMe==='function')gOnMe(ch);return true}
 $('#hAv').onclick=()=>{$('#avList').innerHTML=AVATARS.map(a=>`<button data-av="${a}" style="width:52px;height:52px;font-size:30px;border:1.5px solid ${a===App.me.av?'var(--g)':'#1c1c1c'};border-radius:14px">${a}</button>`).join('');ovl('avP',true)};
-$('#avList').addEventListener('click',e=>{const b=e.target.closest('[data-av]');if(!b)return;App.me.av=b.dataset.av;LS.set('me',App.me);$('#hAv').textContent=App.me.av;ovl('avP',false);sfx.click()});
+$('#avList').addEventListener('click',e=>{const b=e.target.closest('[data-av]');if(!b)return;App.me.av=b.dataset.av;LS.set('me',App.me);$('#hAv').textContent=App.me.av;ovl('avP',false);sfx.click();if(typeof gOnMe==='function')gOnMe(true)});
 $('#bHost').onclick=()=>createRoom(false);$('#bLocal').onclick=()=>createRoom(true);
 $('#bJoin').onclick=()=>{if(!saveNick())return;const c=$('#code').value.replace(/\D/g,'');if(c.length!==4){toast('Kod sobe ima 4 broja');return}
  Object.assign(App,{lobby:null,st:null,shown:null,skv:null,joinFails:0,chat:[]});guestJoin(c)};
@@ -621,8 +617,9 @@ $('#bResume').onclick=()=>{const sv=LS.get('save',null);if(!sv)return;if(!App.me
  Object.keys(App.lobby.players).forEach(id=>App.lobby.players[id].online=id===App.me.id);
  if(sv.role==='host'){App.resumeTries=5;hostOpen(sv.code||App.lobby.code)}
  if(App.game){wake();afterChange()}else{showScreen('sLobby');renderLobby()}};
+$('#nick').addEventListener('change',()=>{if($('#nick').value.trim())saveNick()});
 $('#hSnd').onclick=()=>{SFX.on=!SFX.on;LS.set('snd',SFX.on);sndBtns();if(SFX.on)sfx.pop()};
-$('#lShare').onclick=share;$('#lChat').onclick=openChat;$('#lSet').onclick=openSettings;
+$('#lShare').onclick=share;$('#lSet').onclick=openSettings;
 $('#bStart').onclick=()=>startGame(false);$('#bStartBots').onclick=()=>startGame(true);
 $('#bReady').onclick=()=>{const p=App.lobby&&App.lobby.players[App.me.id];const v=!(p&&p.ready);if(p)p.ready=v;renderLobby();
  if(App.conn&&App.conn.open)App.conn.send({t:'ready',v});else toast('Nema veze s domaćinom…');if(v){sfx.pop();vib(30)}};
@@ -649,12 +646,8 @@ $('#layer').addEventListener('click',e=>{const t=e.target.closest('.piece,.targe
  if(!(mine(st)&&st.phase==='move'))return;const p=+t.dataset.p;if(t.classList.contains('piece')&&+t.dataset.s!==st.turn)return;
  if(st.legal.some(m=>m.p===p))act('move',{p});else vib(20)});
 $('#sGame').addEventListener('click',e=>{const a=e.target.closest('.avw');if(!a)return;const ch=a.closest('.chip');if(ch)openProfile(null,+ch.dataset.s)});
-$('#gChat').onclick=openChat;$('#gHelp').onclick=openHelp;$('#gLog').onclick=()=>$('#gLog').classList.toggle('open');
-$('#chE').innerHTML=EMOJIS.map(e=>`<button>${e}</button>`).join('');$('#chPh').innerHTML=PHRASES.map(e=>`<button>${esc(e)}</button>`).join('');
-$('#chatP').addEventListener('click',e=>{const b=e.target.closest('#chE button,#chPh button');if(b)sendChat(b.textContent)});
-const sendIn=()=>{const v=$('#chatIn').value;if(!v.trim())return;sendChat(v);$('#chatIn').value=''};
-$('#chatGo').onclick=sendIn;$('#chatIn').addEventListener('keydown',e=>{if(e.key==='Enter')sendIn()});
-$('#pfRose').onclick=()=>{const now=Date.now();if(now-App.lastRose<1500)return;App.lastRose=now;if(App.profId){act('rose',{to:App.profId});ovl('prof',false)}};
+$('#gHelp').onclick=openHelp;
+$('#pfRose').onclick=()=>{const now=Date.now();if(now-App.lastRose<1500)return;App.lastRose=now;if(!App.profId)return;if(App.profSrc==='g'){if(typeof gSend==='function')gSend({t:'g_rose',to:App.profId})}else act('rose',{to:App.profId});ovl('prof',false)};
 $('#prof').addEventListener('click',e=>{const b=e.target.closest('#pfThrow button');if(!b)return;const now=Date.now();if(now-App.lastThrow<1200)return;App.lastThrow=now;
  act('throw',{to:+b.dataset.to,item:b.textContent});ovl('prof',false)});
 $('#wLobby').onclick=backToLobby;$('#wAgain').onclick=()=>{hideWin();startGame(true)};
@@ -663,7 +656,8 @@ $('#wLobby').onclick=backToLobby;$('#wAgain').onclick=()=>{hideWin();startGame(t
 sndBtns();renderHome();
 (function(){const h=(location.hash||'').replace(/\D/g,'');if(h.length===4){$('#code').value=h;setTimeout(()=>toast(App.me.nick?'Klikni "Uđi" da se pridružiš sobi '+h:'Upiši nadimak i klikni "Uđi" 🎲',4000),3000)}})();
 (function loader(){drawLogo($('#ldLogo'));const t0=Date.now();
- const done=()=>{const left=Math.max(0,2700-(Date.now()-t0));setTimeout(()=>{$('#loader').classList.add('hide');showScreen('sHome');drawLogo($('#hLogo'));setTimeout(()=>$('#loader').remove(),700)},left)};
+ setTimeout(()=>{for(let i=0;i<4;i++)pawnImg(i)},250);
+ const done=()=>{const left=Math.max(0,2700-(Date.now()-t0));setTimeout(()=>{if(typeof gStart==='function')gStart();$('#loader').classList.add('hide');showScreen('sHome');drawLogo($('#hLogo'));setTimeout(()=>$('#loader').remove(),700)},left)};
  const fr=document.fonts&&document.fonts.load?Promise.race([document.fonts.load('100px "Kaushan Script"'),sleep(1800)]):Promise.resolve();
  fr.then(()=>{drawLogo($('#ldLogo'));done()},done)})();
 if(typeof Peer==='undefined')setTimeout(()=>{if(typeof Peer==='undefined')toast('⚠️ Online dio nije učitan (nema interneta?). Lokalna igra radi.',4000)},3500);
