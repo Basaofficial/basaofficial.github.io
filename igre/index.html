@@ -170,8 +170,8 @@ select option{background:#111}
 .chk input{display:none}
 .chk label:has(input:checked){border-color:var(--g);color:var(--g)}
 /* ---------- LUDO ---------- */
-#sGame{--bw:max(250px,min(96vw,calc(100vh - 290px),600px));gap:7px;padding-top:calc(env(safe-area-inset-top) + 6px)}
-@supports (height:100dvh){#sGame{--bw:max(250px,min(96vw,calc(100dvh - 290px),600px))}}
+#sGame{--bw:max(250px,min(96vw,calc(100vh - 400px),600px));gap:7px;padding-top:calc(env(safe-area-inset-top) + 6px);height:100vh;min-height:0;padding-bottom:calc(env(safe-area-inset-bottom) + 8px)}
+@supports (height:100dvh){#sGame{--bw:max(250px,min(96vw,calc(100dvh - 400px),600px));height:100dvh}}
 #sGame .topbar{width:var(--bw)}
 .room{font-size:12px;color:var(--muted)}.room b{color:var(--g);letter-spacing:.15em}
 .net{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--g);margin-right:5px;vertical-align:1px;box-shadow:0 0 6px var(--g)}
@@ -182,23 +182,26 @@ select option{background:#111}
 .chip{min-width:0;display:flex;align-items:center;gap:7px;padding:6px 7px;border-radius:16px;background:#080808;border:1.5px solid #191919;position:relative;transition:border-color .25s,box-shadow .25s;min-height:64px}
 .chip.R{flex-direction:row-reverse;text-align:right}
 .chip.off{display:none}
-.chip.act{border-color:var(--c);box-shadow:0 0 18px color-mix(in srgb,var(--c) 45%,transparent),inset 0 0 18px color-mix(in srgb,var(--c) 12%,transparent)}
+.chip.act{border-color:color-mix(in srgb,var(--c) 70%,#000);box-shadow:0 0 12px color-mix(in srgb,var(--c) 22%,transparent)}
 .chip .info{min-width:0;flex:1}
 .chip .nm{font-weight:800;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .chip .nm em{font-style:normal;font-weight:500;color:var(--muted);font-size:12px}
-.chip .tm{font-size:10px;border:1px solid var(--c);color:var(--c);border-radius:5px;padding:0 4px;margin-left:4px;font-weight:800;vertical-align:1px}
+.chip .tm{font-size:10px;border:1px solid #444;color:#bbb;border-radius:5px;padding:0 4px;margin-left:4px;font-weight:800;vertical-align:1px}
 .chip .sub{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .chip .offl{color:var(--red)}
 .chip.done{opacity:.75}
 .chip.hit{animation:shake .5s}
 @keyframes shake{20%{transform:translateX(-6px) rotate(-3deg)}40%{transform:translateX(6px) rotate(3deg)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
 .avw{position:relative;flex:none;width:48px;height:48px;cursor:pointer}
-.avw .av{position:absolute;inset:5px;border-radius:50%;display:grid;place-items:center;font-size:21px;background:radial-gradient(circle at 35% 30%,#222,#060606);border:1.5px solid var(--c)}
+.avw .av{position:absolute;inset:5px;border-radius:50%;display:grid;place-items:center;font-size:21px;background:radial-gradient(circle at 35% 30%,#222,#060606);border:1.5px solid #2a2a2a}
+.avw .av::after{content:'';position:absolute;right:-1px;bottom:-1px;width:10px;height:10px;border-radius:50%;background:var(--c);border:2px solid #000}
 .avw svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
 .avw .trk{fill:none;stroke:#161616;stroke-width:3}
 .avw .tmr{fill:none;stroke:var(--c);stroke-width:3.4;stroke-linecap:round;stroke-dasharray:139;stroke-dashoffset:139;filter:drop-shadow(0 0 3px var(--c))}
 .chip.act .tmr{stroke-dashoffset:0}
 .dslot{flex:none;width:54px;height:54px;border-radius:14px;border:1px solid #1d1d1d;background:#040404;position:relative}
+.gchat{width:var(--bw);flex:1;min-height:96px;display:flex;flex-direction:column;gap:6px;position:relative}
+.gchat .feed{flex:1;min-height:40px}
 .prow:not(.solo) .chip:not(.act) .dslot{display:none}
 .chip:not(.act) .dslot{opacity:.4}
 .board-wrap{width:var(--bw);height:var(--bw);padding:calc(var(--bw)*.025);border-radius:22px;position:relative;flex:none;background:#060606;border:1px solid #1c1c1c;
@@ -209,14 +212,16 @@ select option{background:#111}
 #boardSvg{border-radius:14px;overflow:hidden}
 #layer{position:absolute;inset:0}
 #names{position:absolute;inset:0;pointer-events:none;z-index:2}
-.nlab{position:absolute;max-width:33%;font-size:max(10px,calc(var(--bw)*.029));font-weight:800;color:var(--c);background:rgba(0,0,0,.82);
- border:1.5px solid var(--c);border-radius:999px;padding:.18em .6em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:.25s}
-.nlab.act{background:var(--c);color:#000;box-shadow:0 0 14px var(--c)}
+.nlab{position:absolute;max-width:33%;font-size:max(10px,calc(var(--bw)*.028));font-weight:700;color:#ddd;background:rgba(0,0,0,.72);
+ border:1px solid #2a2a2a;border-radius:999px;padding:.2em .65em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:.25s;backdrop-filter:blur(4px)}
+.nlab::before{content:"";display:inline-block;width:.55em;height:.55em;border-radius:50%;background:var(--c);margin-right:.4em;vertical-align:.05em}
+.nlab.act{color:#fff;border-color:#7cff01;box-shadow:0 0 10px rgba(124,255,1,.3)}
 .nlab.me::after{content:" (ti)";font-weight:600;opacity:.75}
 .piece{position:absolute;width:9.0909%;height:9.0909%;transform:translate(-50%,-50%);cursor:pointer;transition:left .32s cubic-bezier(.3,.8,.3,1),top .32s cubic-bezier(.3,.8,.3,1)}
 .piece.step{transition-duration:.15s;z-index:500!important}
 .piece.fly{transition:left .55s cubic-bezier(.5,0,.3,1),top .55s cubic-bezier(.5,0,.3,1);z-index:600!important}
-.pr{position:absolute;left:0;width:100%;height:140%;top:-67.6%;transform:rotate(var(--ra,0deg));transform-origin:50% 84%;filter:drop-shadow(0 2px 2px rgba(0,0,0,.9))}
+.pr{position:absolute;left:var(--pl);width:var(--pw);height:var(--ph);top:var(--pt);transform:rotate(var(--ra,0deg));transform-origin:50% var(--pa)}
+.pawn img{width:100%;height:100%;display:block;pointer-events:none;-webkit-user-drag:none}
 .pawn{width:100%;height:100%;transform-origin:50% 88%}
 .pawn svg{width:100%;height:100%;display:block;overflow:visible}
 .piece.hop .pawn{animation:hop .16s ease-out}
@@ -246,7 +251,7 @@ select option{background:#111}
 .face{position:absolute;inset:0;border-radius:10px;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:6px;
  background:radial-gradient(circle at 30% 25%,#2a2a2a,#0d0d0d 60%,#000);box-shadow:inset 0 0 0 1px #333,inset -3px -4px 8px rgba(0,0,0,.8);backface-visibility:hidden;-webkit-backface-visibility:hidden}
 .face i{width:9px;height:9px;border-radius:50%;place-self:center;background:radial-gradient(circle at 35% 30%,#d8ff9e,var(--g) 60%);box-shadow:0 0 6px var(--g)}
-.f1 i{width:13px;height:13px;background:radial-gradient(circle at 35% 30%,#ffb3c3,var(--red) 60%);box-shadow:0 0 8px var(--red)}
+.f1 i{width:13px;height:13px}
 .f1{transform:translateZ(23px)}.f6{transform:rotateY(180deg) translateZ(23px)}.f3{transform:rotateY(90deg) translateZ(23px)}
 .f4{transform:rotateY(-90deg) translateZ(23px)}.f5{transform:rotateX(90deg) translateZ(23px)}.f2{transform:rotateX(-90deg) translateZ(23px)}
 /* chat */
@@ -272,6 +277,40 @@ select option{background:#111}
 .cin{display:flex;gap:6px}
 .cin input{padding:11px 15px;font-size:16px;border-radius:22px}
 .cin button{flex:none;width:46px;height:46px;border:1.6px solid var(--g);border-radius:50%;background:transparent;color:var(--g);font-weight:900;font-size:17px;cursor:pointer}
+/* transparent chat feed */
+.feed{overflow-y:auto;display:flex;flex-direction:column;gap:4px;padding:6px 2px 2px;scrollbar-width:none;-webkit-overflow-scrolling:touch;
+ -webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 26px);mask-image:linear-gradient(to bottom,transparent 0,#000 26px);user-select:text;-webkit-user-select:text}
+.feed::-webkit-scrollbar{display:none}
+.fm{align-self:flex-start;max-width:94%;font-size:14px;line-height:1.35;padding:5px 11px;border-radius:15px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.05);overflow-wrap:anywhere}
+.fm .fa{margin-right:5px}.fm b{color:#f0f0f0;margin-right:6px;font-weight:700}.fm .ft{color:#c8c8c8}
+.fm.me{align-self:flex-end;background:rgba(124,255,1,.07);border-color:rgba(124,255,1,.28)}
+.fm.big .ft{font-size:26px;line-height:1;vertical-align:middle}
+.fm.sys{align-self:center;background:transparent;border:0;color:#777;font-size:12.5px;padding:1px 6px;text-align:center}
+.fm.sys.all{color:#8fc05a}.fm.sys.rose{color:#d98aa0}.fm.sys.priv{color:#d7c35e}
+.fm .tm{color:#555;font-size:10px;margin-left:6px}
+.cbar{display:flex;gap:6px;align-items:center;position:relative}
+.cbar input{flex:1;min-width:0;background:rgba(255,255,255,.035);border:1px solid #262626;border-radius:22px;padding:10px 15px;font-size:16px}
+.cbar .eb,.cbar .sb{flex:none;width:42px;height:42px;border-radius:50%;border:1px solid #262626;background:transparent;font-size:18px;cursor:pointer;padding:0}
+.cbar .sb{border:1.5px solid var(--g);color:var(--g);font-weight:900}
+.emopop{display:none;position:absolute;left:0;right:0;bottom:calc(100% + 6px);z-index:50;background:rgba(10,10,10,.92);border:1px solid #222;border-radius:16px;padding:8px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.emopop.on{display:block}
+.lchat .feed{max-height:230px;min-height:70px}
+.glob .gh{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.gstat{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.gstat i{width:8px;height:8px;border-radius:50%;background:var(--g);box-shadow:0 0 8px var(--g)}
+.gusers{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:6px}
+.gu{flex:none;width:54px;text-align:center;cursor:pointer}
+.gu .ga{width:44px;height:44px;margin:0 auto;border-radius:50%;border:1.5px solid #262626;display:grid;place-items:center;font-size:22px;position:relative;background:#080808}
+.gu.me .ga{border-color:var(--g)}
+.gu .gr{position:absolute;right:-6px;top:-4px;font-size:10px;background:#000;border:1px solid #3a1a24;color:#e28aa3;border-radius:8px;padding:0 4px}
+.gu small{display:block;font-size:10.5px;color:#aaa;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.glob .feed{height:min(34vh,260px);min-height:120px}
+.room-i{display:flex;align-items:center;gap:12px;padding:10px 4px;border-bottom:1px solid #141414}
+.room-i:last-child{border-bottom:0}
+.room-i .ri{font-size:24px}
+.room-i .rn{flex:1;min-width:0}
+.room-i .rn b{display:block;font-size:14.5px}.room-i .rn small{color:var(--muted);font-size:12px}
+.room-i .btn{width:auto;margin:0;padding:9px 16px;font-size:14px}
 /* profile */
 .pf-h{display:flex;gap:14px;align-items:center;margin-bottom:12px}
 .pf-av{flex:none;width:72px;height:72px;border-radius:50%;display:grid;place-items:center;font-size:38px;background:#080808;border:2px solid var(--c,var(--g));box-shadow:0 0 20px color-mix(in srgb,var(--c,#7cff01) 40%,transparent)}
@@ -365,7 +404,7 @@ select option{background:#111}
 <!-- LOADER -->
 <div id="loader">
  <div class="logo" id="ldLogo"></div>
- <div class="ldots"><i style="background:#ff2d55"></i><i style="background:#1fd65f"></i><i style="background:#ffd60a"></i><i style="background:#2f7bff"></i></div>
+ <div class="ldots"><i style="background:#7cff01"></i><i style="background:#3a3a3a"></i><i style="background:#7cff01"></i><i style="background:#3a3a3a"></i></div>
  <div class="ldbar"><i></i></div>
  <div class="ldtxt">učitavam</div>
 </div>
@@ -386,19 +425,19 @@ select option{background:#111}
     </div>
    </div>
   </div>
+  <div class="card glob">
+   <div class="gh"><h3 style="margin:0">🌐 Kanal #0001</h3><span class="gstat" id="gStat"></span></div>
+   <div class="gusers" id="gUsers"></div>
+   <div class="feed" id="hFeed"></div>
+   <div class="cbar" data-chat="global"><button class="eb">😀</button><input id="hIn" maxlength="140" placeholder="Piši svima u kanalu…" autocomplete="off"><button class="sb">➤</button></div>
+  </div>
+  <div class="card"><h3>🎮 Otvorene sobe</h3><div id="gRooms"></div></div>
   <div class="card">
    <h3>Igraj</h3>
    <button class="btn" id="bResume" style="display:none"></button>
    <button class="btn fill" id="bHost">＋ Napravi sobu</button>
    <div class="row" style="margin-top:12px"><input id="code" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="Kod sobe"><button class="btn" id="bJoin" style="width:auto;padding:13px 22px">Uđi</button></div>
    <button class="btn ghost" id="bLocal">📱 Ne ljuti se na jednom mobitelu</button>
-  </div>
-  <div class="card">
-   <h3>Igre</h3>
-   <div class="games">
-    <div class="gcard"><div class="gi">🎲</div><b>Ne ljuti se čovječe</b><small>Klasika ili Ludo King pravila · 2–4 igrača</small></div>
-    <div class="gcard"><div class="gi">🎨</div><b>Crtaj &amp; pogađaj</b><small>Jedan crta, ostali pogađaju · 2–5 igrača</small></div>
-   </div>
   </div>
   <div class="links"><a class="btn ghost" href="https://instagram.com/basa.gtm" target="_blank" rel="noopener noreferrer">📸 @basa.gtm</a><a class="btn" href="https://paypal.me/basagtm" target="_blank" rel="noopener noreferrer">☕ Častiš kafu?</a></div>
  </div>
@@ -409,7 +448,6 @@ select option{background:#111}
  <div class="topbar wrap">
   <button class="ib hb" data-menu><i></i></button>
   <div class="mid codebox"><div class="lbl" id="lLbl">Kod sobe</div><div class="code" id="lCode">····</div></div>
-  <button class="ib cbtn" id="lChat">💬<span class="badge"></span></button>
   <button class="ib" id="lShare">📤</button>
  </div>
  <div class="wrap">
@@ -422,6 +460,8 @@ select option{background:#111}
    <div class="summary" id="lSum"></div>
    <button class="btn ghost" id="lSet">⚙️ Postavke igre</button>
   </div>
+  <div class="card lchat" id="lChatC"><h3>💬 Chat sobe</h3><div class="feed" id="lFeed"></div>
+   <div class="cbar" data-chat="room"><button class="eb">😀</button><input id="lIn" maxlength="120" placeholder="Napiši poruku…" autocomplete="off"><button class="sb">➤</button></div></div>
   <button class="btn fill" id="bStart">▶ Počni igru</button>
   <button class="btn" id="bReady" style="display:none"></button>
   <button class="btn ghost" id="bStartBots" style="display:none">Počni odmah</button>
@@ -435,13 +475,13 @@ select option{background:#111}
   <button class="ib hb" data-menu><i></i></button>
   <div class="mid room" id="gRoom"></div>
   <button class="ib" id="gHelp">?</button>
-  <button class="ib cbtn" id="gChat">💬<span class="badge"></span></button>
  </div>
  <div class="prow"><div class="chip L" data-c="0"></div><div class="chip R" data-c="1"></div></div>
  <div class="board-wrap"><div class="board-in"><div class="rot" id="rot"><div id="boardSvg"></div><div id="layer"></div></div><div id="names"></div></div></div>
  <div class="prow"><div class="chip L" data-c="3"></div><div class="chip R" data-c="2"></div></div>
  <div class="ctrl"><div class="status"><div id="stMain"></div><div id="stSub"></div></div></div>
- <div class="log" id="gLog"></div>
+ <div class="gchat"><div class="feed" id="gFeed"></div>
+  <div class="cbar" data-chat="room"><button class="eb">😀</button><input id="gIn" maxlength="120" placeholder="Poruka…" autocomplete="off"><button class="sb">➤</button></div></div>
 </section>
 
 <!-- SKETCH GAME -->
@@ -454,7 +494,7 @@ select option{background:#111}
  <div class="skcw" id="skCw"><canvas id="skCv"></canvas><div class="skov" id="skOv"></div></div>
  <div class="sktools" id="skTools"></div>
  <div class="skpl" id="skPl"></div>
- <div class="skchat" id="skChat"></div>
+ <div class="skchat feed" id="skChat"></div>
  <div class="cin"><input id="skIn" maxlength="60" placeholder="Pogodi riječ…" autocomplete="off" autocapitalize="off" spellcheck="false"><button id="skGo">➤</button></div>
 </section>
 
@@ -464,13 +504,7 @@ select option{background:#111}
 <div class="ovl" id="drawer"><div class="dpanel" id="dpanel"></div></div>
 <!-- SETTINGS -->
 <div class="ovl sheet" id="settings"><div class="panel"><div class="grab"></div><div class="ph"><h2 id="setT">⚙️ Postavke</h2><button class="ib" data-close="settings">✕</button></div><div id="setBody"></div><button class="btn fill" data-close="settings">Gotovo</button></div></div>
-<!-- CHAT -->
-<div class="ovl sheet" id="chatP"><div class="panel cpanel">
- <div class="ph"><h2>💬 Chat</h2><span class="muted" id="chWho"></span><button class="ib" data-close="chatP">✕</button></div>
- <div class="ch-list" id="chList"></div>
- <div class="es" id="chE"></div><div class="ps" id="chPh"></div>
- <div class="cin"><input id="chatIn" maxlength="120" placeholder="Napiši poruku…" autocomplete="off"><button id="chatGo">➤</button></div>
-</div></div>
+<div id="emoPop" class="emopop"><div class="es" id="emoE"></div><div class="ps" id="emoP"></div></div>
 <!-- PROFILE -->
 <div class="ovl" id="prof"><div class="panel">
  <div class="pf-h"><div class="pf-av" id="pfAv"></div><div style="min-width:0;flex:1"><h2 id="pfName" style="margin:0"></h2><div class="muted" id="pfSub"></div></div><button class="ib" data-close="prof">✕</button></div>
@@ -495,9 +529,11 @@ select option{background:#111}
 <canvas id="confetti"></canvas>
 <div id="toast"></div>
 
+<script src="pawn3d.js"></script>
 <script src="logic.js"></script>
 <script src="words.js"></script>
 <script src="app.js"></script>
 <script src="sketch.js"></script>
+<script src="global.js"></script>
 </body>
 </html>
