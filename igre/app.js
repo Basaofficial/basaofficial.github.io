@@ -598,7 +598,7 @@ function openDrawer(){
  }else h+=it('📖','Pravila igara','help');
  h+=`<div class="dsep"></div>`+it(SFX.on?'🔊':'🔇','Zvuk: '+(SFX.on?'uključen':'isključen'),'snd')+
   it('📸','Instagram @basa.gtm','', '',INSTA)+it('☕','Častiš kafu? (PayPal)','','g',DONATE)+
-  `<div class="dfoot">#Bash igre · napravljeno sa 💚<br>sigurna veza (HTTPS) · direktno između mobitela</div>`;
+  `<div class="dfoot">#Bash igre · napravljeno sa 💚<br>sigurna veza (HTTPS/WSS) · 3 servera za rezervu</div>`;
  $('#dpanel').innerHTML=h;ovl('drawer',true);
 }
 $('#dpanel').addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(!b)return;const a=b.dataset.act;

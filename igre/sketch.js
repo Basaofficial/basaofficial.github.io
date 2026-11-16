@@ -166,7 +166,7 @@ cv.addEventListener('pointermove',e=>{const st=SK.cur;if(!st||!canDraw())return;
  if(st.p.length/2>from)skDrawStroke(st,from);skQueue()});
 const skUp=()=>{if(SK.cur){skFlush();SK.cur=null}};
 cv.addEventListener('pointerup',skUp);cv.addEventListener('pointercancel',skUp);cv.addEventListener('pointerleave',skUp);
-function skQueue(){if(!SK.flushT)SK.flushT=setTimeout(skFlush,40)}
+function skQueue(){if(!SK.flushT)SK.flushT=setTimeout(skFlush,70)}
 function skFlush(){clearTimeout(SK.flushT);SK.flushT=0;const st=SK.cur;if(!st)return;const pts=st.p.slice(SK.sent);if(!pts.length)return;SK.sent=st.p.length;
  act('sk_draw',{id:st.id,c:st.c,w:st.w,p:pts})}
 function skTools(){$('#skTools').innerHTML=SK_COLORS.map(c=>`<span class="col${!SK.eraser&&SK.color===c?' on':''}" data-col="${c}" style="background:${c}"></span>`).join('')+
