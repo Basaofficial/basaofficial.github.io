@@ -361,12 +361,12 @@ select option{background:#111}
 .unhand{width:var(--uw);overflow-x:auto;overflow-y:visible;scrollbar-width:none;flex:none;padding:20px 0 4px}
 .unhand::-webkit-scrollbar{display:none}
 .unhand .inner{display:flex;width:max-content;margin:0 auto;padding:0 26px}
-.unhand .ucard{--w:64px;margin:0 -12px;cursor:pointer;transition:transform .18s,filter .2s,margin .2s}
-.unhand.many .ucard{margin:0 -19px}.unhand.lots .ucard{margin:0 -24px}
+.unhand .ucard{--w:70px;margin:0 var(--ov,-13px);cursor:pointer;transition:transform .18s,filter .2s,margin .2s}
+
 .unhand .ucard.ok{transform:translateY(-14px);z-index:2}
 .unhand .ucard.no{filter:brightness(.4) saturate(.6)}
 .unhand .ucard.drawn{transform:translateY(-18px);outline:2px solid var(--g);outline-offset:2px}
-.unhand .ucard.new{animation:cin .5s cubic-bezier(.2,1.2,.4,1)}
+.unhand .ucard.new{animation:cin .5s cubic-bezier(.2,1.2,.4,1) both}
 @keyframes cin{from{transform:translateY(-140px) scale(.6) rotate(-25deg);opacity:0}}
 .ucard.shake{animation:shake .4s}
 .unbtns{width:var(--uw);display:flex;gap:8px;flex:none}.unbtns .btn{margin:0;padding:11px 8px;font-size:15px}
@@ -380,6 +380,9 @@ select option{background:#111}
 .unshout small{display:block;font-family:-apple-system,Segoe UI,Roboto,sans-serif;font-size:16px;color:#fff;text-shadow:0 2px 6px #000;font-weight:800}
 .unshout.on{animation:shout 1.6s cubic-bezier(.2,1.3,.4,1)}
 @keyframes shout{0%{opacity:0;transform:translate(-50%,-50%) scale(.3) rotate(-12deg)}18%{opacity:1;transform:translate(-50%,-50%) scale(1.1) rotate(-4deg)}30%{transform:translate(-50%,-50%) scale(1) rotate(-4deg)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-60%) scale(.95) rotate(-4deg)}}
+.unshout.red{color:var(--red);text-shadow:0 0 30px rgba(255,45,85,.8),0 4px 0 #000;font-size:min(26vw,130px)}
+.hitfx{animation:hitfx .9s ease-out}
+@keyframes hitfx{0%,100%{filter:none}15%{filter:drop-shadow(0 0 16px rgba(255,45,85,.9))}20%{transform:translateX(-7px)}35%{transform:translateX(7px)}50%{transform:translateX(-4px)}65%{transform:translateX(3px)}}
 /* profile */
 .pf-h{display:flex;gap:14px;align-items:center;margin-bottom:12px}
 .pf-av{flex:none;width:72px;height:72px;border-radius:50%;display:grid;place-items:center;font-size:38px;background:#080808;border:2px solid var(--c,var(--g));box-shadow:0 0 20px color-mix(in srgb,var(--c,#7cff01) 40%,transparent)}
@@ -623,13 +626,13 @@ select option{background:#111}
 <canvas id="confetti"></canvas>
 <div id="toast"></div>
 
-<script src="err.js?v=20261116b"></script>
-<script src="pawn3d.js?v=20261116b"></script>
-<script src="logic.js?v=20261116b"></script>
-<script src="words.js?v=20261116b"></script>
-<script src="app.js?v=20261116b"></script>
-<script src="sketch.js?v=20261116b"></script>
-<script src="uno.js?v=20261116b"></script>
-<script src="global.js?v=20261116b"></script>
+<script src="err.js?v=20261116c"></script>
+<script src="pawn3d.js?v=20261116c"></script>
+<script src="logic.js?v=20261116c"></script>
+<script src="words.js?v=20261116c"></script>
+<script src="app.js?v=20261116c"></script>
+<script src="sketch.js?v=20261116c"></script>
+<script src="uno.js?v=20261116c"></script>
+<script src="global.js?v=20261116c"></script>
 </body>
 </html>

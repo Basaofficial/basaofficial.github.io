@@ -14,7 +14,8 @@ function skMask(word,rev){return [...word].map((ch,i)=>ch===' '?'  ':(rev.includ
 function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 
 // ================= HOST =================
-function skPool(){const lb=App.lobby;let w=[];(lb.sk.cats.length?lb.sk.cats:Object.keys(WORDS)).forEach(c=>w.push(...(WORDS[c]||[])));
+const SK_CAT_OF={};for(const k in WORDS)WORDS[k].forEach(w=>SK_CAT_OF[w]=k);
+function skPool(){const lb=App.lobby;let w=[];let cats=(lb.sk.cats||[]).filter(c=>WORDS[c]);if(!cats.length)cats=Object.keys(WORDS);cats.forEach(c=>w.push(...(WORDS[c]||[])));
  const used=new Set(App.sk?App.sk.used:[]);const f=w.filter(x=>!used.has(x));return f.length>=3?f:w}
 function skOnline(id){const p=App.lobby&&App.lobby.players[id];return id===App.me.id||!!(p&&p.online)}
 function skStop(){clearTimeout(App.H.skT);clearInterval(App.H.skI)}
@@ -61,7 +62,7 @@ function skGuess(id,text){
 }
 function skView(id){const s=App.sk;if(!s)return null;const see=id===s.drawer||!!s.guessed[id]||s.phase==='reveal'||s.phase==='over';
  return {id:s.id,phase:s.phase,round:Math.min(s.round,s.rounds),rounds:s.rounds,time:s.time,order:s.order,drawer:s.drawer,
-  word:see?s.word:'',mask:s.word?skMask(s.word,s.revealed):'',len:[...s.word].filter(c=>c!==' ').length,
+  cat:s.word&&SK_CAT_OF[s.word]?WORD_CATS[SK_CAT_OF[s.word]]:'',word:see?s.word:'',mask:s.word?skMask(s.word,s.revealed):'',len:[...s.word].filter(c=>c!==' ').length,
   choices:id===s.drawer&&s.phase==='choose'?s.choices:null,scores:s.scores,guessed:s.guessed,gain:s.gain,remain:Math.max(0,s.endsAt-Date.now()),reason:s.reason}}
 function skBroadcast(){const s=App.sk;if(!s)return;App.conns.forEach((c,id)=>{if(c.open)try{c.send({t:'sk',s:skView(id)})}catch(e){}});skOnView(skView(App.me.id))}
 function skBcastStrokes(to){const m={t:'sk_strokes',list:App.sk?App.sk.strokes:[]};if(to)sendTo(to,m);else{bcast(m);skSetStrokes(m.list)}}
@@ -102,7 +103,7 @@ function skOnView(v){
 }
 function skRender(){
  const v=App.skv;if(!v)return;const me=App.me.id,dr=v.drawer===me;
- $('#skRound').textContent=v.phase==='over'?'KRAJ IGRE':`RUNDA ${v.round}/${v.rounds} · ✏️ ${pName(v.drawer)}`;
+ $('#skRound').textContent=v.phase==='over'?'KRAJ IGRE':`RUNDA ${v.round}/${v.rounds} · ✏️ ${pName(v.drawer)}${v.phase==='draw'&&v.cat?' · '+v.cat:''}`;
  const w=$('#skWord');
  if(v.phase==='choose'){w.className='skw plain';w.innerHTML=dr?'Izaberi riječ 👇':'bira riječ…'}
  else if(v.word&&(dr||v.guessed[me]||v.phase!=='draw')){w.className='skw word';w.textContent=v.word.toUpperCase()}
@@ -111,7 +112,7 @@ function skRender(){
  $('#skTools').classList.toggle('on',dr&&v.phase==='draw');
  const ov=$('#skOv');let h='';
  if(v.phase==='choose'){
-  if(dr&&v.choices)h=`<h3>Tvoj red! Izaberi šta ćeš crtati:</h3>${v.choices.map((c,i)=>`<button class="btn" data-pick="${i}">${esc(c)}</button>`).join('')}<p class="muted" id="skCnt"></p>`;
+  if(dr&&v.choices)h=`<h3>Tvoj red! Izaberi šta ćeš crtati:</h3>${v.choices.map((c,i)=>`<button class="btn" data-pick="${i}">${esc(c)} <small>${esc((WORD_CATS[SK_CAT_OF[c]]||'').split(' ')[0])}</small></button>`).join('')}<p class="muted" id="skCnt"></p>`;
   else h=`<div class="big">✏️</div><h3>${esc(pName(v.drawer))} bira riječ…</h3><p class="muted">Spremi se da pogađaš!</p>`;
  }else if(v.phase==='reveal'){
   const rs={all:'Svi su pogodili! 🎉',time:'Isteklo je vrijeme ⏱',left:'Crtač je izašao 😕'}[v.reason]||'';

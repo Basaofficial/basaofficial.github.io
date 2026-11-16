@@ -1,6 +1,6 @@
 // #Bash igre – "Jedna!" (kartaška igra po UNO pravilima), 2–5 igrača + botovi
 'use strict';
-const UN_DEF={bots:0,start:7,time:30,stack:false,drawMatch:false};
+const UN_DEF={bots:0,start:7,time:30,stack:false,drawMatch:false,jedna:false};
 const UN_COL={r:'Crvena',y:'Žuta',g:'Zelena',b:'Plava'};
 const UN_BOTS=[['Bot Mujo','🤖'],['Bot Suljo','👾'],['Bot Fata','🦾'],['Bot Haso','🎰']];
 const UN_SYM={s:'⊘',r:'⇄',d2:'+2',w:'',w4:'+4'};
@@ -42,7 +42,7 @@ function unPlay(pid,cid,col){
  if(U.drawn!=null&&U.drawn!==cid)return;if(!unCanPlay(c))return;if(c.c==='w'&&!UN_COL[col])return;
  unClearP(pid);h.splice(i,1);U.discard.push(c);if(U.discard.length>60)U.discard.splice(0,U.discard.length-60).forEach(x=>U.deck.unshift(x));
  U.color=c.c==='w'?col:c.c;U.act={k:'play',who:pid,card:c,col:U.color,seq:++U.seq};
- if(h.length===1&&!U.said[pid])U.unoP=pid;
+ if(h.length===1&&!U.said[pid]){if(U.rules.jedna)U.unoP=pid;else{U.said[pid]=true;U.act.uno=true}}
  if(!h.length){unWin(pid);return}
  const n=U.players.length;
  if(c.v==='s'){U.act.skip=U.players[unNext(1)];unAdv(true)}
@@ -71,7 +71,7 @@ function unView(id){const U=App.un;
  return {id:U.id,me:id,players:U.players.map(p=>({id:p,name:unName(p),av:unAv(p),n:U.hands[p].length,bot:unIsBot(p),said:!!U.said[p],on:unIsBot(p)||skOnline(p)})),
   hand:U.hands[id]?U.hands[id].slice():null,top:unTop(),under:U.discard.slice(-4,-1),color:U.color,dir:U.dir,turn:U.turn,phase:U.phase,
   drawn:U.players[U.turn]===id?U.drawn:null,pend:U.pend,unoP:U.unoP,deckN:U.deck.length,winner:U.winner,act:U.act,
-  remain:U.endsAt?Math.max(0,U.endsAt-Date.now()):0,total:(U.rules.time||0)*1000,stack:U.rules.stack,
+  jedna:!!U.rules.jedna,remain:U.endsAt?Math.max(0,U.endsAt-Date.now()):0,total:(U.rules.time||0)*1000,stack:U.rules.stack,
   rank:U.phase==='over'?U.rank.map(r=>({id:r.p,name:unName(r.p),av:unAv(r.p),pts:r.pts,n:r.n,win:!!r.win})):null}}
 function unChanged(){const U=App.un;if(!U)return;
  const cur=U.players[U.turn],human=!unIsBot(cur)&&skOnline(cur);U.endsAt=U.phase==='play'&&human&&U.rules.time>0?Date.now()+U.rules.time*1000:0;
@@ -81,7 +81,7 @@ function unSched(){
  if(bot)App.H.unT=setTimeout(()=>{if(App.un===U&&U.players[U.turn]===pid&&U.phase==='play')unBot(pid)},1000+Math.random()*800);
  else if(U.rules.time>0)App.H.unT=setTimeout(()=>{if(App.un!==U||U.players[U.turn]!==pid||U.phase!=='play')return;
   if(U.drawn!=null)unPass(pid);else{unDrawAct(pid);if(App.un===U&&U.drawn!=null&&U.players[U.turn]===pid)unPass(pid)}},U.rules.time*1000+400);
- if(U.unoP&&!unIsBot(U.unoP)){const cs=U.players.filter(p=>unIsBot(p)&&p!==U.unoP);
+ if(U.rules.jedna&&U.unoP&&!unIsBot(U.unoP)){const cs=U.players.filter(p=>unIsBot(p)&&p!==U.unoP);
   if(cs.length&&Math.random()<.55)App.H.unC=setTimeout(()=>{if(App.un===U&&U.unoP)unCatch(cs[0])},1300+Math.random()*1500)}
 }
 function unBotColor(h){const cnt={r:0,y:0,g:0,b:0};h.forEach(c=>{if(cnt[c.c]!=null)cnt[c.c]++});return Object.keys(cnt).sort((a,b)=>cnt[b]-cnt[a]||Math.random()-.5)[0]}
@@ -90,7 +90,7 @@ function unBot(pid){
  if(U.drawn!=null){const c=h.find(x=>x.id===U.drawn);if(c&&unCanPlay(c))unPlay(pid,c.id,unBotColor(h.filter(x=>x!==c)));else unPass(pid);return}
  const ok=h.filter(unCanPlay);
  if(!ok.length){unDrawAct(pid);if(App.un===U&&U.drawn!=null&&U.players[U.turn]===pid)App.H.unT=setTimeout(()=>{if(App.un===U&&U.players[U.turn]===pid)unBot(pid)},900);return}
- if(h.length===2&&!U.said[pid]&&Math.random()<.88){unSay(pid);return}
+ if(U.rules.jedna&&h.length===2&&!U.said[pid]&&Math.random()<.88){unSay(pid);return}
  const nextN=U.hands[U.players[unNext(1)]].length;
  const sc=c=>(c.c==='w'?(h.length<=2?50:-30):0)+(['s','r','d2'].includes(c.v)?(nextN<=2?40:5):0)+(c.c===U.color?8:0)+h.filter(x=>x.c===c.c).length*3+Math.random()*4;
  const c=ok.sort((a,b)=>sc(b)-sc(a))[0];unPlay(pid,c.id,unBotColor(h.filter(x=>x!==c)));
@@ -114,7 +114,9 @@ function unOnView(v){
  const a=v.act,fresh=a&&prev&&(!prev.act||prev.act.seq!==a.seq);let src=null;
  if(fresh&&a.k==='play'&&a.who===v.me){const el=$(`#unHand [data-id="${a.card.id}"]`);if(el)src=el.getBoundingClientRect()}
  const newIds=prev&&prev.hand&&v.hand?v.hand.filter(c=>!prev.hand.some(x=>x.id===c.id)).map(c=>c.id):[];
- App.unv=v;unRender(v,newIds,fresh&&a.k==='play');
+ let base=0;if(fresh&&a.k==='play'&&a.hit&&a.hit.who===v.me)base=520;
+ const delays={};newIds.forEach((id,i)=>delays[id]=base+180+i*170);
+ App.unv=v;unRender(v,newIds,fresh&&a.k==='play',delays);
  if(fresh)unAnim(v,a,src);
  const me=v.players.findIndex(p=>p.id===v.me);
  if(v.phase==='play'&&v.turn===me&&(!prev||prev.turn!==me)){sfx.turn();vib(50)}
@@ -122,7 +124,7 @@ function unOnView(v){
 }
 function unOrder(v){const i=v.players.findIndex(p=>p.id===v.me);const n=v.players.length,out=[];
  if(i<0)return v.players.map((p,k)=>[p,k]);for(let k=1;k<n;k++){const j=(i+k)%n;out.push([v.players[j],j])}return out}
-function unRender(v,newIds,hideTop){
+function unRender(v,newIds,hideTop,delays){delays=delays||{};
  const meI=v.players.findIndex(p=>p.id===v.me),myTurn=v.phase==='play'&&v.turn===meI,cur=v.players[v.turn];
  $('#unInfo').innerHTML=`🃏 JEDNA! · ${v.players.length} igrača · ${v.dir>0?'↻':'↺'}`;
  $('#unOps').innerHTML=unOrder(v).map(([p,j])=>`<div class="uop${j===v.turn&&v.phase==='play'?' act':''}${p.on?'':' offp'}" data-pid="${esc(p.id)}" data-i="${j}">
@@ -140,15 +142,16 @@ function unRender(v,newIds,hideTop){
  else st='';
  $('#unSt').innerHTML=st;
  const H=$('#unHand');
- if(v.hand){const n=v.hand.length;H.classList.toggle('many',n>8);H.classList.toggle('lots',n>13);
+ if(v.hand){const n=v.hand.length,av=Math.max(200,(H.clientWidth||340)-56),vis=n>1?Math.max(13,Math.min(56,(av-70)/(n-1))):70;H.style.setProperty('--ov',(-(70-vis)/2)+'px');
   const sorted=v.hand.slice().sort((a,b)=>('rygbw'.indexOf(a.c)-'rygbw'.indexOf(b.c))||(a.v<b.v?-1:1));
-  H.innerHTML=`<div class="inner">${sorted.map(c=>unCard(c,(myTurn?(unOk(v,c)?'ok':'no'):'')+(newIds.includes(c.id)?' new':'')+(v.drawn===c.id?' drawn':''))).join('')}</div>`}
+  H.innerHTML=`<div class="inner">${sorted.map(c=>unCard(c,(myTurn?(unOk(v,c)?'ok':'no'):'')+(newIds.includes(c.id)?' new':'')+(v.drawn===c.id?' drawn':''))).join('')}</div>`;
+  newIds.forEach(id=>{const e=H.querySelector(`[data-id="${id}"]`);if(e)e.style.animationDelay=(delays[id]||0)+'ms'})}
  else H.innerHTML='<p class="muted">👀 Gledaš igru</p>';
  const mine=v.hand||[];
  $('#unDrawB').style.display=myTurn&&v.drawn==null?'':'none';$('#unDrawB').textContent=v.pend?`Vuci +${v.pend}`:'🂠 Vuci';
  $('#unPassB').style.display=myTurn&&v.drawn!=null?'':'none';
- $('#unUnoB').style.display=v.phase==='play'&&mine.length&&mine.length<=2&&!(v.players[meI]&&v.players[meI].said)&&(myTurn||v.unoP===v.me)?'':'none';
- $('#unCatchB').style.display=v.phase==='play'&&v.unoP&&v.unoP!==v.me&&meI>=0?'':'none';
+ $('#unUnoB').style.display=v.jedna&&v.phase==='play'&&mine.length&&mine.length<=2&&!(v.players[meI]&&v.players[meI].said)&&(myTurn||v.unoP===v.me)?'':'none';
+ $('#unCatchB').style.display=v.jedna&&v.phase==='play'&&v.unoP&&v.unoP!==v.me&&meI>=0?'':'none';
  $('#unDeck').classList.toggle('can',myTurn&&v.drawn==null);
 }
 function unRectOf(pid){const v=App.unv;if(pid===v.me)return $('#unHand').getBoundingClientRect();const e=$(`#unOps [data-pid="${CSS.escape(pid)}"] .avw`);return e?e.getBoundingClientRect():null}
@@ -157,21 +160,29 @@ function unFly(html,from,to,dur,cb){const e=document.createElement('div');e.clas
  const x0=from.left+from.width/2-w/2,y0=from.top+from.height/2-h/2,x1=to.left+to.width/2-w/2,y1=to.top+to.height/2-h/2;
  const an=e.animate([{transform:`translate(${x0}px,${y0}px) rotate(-12deg) scale(.9)`},{transform:`translate(${(x0+x1)/2}px,${Math.min(y0,y1)-40}px) rotate(8deg) scale(1.1)`},{transform:`translate(${x1}px,${y1}px) rotate(0) scale(1)`}],{duration:dur||420,easing:'cubic-bezier(.3,.7,.3,1)'});
  an.onfinish=()=>{e.remove();cb&&cb()}}
-function unShout(t,sub){const e=$('#unShout');e.innerHTML=`${t}${sub?`<small>${esc(sub)}</small>`:''}`;e.classList.remove('on');void e.offsetWidth;e.classList.add('on')}
+function unShout(t,sub,cls){const e=$('#unShout');e.className='unshout'+(cls?' '+cls:'');e.innerHTML=`${t}${sub?`<small>${esc(sub)}</small>`:''}`;void e.offsetWidth;e.classList.add('on')}
 function unPop(pid,t){const r=unRectOf(pid);if(!r)return;const b=document.createElement('div');b.className='bub big';b.textContent=t;b.style.left=(r.left+r.width/2)+'px';b.style.top=(pid===App.unv.me?r.top:r.bottom+4)+'px';if(pid!==App.unv.me)b.classList.add('below');document.body.appendChild(b);setTimeout(()=>b.remove(),2900)}
 function unAnim(v,a,src){
  const disc=$('#unDisc').getBoundingClientRect(),deck=$('#unDeck').getBoundingClientRect();
  if(a.k==='play'){const from=src||unRectOf(a.who)||deck;noise(.12,.5,0,2600,1);noise(.05,.6,.35,900,1);
   unFly(unCard(a.card),from,disc,430,()=>{const t=$('#unDisc .top');if(t)t.classList.remove('hid')});
   if(a.card.c==='w')setTimeout(()=>unPop(a.who,{r:'🔴',y:'🟡',g:'🟢',b:'🔵'}[a.col]||'🎨'),450);
-  if(a.hit)setTimeout(()=>{unPop(a.hit.who,'+'+a.hit.n);tone(220,.25,'sawtooth',.08,0,110);if(a.hit.who===v.me)vib([60,40,60])},500);
+  if(a.hit)unHit(v,a.hit.who,a.hit.n,420);
+  if(a.uno)setTimeout(()=>{unShout('JEDNA!',unName2(v,a.who)+' ima još jednu kartu');[784,988,1319].forEach((f,i)=>tone(f,.25,'square',.05,i*.08))},a.hit?1500:520);
   if(a.skip)setTimeout(()=>{unPop(a.skip,'⊘');tone(300,.15,'square',.05)},500);
   if(a.card.v==='r')setTimeout(()=>tone(500,.2,'triangle',.08,0,900),400)}
- else if(a.k==='draw'){const to=unRectOf(a.who);if(!to)return;const n=Math.min(a.n,5);
-  for(let i=0;i<n;i++)setTimeout(()=>{unFly('<div class="ucard back"></div>',deck,to,380);noise(.06,.35,0,3000,1)},i*120);
-  if(a.big)setTimeout(()=>unPop(a.who,'+'+a.n),300)}
+ else if(a.k==='draw'){if(a.big){unHit(v,a.who,a.n,0);return}const to=unRectOf(a.who);if(!to)return;const n=Math.min(a.n,8);
+  for(let i=0;i<n;i++)setTimeout(()=>{unFly('<div class="ucard back"></div>',deck,to,380);noise(.06,.35,0,3000,1)},i*170)}
  else if(a.k==='uno'){unShout('JEDNA!',unName2(v,a.who));[784,988,1319].forEach((f,i)=>tone(f,.25,'square',.06,i*.08));vib(40)}
  else if(a.k==='catch'){unShout('UHVAĆEN! 😈',unName2(v,a.vic)+' vuče +2');tone(200,.4,'sawtooth',.1,0,80)}
+}
+function unHit(v,who,n,delay){
+ const deck=$('#unDeck').getBoundingClientRect();const me=who===v.me;
+ setTimeout(()=>{unShout('+'+n,(me?'Ti vučeš ':unName2(v,who)+' vuče ')+n+' karte','red');tone(180,.35,'sawtooth',.1,0,90);if(me)vib([80,50,80,50,120]);
+  const t=me?$('#unHand'):$(`#unOps [data-pid="${CSS.escape(who)}"]`);if(t){t.classList.remove('hitfx');void t.offsetWidth;t.classList.add('hitfx')}},delay);
+ for(let i=0;i<n;i++)setTimeout(()=>{const to=unRectOf(who);if(!to)return;
+  const r=me?{left:to.left+to.width/2-30+(i-(n-1)/2)*26,top:to.top+10,width:60,height:90}:to;
+  unFly('<div class="ucard back"></div>',deck,r,420);noise(.07,.45,0,2800,1)},delay+120+i*170);
 }
 function unName2(v,id){const p=v.players.find(x=>x.id===id);return p?p.name:''}
 function unTimer(){const v=App.unv;if(!v||!onScreen('sUno'))return;
@@ -201,5 +212,5 @@ function unHelp(){return `<h4>🃏 Jedna!</h4><p>Cilj: prvi ostani bez karata.</
  <li>Igraš kartu iste <b>boje</b> ili istog <b>broja/znaka</b> kao gornja karta.</li><li>Ako nemaš šta – <b>vuci</b>. Ako izvučena karta odgovara, možeš je odmah odigrati.</li>
  <li><b>⊘ Preskoči</b> – sljedeći igrač gubi red. <b>⇄ Okreni</b> – mijenja smjer (u 2 igrača = preskoči).</li>
  <li><b>+2</b> – sljedeći vuče 2 i gubi red. <b>★ Džoker</b> – biraš boju. <b>+4</b> – biraš boju, sljedeći vuče 4.</li>
- <li>Kad ostaneš na 2 karte, pritisni <b>JEDNA!</b> Ako zaboraviš, drugi te mogu <b>uhvatiti</b> – vučeš +2 😈</li>
+ <li>Kad nekome ostane jedna karta, igra sama vikne <b>JEDNA!</b> (u postavkama možeš uključiti da se mora stisnuti dugme, inače te uhvate 😈).</li>
  <li>Opcije u sobi: slaganje +2/+4, vuci dok ne možeš igrati, botovi, broj karata, vrijeme za potez.</li></ul>`}
