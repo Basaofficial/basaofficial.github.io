@@ -444,7 +444,7 @@ function act(t,extra){
 }
 
 // ================= LOBBY =================
-function settings(){const s=LS.get('settings',{});return {game:s.game||'ludo',mode:MODES[s.mode]?s.mode:'1v1',rules:Object.assign({},DEFAULT_RULES,s.rules||{}),sk:Object.assign({},SK_DEF,s.sk||{}),uno:Object.assign({},UN_DEF,s.uno||{})}}
+function settings(){const s=LS.get('settings',{});return {game:s.game||'ludo',mode:MODES[s.mode]?s.mode:'1v1',rules:Object.assign({},DEFAULT_RULES,s.rules||{}),sk:(()=>{const k=Object.assign({},SK_DEF,s.sk||{});k.cats=(k.cats||[]).filter(c=>WORDS[c]);if(!k.cats.length)k.cats=Object.keys(WORDS);return k})(),uno:Object.assign({},UN_DEF,s.uno||{})}}
 function createRoom(local){
  if(!saveNick())return;const s=settings();
  App.role=local?'local':'host';App.leaving=false;App.game=null;App.st=null;App.shown=null;App.sk=null;App.skv=null;App.H={};App.chat=[];
@@ -513,6 +513,7 @@ function renderSettings(){
   h+=`<label class="l">Karata na početku</label><div class="seg" data-un="start">${[5,7,10].map(v=>`<button${u.start===v?' class="on"':''} data-v="${v}"${dis}>${v}</button>`).join('')}</div>`;
   h+=`<label class="l">⏱ Vrijeme za potez</label><div class="seg" data-un="time">${[0,15,20,30,45].map(v=>`<button${u.time===v?' class="on"':''} data-v="${v}"${dis}>${v?v+'s':'∞'}</button>`).join('')}</div>`;
   h+=`<label class="rule" style="margin-top:8px"><input type="checkbox" data-unc="stack"${u.stack?' checked':''}${dis}><span class="sw"></span><span class="rt"><b>Slaganje +2 / +4</b><small>Na +2 možeš staviti +2 (ili +4), pa sljedeći vuče sve.</small></span></label>`;
+  h+=`<label class="rule"><input type="checkbox" data-unc="jedna"${u.jedna?' checked':''}${dis}><span class="sw"></span><span class="rt"><b>JEDNA! dugme (teže)</b><small>Moraš sam stisnuti JEDNA! kad ti ostanu 2 karte – ako zaboraviš, drugi te uhvate i vučeš +2.</small></span></label>`;
   h+=`<label class="rule"><input type="checkbox" data-unc="drawMatch"${u.drawMatch?' checked':''}${dis}><span class="sw"></span><span class="rt"><b>Vuci dok ne možeš igrati</b><small>Umjesto jedne karte, vučeš dok ne dobiješ kartu koja odgovara.</small></span></label>`;
  }else if(lb.game==='sketch'){const s=lb.sk;
   h+=`<label class="l">Broj rundi (svako crta po jednom u rundi)</label><div class="seg" data-sk="rounds">${[2,3,4,5,6].map(v=>`<button${s.rounds===v?' class="on"':''} data-v="${v}"${dis}>${v}</button>`).join('')}</div>`;
