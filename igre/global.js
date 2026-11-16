@@ -89,7 +89,7 @@ setInterval(()=>gAnnounce(),20000);
 function gRenderFeed(){const el=$('#hFeed');if(el)fillFeed(el,G.chat,G.status==='on'?'Tišina u kanalu… javi se prvi! 👋':'Spajam se na kanal…')}
 function gRender(){
  const st=$('#gStat');if(!st)return;const users=Object.entries(G.users);
- st.innerHTML=!App.me.nick?'upiši nadimak ⤴':G.status==='on'?`<i></i>${users.length} online`:G.status==='connecting'?'<span class="spin"></span> spajam se…':'offline';
+ const nt=App.netT?` · 📡${App.netN||0}/${App.netT}`:'';st.innerHTML=!App.me.nick?'upiši nadimak ⤴':G.status==='on'?`<i></i>${users.length} online${nt}`:G.status==='connecting'?`<span class="spin"></span> spajam se…${nt}`:'offline';
  const me=App.me.id;users.sort((a,b)=>(b[0]===me)-(a[0]===me)||rosesTotal(b[1].roses)-rosesTotal(a[1].roses));
  $('#gUsers').innerHTML=users.map(([id,u])=>{const rz=id===me?rosesTotal(mergeRoses(App.me.roses,u.roses)):rosesTotal(u.roses);
   return `<div class="gu${id===me?' me':''}" data-gid="${esc(id)}"><div class="ga">${esc(u.av)}${rz?`<span class="gr">🌹${rz}</span>`:''}</div><small>${esc(id===me?'ti':u.nick)}</small></div>`}).join('');

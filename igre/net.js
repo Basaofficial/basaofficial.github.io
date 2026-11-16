@@ -2,7 +2,9 @@
 // Poruke idu preko 3 javna MQTT servera ISTOVREMENO (EMQX, HiveMQ, Mosquitto) preko sigurnog WSS-a.
 // Ako jedan server zakaže, ostali rade. Duplikati se odbacuju. API je isti kao PeerJS (Peer, connect, on('data'...)).
 'use strict';
-const NET={brokers:(window.BASH_BROKERS||['wss://broker.emqx.io:8084/mqtt','wss://broker.hivemq.com:8884/mqtt','wss://test.mosquitto.org:8081/mqtt']),prefix:'bashigre/v2/'};
+const NET={brokers:(window.BASH_BROKERS?window.BASH_BROKERS.map((u,i)=>({n:'B'+i,u})):[
+ {n:'EMQX',u:'wss://broker.emqx.io:8084/mqtt'},{n:'HiveMQ',u:'wss://broker.hivemq.com:8884/mqtt'},{n:'Mosquitto',u:'wss://test.mosquitto.org:8081/mqtt'},
+ {n:'Eclipse',u:'wss://mqtt.eclipseprojects.io:443/mqtt'},{n:'Shiftr',u:'wss://public.cloud.shiftr.io:443',user:'public',pass:'public'}]),prefix:'bashigre/v2/'};
 const _te=new TextEncoder(),_td=new TextDecoder();
 function _cat(...a){let n=0;a.forEach(x=>n+=x.length);const o=new Uint8Array(n);let p=0;a.forEach(x=>{o.set(x,p);p+=x.length});return o}
 function _str(s){const b=_te.encode(s);return _cat(Uint8Array.of(b.length>>8,b.length&255),b)}
@@ -10,11 +12,11 @@ function _pkt(h,body){const l=[];let x=body.length;do{let d=x%128;x=Math.floor(x
 const _uid=()=>Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-5);
 
 class MqttLink{
- constructor(url,bus){this.url=url;this.bus=bus;this.subs=new Set();this.ok=false;this.buf=new Uint8Array(0);this.tries=0;this.pid=0;this.connect()}
+ constructor(b,bus){this.b=b;this.url=b.u;this.name=b.n;this.bus=bus;this.subs=new Set();this.ok=false;this.buf=new Uint8Array(0);this.tries=0;this.pid=0;this.connect()}
  connect(){let ws;try{ws=new WebSocket(this.url,['mqtt'])}catch(e){this.retry();return}
   ws.binaryType='arraybuffer';this.ws=ws;this.buf=new Uint8Array(0);
   const to=setTimeout(()=>{if(this.ws===ws&&!this.ok)try{ws.close()}catch(e){}},9000);
-  ws.onopen=()=>{ws.send(_pkt(0x10,_cat(_str('MQTT'),Uint8Array.of(4,2,0,40),_str('bi'+_uid()))))};
+  ws.onopen=()=>{const b=this.b,fl=2|(b.user?0x80:0)|(b.pass?0x40:0);ws.send(_pkt(0x10,_cat(_str('MQTT'),Uint8Array.of(4,fl,0,40),_str('bi'+_uid()),b.user?_str(b.user):new Uint8Array(0),b.pass?_str(b.pass):new Uint8Array(0))))};
   ws.onmessage=e=>{if(this.ws===ws)this.data(new Uint8Array(e.data))};
   const down=()=>{clearTimeout(to);if(this.ws!==ws)return;this.ws=null;const was=this.ok;this.ok=false;clearInterval(this.pi);if(was)this.bus.state();this.retry()};
   ws.onclose=down;ws.onerror=down;
@@ -35,9 +37,10 @@ class MqttLink{
  pub(t,s){if(!this.ok||!this.ws)return false;try{this.ws.send(_pkt(0x30,_cat(_str(t),_te.encode(s))));return true}catch(e){return false}}
 }
 const BUS={links:null,h:new Map(),seen:new Map(),wait:[],
- init(){if(this.links)return;this.links=NET.brokers.map(u=>new MqttLink(u,this));setInterval(()=>{const now=Date.now();for(const [k,t] of this.seen)if(now-t>60000)this.seen.delete(k)},20000)},
+ init(){if(this.links)return;this.links=NET.brokers.map(b=>new MqttLink(b,this));setInterval(()=>{const now=Date.now();for(const [k,t] of this.seen)if(now-t>60000)this.seen.delete(k)},20000)},
  ready(){return !!this.links&&this.links.some(l=>l.ok)},
- state(){if(this.ready()){const w=this.wait;this.wait=[];w.forEach(f=>f())}if(typeof window.onNetState==='function')window.onNetState(this.links.filter(l=>l.ok).length)},
+ state(){if(this.ready()){const w=this.wait;this.wait=[];w.forEach(f=>f())}if(typeof window.onNetState==='function')window.onNetState(this.links.filter(l=>l.ok).length,this.links.length)},
+ info(){return this.links?this.links.map(l=>({n:l.name,ok:l.ok})):[]},
  whenReady(cb){if(this.ready())cb();else this.wait.push(cb)},
  sub(t,fn){if(!this.h.has(t)){this.h.set(t,new Set());this.links.forEach(l=>l.sub(t))}this.h.get(t).add(fn)},
  unsub(t,fn){const s=this.h.get(t);if(!s)return;s.delete(fn);if(!s.size){this.h.delete(t);this.links.forEach(l=>l.unsub(t))}},
