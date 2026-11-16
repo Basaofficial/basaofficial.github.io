@@ -2,6 +2,9 @@
 'use strict';
 if(location.protocol==='http:'&&!/^(localhost|127\.0\.0\.1|192\.168\.|10\.)/.test(location.hostname))location.replace('https:'+location.href.slice(5));
 
+const APP_VER='20261116e';
+(async()=>{try{if(!/^https?:/.test(location.protocol))return;const r=await fetch('version.json?t='+Date.now(),{cache:'no-store'});const j=await r.json();
+ if(j&&j.v&&j.v!==APP_VER){const k='nljc_rl_'+j.v;if(!sessionStorage.getItem(k)){sessionStorage.setItem(k,'1');location.replace(location.pathname+'?v='+j.v+location.hash)}}}catch(e){}})();
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const LS={get(k,d){try{const v=localStorage.getItem('nljc_'+k);return v?JSON.parse(v):d}catch(e){return d}},
  set(k,v){try{localStorage.setItem('nljc_'+k,JSON.stringify(v))}catch(e){}},del(k){try{localStorage.removeItem('nljc_'+k)}catch(e){}}};
@@ -402,7 +405,8 @@ function hostOpen(code){
 function guestJoin(code){
  if(typeof Peer==='undefined'){toast('Online dio se nije učitao – provjeri internet i osvježi stranicu.',4000);return}
  App.role='guest';App.code=code;App.leaving=false;LS.set('save',{role:'guest',code,ts:Date.now()});
- if(!App.lobby){showScreen('sLobby');$('#lCode').textContent=code;$('#lPlayers').innerHTML='<p class="muted"><span class="spin"></span> Spajam se na sobu…</p>';
+ if(typeof BUS!=='undefined')BUS.init();
+ if(!App.lobby){showScreen('sLobby');$('#lCode').textContent=code;$('#lPlayers').innerHTML=`<p class="muted"><span class="spin"></span> Spajam se na sobu ${esc(code)}…${App.joinFails?' (pokušaj '+(App.joinFails+1)+'/4)':''}<br><span id="lNet">📡 ${App.netN||0}/${NET.brokers.length}</span> servera</p>`;
   ['#bStart','#bReady','#bStartBots'].forEach(s=>$(s).style.display='none');$('#lWait').style.display='none'}
  const go=()=>{const c=App.peer.connect(PEER_PREFIX+code,{reliable:true,serialization:'json'});App.conn=c;let ok=false;
   const t=setTimeout(()=>{if(!ok){try{c.close()}catch(e){}retryJoin()}},11000);
@@ -417,7 +421,7 @@ function guestJoin(code){
  pr.on('disconnected',()=>{setTimeout(()=>{if(App.peer===pr&&!pr.destroyed)try{pr.reconnect()}catch(e){}},1500)});
 }
 function retryJoin(){if(App.role!=='guest'||App.leaving)return;App.joinFails=(App.joinFails||0)+1;
- if(!App.lobby&&App.joinFails>=4){toast('Ne mogu se spojiti. Provjeri kod i da je domaćin u sobi.',4000);leave();return}
+ if(!App.lobby&&App.joinFails>=4){toast(App.netN?'Soba nije pronađena. Provjeri kod, i da domaćin ima istu (najnoviju) verziju i da je u sobi.':'Nema veze sa serverima – provjeri internet (probaj i Wi-Fi/mobilne podatke).',6000);leave();return}
  clearTimeout(App.rj);App.rj=setTimeout(()=>{if(App.role==='guest'&&!App.leaving&&!(App.conn&&App.conn.open))guestJoin(App.code)},2500)}
 function guestMsg(d){
  if(!d||!d.t)return;
@@ -598,14 +602,17 @@ function openDrawer(){
  }else h+=it('📖','Pravila igara','help');
  h+=`<div class="dsep"></div>`+it(SFX.on?'🔊':'🔇','Zvuk: '+(SFX.on?'uključen':'isključen'),'snd')+
   it('📸','Instagram @basa.gtm','', '',INSTA)+it('☕','Častiš kafu? (PayPal)','','g',DONATE)+
-  `<div class="dfoot">#Bash igre · napravljeno sa 💚<br>sigurna veza (HTTPS/WSS) · 3 servera za rezervu</div>`;
+  it('📡','Stanje veze','net')+`<div class="dfoot">#Bash igre · napravljeno sa 💚<br>sigurna veza (HTTPS/WSS) · ${NET.brokers.length} servera za rezervu<br>verzija ${APP_VER}</div>`;
  $('#dpanel').innerHTML=h;ovl('drawer',true);
 }
 $('#dpanel').addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(!b)return;const a=b.dataset.act;
  if(a==='snd'){SFX.on=!SFX.on;LS.set('snd',SFX.on);sndBtns();if(SFX.on)sfx.pop();openDrawer();return}
  ovl('drawer',false);
+ if(a==='net'){netReport();return}
  if(a==='share')share();else if(a==='settings')openSettings();else if(a==='lobby')backToLobby();else if(a==='help')openHelp();
  else if(a==='quit'){if(confirm(App.role==='host'?'Zatvoriti sobu za sve?':'Sigurno želiš izaći?'))leave()}});
+function netReport(){const i=BUS.info();toast(i.length?'📡 '+i.map(x=>(x.ok?'✅ ':'❌ ')+x.n).join('  '):'📡 Veza još nije pokrenuta',6000)}
+window.onNetState=(n,t)=>{App.netN=n;App.netT=t;if(typeof gRender==='function')gRender();const e=$('#lNet');if(e)e.textContent=`📡 ${n}/${t}`};
 function sndBtns(){$('#hSnd').textContent=SFX.on?'🔊':'🔇'}
 
 // ================= HOME =================
