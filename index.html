@@ -230,6 +230,21 @@ footer b{color:var(--g)}
         </div>
       </article>
 
+      <article class="card rv" data-t="web">
+        <div class="status"><i></i>live</div>
+        <div class="ct">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7c-2-3-7-2-7 3 0 6 4 11 7 11s7-5 7-11c0-5-5-6-7-3z"/><path d="M12 7c0-2 1-4 3-4"/></svg></div>
+          <div><h3><span class="h">#</span>Bash Fit</h3><div class="chips"><span class="chip web">web</span><span class="chip">zdravlje</span></div></div>
+        </div>
+        <p>Aplikacija za mršavljenje: BMI i kalorijski kalkulator, sedmični plan ishrane sa pravim namirnicama i gramažom, lista za kupovinu, dnevnik obroka, voda i graf kilaže.</p>
+        <div class="acts">
+          <a class="btn pri" href="fit/">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Otvori
+          </a>
+          <a class="btn" href="fit/#plan">Plan ishrane</a>
+        </div>
+      </article>
+
       <article class="card rv" data-t="web apk">
         <div class="status"><i></i>live</div>
         <div class="ct">
@@ -298,7 +313,7 @@ aplikacije, igre i Android alate.
       <div class="panel rv">
         <div class="bar"><i></i><i></i><i></i><span>stats</span></div>
         <div class="stats">
-          <div class="stat"><b data-c="4">0</b><span>aktivna projekta</span></div>
+          <div class="stat"><b data-c="5">0</b><span>aktivnih projekata</span></div>
           <div class="stat"><b data-c="2016">0</b><span>prva linija koda</span></div>
           <div class="stat"><b>∞</b><span>kafa</span></div>
           <div class="stat"><b>24/7</b><span>u labu</span></div>
@@ -421,7 +436,7 @@ frame();
 document.addEventListener('visibilitychange', () => { if (!document.hidden && !reduce) requestAnimationFrame(frame); });
 
 /* ---------- terminal kucanje ---------- */
-const lines = ['whoami → anel aka basa','ls ./projekti → igre  bashtalk  bash-electro  bashmouse','./build --apk --web','echo "dobrodošli u bashlab"'];
+const lines = ['whoami → anel aka basa','ls ./projekti → igre  fit  bashtalk  bash-electro  bashmouse','./build --apk --web','echo "dobrodošli u bashlab"'];
 const el = document.getElementById('typed'); let li=0, ci=0, del=false;
 function type(){
   const s = lines[li];

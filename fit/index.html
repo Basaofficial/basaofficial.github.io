@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="bs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>#Bash Fit — mršavljenje, plan ishrane i BMI</title>
+<meta name="description" content="#Bash Fit: BMI i kalorijski kalkulator, sedmični plan ishrane sa stvarnim namirnicama, lista za kupovinu, dnevnik i praćenje kilaže.">
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23000'/%3E%3Ctext x='50%25' y='58%25' text-anchor='middle' dominant-baseline='middle' font-family='monospace' font-weight='bold' font-size='30' fill='%237cff01'%3E%23F%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kaushan+Script&family=JetBrains+Mono:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#000;--card:#0a0a0a;--card2:#111;--line:#1c1c1c;--line2:#2a2a2a;
+  --g:#7cff01;--g2:#39ff88;--gdim:rgba(124,255,1,.12);
+  --t:#ececec;--t2:#8d8d8d;--t3:#555;--warn:#ffb84d;--bad:#ff5a5a;--blue:#4dc3ff;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;--hand:"Kaushan Script",cursive;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--t);font-family:var(--mono);font-size:14px;line-height:1.55;min-height:100vh;padding-bottom:calc(84px + env(safe-area-inset-bottom))}
+a{color:inherit;text-decoration:none}
+button,input,select{font-family:inherit;font-size:inherit;color:inherit}
+::selection{background:var(--g);color:#000}
+
+header{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:12px 16px;background:linear-gradient(#000 70%,#0000);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.brand{display:flex;align-items:baseline;gap:6px}
+.brand h1{font-family:var(--hand);font-weight:400;font-size:30px;line-height:1;text-shadow:0 0 18px rgba(124,255,1,.35)}
+.brand h1 b{color:var(--g);font-weight:400}
+.brand small{font-size:10px;color:var(--t3)}
+.hlinks{display:flex;gap:6px}
+.ib{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:10px;border:1px solid var(--line2);background:#0a0a0a;color:var(--t2);transition:.2s}
+.ib:hover{color:var(--g);border-color:rgba(124,255,1,.5)}
+.ib svg{width:18px;height:18px}
+
+main{max-width:760px;margin:0 auto;padding:4px 14px 20px}
+.tab{display:none;animation:fade .35s ease}
+.tab.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+.card{background:linear-gradient(160deg,#0e0e0e,#070707);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:14px}
+.card h2{font-size:15px;font-weight:800;display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.card h2 .h{font-family:var(--hand);font-weight:400;color:var(--g);font-size:20px}
+.card h2 .r{margin-left:auto;font-size:11px;font-weight:400;color:var(--t2)}
+.muted{color:var(--t2);font-size:12px}
+.tiny{color:var(--t3);font-size:11px}
+.g{color:var(--g)}.warn{color:var(--warn)}.bad{color:var(--bad)}
+
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fg .full{grid-column:1/-1}
+label.f{display:flex;flex-direction:column;gap:5px;font-size:11px;color:var(--t2)}
+.in,select.in{width:100%;background:#050505;border:1px solid var(--line2);border-radius:11px;padding:11px 12px;font-size:15px;color:var(--t);outline:none;transition:border-color .2s;-webkit-appearance:none;appearance:none}
+select.in{background-image:linear-gradient(45deg,transparent 50%,var(--g) 50%),linear-gradient(135deg,var(--g) 50%,transparent 50%);background-position:calc(100% - 17px) 50%,calc(100% - 12px) 50%;background-size:5px 5px;background-repeat:no-repeat;padding-right:30px}
+.in:focus{border-color:var(--g)}
+.seg{display:flex;background:#050505;border:1px solid var(--line2);border-radius:11px;padding:3px;gap:3px}
+.seg button{flex:1;border:0;background:transparent;padding:8px 6px;border-radius:8px;cursor:pointer;color:var(--t2);font-size:13px;transition:.2s}
+.seg button.on{background:var(--g);color:#000;font-weight:800}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line2);background:#050505;border-radius:99px;padding:6px 11px;font-size:12px;color:var(--t2);cursor:pointer;transition:.2s;user-select:none}
+.chip.on{border-color:var(--g);color:var(--g);background:var(--gdim)}
+.chip.x.on{border-color:var(--bad);color:var(--bad);background:rgba(255,90,90,.08)}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1px solid var(--line2);background:#0c0c0c;border-radius:12px;padding:11px 15px;font-weight:600;font-size:13px;cursor:pointer;transition:.2s}
+.btn:hover{border-color:rgba(124,255,1,.55)}
+.btn.pri{background:var(--g);color:#000;border-color:var(--g);font-weight:800;box-shadow:0 8px 26px -10px rgba(124,255,1,.7)}
+.btn.sm{padding:7px 11px;font-size:12px;border-radius:10px}
+.btn.w{width:100%}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.sp{flex:1}
+
+/* rezultati */
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.kpi{background:#050505;border:1px solid var(--line);border-radius:14px;padding:11px 10px}
+.kpi b{display:block;font-size:20px;font-weight:800;line-height:1.15}
+.kpi span{font-size:10.5px;color:var(--t2)}
+.kpi.big{grid-column:1/-1;display:flex;align-items:center;gap:14px;border-color:rgba(124,255,1,.35);background:radial-gradient(ellipse at 0% 0%,rgba(124,255,1,.12),transparent 70%),#050505}
+.kpi.big b{font-size:34px;color:var(--g)}
+@media(max-width:420px){.kpis{grid-template-columns:1fr 1fr}}
+.gauge{position:relative;height:12px;border-radius:99px;margin:14px 0 6px;background:linear-gradient(90deg,#4dc3ff 0 13%,#7cff01 13% 38%,#ffb84d 38% 58%,#ff8a3d 58% 78%,#ff5a5a 78%)}
+.gauge i{position:absolute;top:-6px;width:4px;height:24px;border-radius:3px;background:#fff;box-shadow:0 0 10px #fff;transform:translateX(-50%);transition:left .6s cubic-bezier(.2,.8,.2,1)}
+.gl{display:flex;justify-content:space-between;font-size:10px;color:var(--t3)}
+.bmibig{display:flex;align-items:baseline;gap:10px}
+.bmibig b{font-size:40px;font-weight:800;line-height:1}
+.macro{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.macro div{background:#050505;border:1px solid var(--line);border-radius:12px;padding:9px}
+.macro b{font-size:16px}
+.macro span{display:block;font-size:10.5px;color:var(--t2)}
+.bar{height:6px;border-radius:9px;background:#1a1a1a;overflow:hidden;margin-top:6px}
+.bar i{display:block;height:100%;border-radius:9px;background:var(--g);transition:width .5s}
+.note{border-left:3px solid var(--warn);background:rgba(255,184,77,.06);padding:10px 12px;border-radius:10px;font-size:12px;color:#ffd9a3;margin-top:12px}
+.note.ok{border-color:var(--g);background:var(--gdim);color:#cfffa0}
+.note.bad{border-color:var(--bad);background:rgba(255,90,90,.07);color:#ffb3b3}
+
+/* plan */
+.days{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:12px;scrollbar-width:none}
+.days::-webkit-scrollbar{display:none}
+.day{flex:1;min-width:46px;border:1px solid var(--line2);border-radius:12px;background:#070707;padding:8px 4px;text-align:center;cursor:pointer;font-size:12px;color:var(--t2);transition:.2s}
+.day b{display:block;font-size:14px;color:var(--t)}
+.day.on{background:var(--g);border-color:var(--g);color:#000}.day.on b{color:#000}
+.day.td{border-color:rgba(124,255,1,.6)}
+.meal{border:1px solid var(--line);border-radius:16px;background:#070707;padding:13px;margin-bottom:10px}
+.meal .mh{display:flex;align-items:center;gap:8px}
+.meal .slot{font-size:10.5px;color:var(--g);letter-spacing:1px;text-transform:uppercase}
+.meal h3{font-size:14.5px;font-weight:800;margin:3px 0 8px;line-height:1.3}
+.meal .kc{margin-left:auto;font-weight:800;font-size:13px;white-space:nowrap}
+.items{list-style:none;display:flex;flex-direction:column;gap:3px;margin-bottom:8px}
+.items li{display:flex;justify-content:space-between;gap:10px;font-size:12.5px;padding:4px 0;border-bottom:1px dashed #1b1b1b}
+.items li:last-child{border-bottom:0}
+.items li span:last-child{color:var(--t2);white-space:nowrap}
+.prep{font-size:11.5px;color:var(--t2);background:#0c0c0c;border-radius:10px;padding:8px 10px}
+.mm{font-size:11px;color:var(--t3);margin-top:7px}
+.daytot{display:flex;gap:6px;flex-wrap:wrap;font-size:11.5px;color:var(--t2);margin-bottom:12px}
+.daytot b{color:var(--t)}
+.pill{border:1px solid var(--line2);border-radius:99px;padding:4px 10px}
+.pill.g{border-color:rgba(124,255,1,.5);color:var(--g)}
+
+.shop h4{font-size:11px;color:var(--g);letter-spacing:1px;text-transform:uppercase;margin:14px 0 6px}
+.shop label{display:flex;align-items:center;gap:10px;padding:8px 2px;border-bottom:1px solid #151515;font-size:13px;cursor:pointer}
+.shop label span{flex:1}
+.shop label em{font-style:normal;color:var(--t2);font-size:12px}
+.shop input:checked+span{text-decoration:line-through;color:var(--t3)}
+input[type=checkbox]{appearance:none;-webkit-appearance:none;width:20px;height:20px;border:1.5px solid var(--line2);border-radius:6px;flex:none;display:grid;place-items:center;cursor:pointer;background:#050505}
+input[type=checkbox]:checked{background:var(--g);border-color:var(--g)}
+input[type=checkbox]:checked::after{content:"";width:5px;height:10px;border:solid #000;border-width:0 2.5px 2.5px 0;transform:rotate(45deg) translate(-1px,-1px)}
+
+/* danas */
+.dnav{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.dnav b{flex:1;text-align:center;font-size:13px}
+.ringw{display:flex;align-items:center;gap:16px}
+.ring{position:relative;width:132px;height:132px;flex:none}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring .c{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.ring .c b{font-size:26px;line-height:1}
+.ring .c span{font-size:10px;color:var(--t2)}
+.mlist{flex:1;display:flex;flex-direction:column;gap:9px;font-size:12px}
+.mlist .l{display:flex;justify-content:space-between}
+.eat{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #151515}
+.eat:last-child{border-bottom:0}
+.eat .nm{flex:1;font-size:13px;line-height:1.3}
+.eat .nm small{display:block;color:var(--t3);font-size:11px}
+.eat .kk{font-size:12px;color:var(--t2);white-space:nowrap}
+.xb{border:0;background:transparent;color:var(--t3);cursor:pointer;font-size:18px;padding:0 4px;line-height:1}
+.xb:hover{color:var(--bad)}
+.res{max-height:240px;overflow:auto;border:1px solid var(--line);border-radius:12px;margin-top:8px;display:none}
+.res.on{display:block}
+.res div{display:flex;justify-content:space-between;gap:10px;padding:9px 11px;border-bottom:1px solid #151515;cursor:pointer;font-size:12.5px}
+.res div:hover,.res div.sel{background:var(--gdim);color:var(--g)}
+.res div span:last-child{color:var(--t2);font-size:11px}
+.water{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.glass{width:32px;height:40px;border:1.5px solid var(--line2);border-radius:4px 4px 9px 9px;position:relative;cursor:pointer;overflow:hidden;background:#050505}
+.glass::after{content:"";position:absolute;left:0;right:0;bottom:0;height:0;background:linear-gradient(#4dc3ff,#1f7fb3);transition:height .3s}
+.glass.on{border-color:var(--blue)}.glass.on::after{height:80%}
+
+/* napredak */
+canvas#chart{width:100%;height:230px;display:block}
+.wl{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid #151515;font-size:13px}
+.wl em{font-style:normal;font-size:11px}
+
+/* namirnice */
+.food{display:grid;grid-template-columns:12px 1fr auto;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid #151515}
+.food .dot{width:10px;height:10px;border-radius:50%}
+.food .n{font-size:13px;line-height:1.3}
+.food .n small{display:block;font-size:11px;color:var(--t3)}
+.food .v{text-align:right;font-size:12px;white-space:nowrap}
+.food .v small{display:block;color:var(--t3);font-size:10.5px}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:11px;color:var(--t2);margin:8px 0 2px}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px}
+.swap{display:flex;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid #151515;font-size:12.5px}
+.swap .a{color:var(--t2);text-decoration:line-through;text-decoration-color:var(--bad)}
+.swap .ar{color:var(--g)}
+.tips li{margin:0 0 9px 18px;font-size:12.5px;color:#cfcfcf}
+.tips li::marker{color:var(--g)}
+
+.contact{text-align:center;background:radial-gradient(ellipse at 50% 0%,rgba(124,255,1,.13),transparent 65%),#070707}
+.contact .hand{font-family:var(--hand);font-size:34px;line-height:1.1}
+.contact .hand span{color:var(--g)}
+.ig{background:linear-gradient(135deg,#7cff01,#39ff88)!important;color:#000!important;border:0!important}
+
+nav.bot{position:fixed;left:0;right:0;bottom:0;z-index:30;display:flex;justify-content:center;background:rgba(0,0,0,.92);border-top:1px solid var(--line);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);padding:6px 6px calc(6px + env(safe-area-inset-bottom))}
+nav.bot .in2{display:flex;width:100%;max-width:560px}
+nav.bot button{flex:1;border:0;background:transparent;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 2px;color:var(--t3);font-size:10px;cursor:pointer;border-radius:12px;transition:.2s}
+nav.bot button svg{width:22px;height:22px}
+nav.bot button.on{color:var(--g)}
+nav.bot button.on svg{filter:drop-shadow(0 0 6px rgba(124,255,1,.7))}
+
+#toast{position:fixed;left:50%;bottom:96px;transform:translate(-50%,160px);z-index:50;background:#0d0d0d;border:1px solid rgba(124,255,1,.5);padding:11px 16px;border-radius:12px;font-size:12px;transition:transform .35s cubic-bezier(.2,.8,.2,1);max-width:90vw;box-shadow:0 10px 40px -10px rgba(124,255,1,.45)}
+#toast.on{transform:translate(-50%,0)}
+.hide{display:none!important}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand"><h1><b>#</b>Bash Fit</h1><small>v1</small></div>
+  <div class="hlinks">
+    <a class="ib" href="https://instagram.com/basa.gtm" target="_blank" rel="noopener" aria-label="Instagram @basa.gtm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".6" fill="currentColor"/></svg></a>
+    <a class="ib" href="../" aria-label="bashlab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17l6-5-6-5M12 19h8"/></svg></a>
+  </div>
+</header>
+
+<main>
+
+<!-- ================= JA ================= -->
+<section class="tab on" id="t-ja">
+  <div class="card">
+    <h2><span class="h">01</span>Tvoji podaci</h2>
+    <div class="fg">
+      <div class="full"><div class="seg" id="sex"><button data-v="m" class="on">♂ Muško</button><button data-v="f">♀ Žensko</button></div></div>
+      <label class="f">Godine<input class="in" id="age" type="number" inputmode="numeric" min="16" max="90" placeholder="npr. 30"></label>
+      <label class="f">Visina (cm)<input class="in" id="height" type="number" inputmode="decimal" min="130" max="230" placeholder="npr. 180"></label>
+      <label class="f">Težina (kg)<input class="in" id="weight" type="number" inputmode="decimal" step="0.1" min="35" max="300" placeholder="npr. 95"></label>
+      <label class="f">Ciljna težina (kg)<input class="in" id="goal" type="number" inputmode="decimal" step="0.1" min="35" max="300" placeholder="npr. 82"></label>
+      <label class="f full">Aktivnost
+        <select class="in" id="act">
+          <option value="1.2">Sjedeći posao, bez treninga</option>
+          <option value="1.375" selected>Lagano aktivan (1–3 treninga / šetnje)</option>
+          <option value="1.55">Aktivan (3–5 treninga ili fizički posao)</option>
+          <option value="1.725">Vrlo aktivan (težak fizički posao + treninzi)</option>
+          <option value="1.9">Ekstremno (2 treninga dnevno / građevina + teretana)</option>
+        </select></label>
+      <label class="f full">Tempo mršavljenja
+        <select class="in" id="pace">
+          <option value="0.25">Polako · 0,25 kg sedmično (najlakše za održati)</option>
+          <option value="0.5" selected>Preporučeno · 0,5 kg sedmično</option>
+          <option value="0.75">Brže · 0,75 kg sedmično</option>
+          <option value="1">Maksimalno · 1 kg sedmično (samo uz veći višak)</option>
+        </select></label>
+      <label class="f">Ishrana
+        <select class="in" id="diet">
+          <option value="all">Sve (bez svinjetine)</option>
+          <option value="pesc">Bez mesa, s ribom</option>
+          <option value="veg">Vegetarijanska</option>
+        </select></label>
+      <label class="f">Obroka dnevno
+        <select class="in" id="meals">
+          <option value="3">3 obroka</option>
+          <option value="4" selected>4 (3 + užina)</option>
+          <option value="5">5 (3 + 2 užine)</option>
+        </select></label>
+      <div class="full"><div class="tiny" style="margin-bottom:6px">Ne jedem / alergija (izbaci iz plana):</div>
+        <div class="chips" id="excl">
+          <span class="chip x" data-v="jaja">jaja</span><span class="chip x" data-v="mlijeko">mliječno</span><span class="chip x" data-v="riba">riba</span><span class="chip x" data-v="orasi">orašasti</span><span class="chip x" data-v="gluten">gluten</span>
+        </div></div>
+      <button class="btn pri w full" id="calc">⚡ Izračunaj i napravi plan</button>
+    </div>
+  </div>
+
+  <div id="results" class="hide">
+    <div class="card">
+      <h2><span class="h">02</span>BMI<span class="r" id="bmiCat"></span></h2>
+      <div class="bmibig"><b id="bmiV">–</b><span class="muted" id="bmiTxt"></span></div>
+      <div class="gauge"><i id="bmiPin" style="left:0"></i></div>
+      <div class="gl"><span>15</span><span>18,5</span><span>25</span><span>30</span><span>35</span><span>40+</span></div>
+      <div class="muted" style="margin-top:10px" id="idealW"></div>
+    </div>
+
+    <div class="card">
+      <h2><span class="h">03</span>Kalorije i makroi</h2>
+      <div class="kpis">
+        <div class="kpi big"><div><b id="kTarget">–</b><span>kcal dnevno za mršavljenje</span></div></div>
+        <div class="kpi"><b id="kBmr">–</b><span>BMR (mirovanje)</span></div>
+        <div class="kpi"><b id="kTdee">–</b><span>održavanje (TDEE)</span></div>
+        <div class="kpi"><b id="kDef">–</b><span>deficit / dan</span></div>
+        <div class="kpi"><b id="kWater">–</b><span>voda dnevno</span></div>
+        <div class="kpi"><b id="kWeeks">–</b><span>do cilja</span></div>
+        <div class="kpi"><b id="kDate">–</b><span>očekivani datum</span></div>
+      </div>
+      <div class="macro">
+        <div><b id="mP">–</b><span>proteini</span><div class="bar"><i id="mPb" style="background:#7cff01"></i></div></div>
+        <div><b id="mC">–</b><span>ugljikohidrati</span><div class="bar"><i id="mCb" style="background:#4dc3ff"></i></div></div>
+        <div><b id="mF">–</b><span>masti</span><div class="bar"><i id="mFb" style="background:#ffb84d"></i></div></div>
+      </div>
+      <div id="notes"></div>
+      <button class="btn w" style="margin-top:12px" data-go="plan">🍽️ Pogledaj plan ishrane →</button>
+    </div>
+
+    <div class="card">
+      <h2><span class="h">04</span>% masti i struk<span class="r">opcionalno</span></h2>
+      <div class="fg">
+        <label class="f">Struk (cm, u visini pupka)<input class="in" id="waist" type="number" inputmode="decimal" placeholder="npr. 98"></label>
+        <label class="f">Vrat (cm)<input class="in" id="neck" type="number" inputmode="decimal" placeholder="npr. 40"></label>
+        <label class="f full hide" id="hipW">Kukovi (cm, najširi dio)<input class="in" id="hip" type="number" inputmode="decimal" placeholder="npr. 104"></label>
+      </div>
+      <div class="kpis" style="margin-top:10px">
+        <div class="kpi"><b id="bf">–</b><span>% tjelesne masti</span></div>
+        <div class="kpi"><b id="fm">–</b><span>masna masa</span></div>
+        <div class="kpi"><b id="whtr">–</b><span>struk / visina</span></div>
+      </div>
+      <div class="tiny" style="margin-top:8px" id="bfTxt">Metoda US Navy (mjerna traka). Struk/visina ispod 0,5 = nizak rizik.</div>
+    </div>
+  </div>
+
+  <div class="card contact">
+    <div class="hand">Pitanja? <span>Piši mi</span></div>
+    <p class="muted" style="margin:8px 0 14px">Ideje, greške ili prijedlozi za #Bash Fit</p>
+    <div class="row" style="justify-content:center">
+      <a class="btn ig" href="https://instagram.com/basa.gtm" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".6" fill="currentColor"/></svg>
+        Instagram · @basa.gtm</a>
+      <a class="btn" href="https://paypal.me/basagtm" target="_blank" rel="noopener">☕ Buy me a coffee</a>
+    </div>
+    <p class="tiny" style="margin-top:14px">Nije medicinski savjet. Ako imaš dijabetes, bolest srca/bubrega, trudna si ili dojiš, ili imaš problema s ishranom, prvo se posavjetuj s doktorom.</p>
+    <div class="row" style="justify-content:center;margin-top:10px">
+      <button class="btn sm" id="exp">⇩ Izvezi podatke</button>
+      <label class="btn sm">⇧ Uvezi<input type="file" id="imp" accept=".json" hidden></label>
+      <button class="btn sm" id="reset" style="color:var(--bad)">Obriši sve</button>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PLAN ================= -->
+<section class="tab" id="t-plan">
+  <div id="planEmpty" class="card"><h2><span class="h">!</span>Prvo unesi podatke</h2><p class="muted">Plan se računa po tvojim kalorijama.</p><button class="btn pri w" style="margin-top:12px" data-go="ja">Unesi podatke</button></div>
+  <div id="planWrap" class="hide">
+    <div class="row" style="margin-bottom:12px">
+      <div class="seg" id="planView" style="flex:1"><button data-v="day" class="on">🍽️ Plan</button><button data-v="shop">🛒 Kupovina</button></div>
+      <button class="btn sm" id="newPlan" title="Novi plan">↻ Novi</button>
+    </div>
+    <div id="pvDay">
+      <div class="days" id="days"></div>
+      <div class="daytot" id="dayTot"></div>
+      <div id="mealsList"></div>
+      <p class="tiny">Žitarice, riža i tjestenina su u <b>suhom</b> (nekuhanom) stanju, meso i riba <b>sirovi</b>. Povrće možeš jesti i više — skoro nema kalorija.</p>
+    </div>
+    <div id="pvShop" class="hide">
+      <div class="card shop">
+        <h2><span class="h">🛒</span>Lista za 7 dana<span class="r"><button class="btn sm" id="shopClr">poništi ✓</button></span></h2>
+        <div id="shopList"></div>
+        <button class="btn w" style="margin-top:14px" id="shopCopy">📋 Kopiraj listu</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= DANAS ================= -->
+<section class="tab" id="t-danas">
+  <div class="dnav"><button class="btn sm" id="dPrev">‹</button><b id="dLabel">Danas</b><button class="btn sm" id="dNext">›</button></div>
+  <div class="card">
+    <div class="ringw">
+      <div class="ring">
+        <svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" stroke="#1a1a1a" stroke-width="11" fill="none"/><circle id="ringC" cx="60" cy="60" r="52" stroke="#7cff01" stroke-width="11" fill="none" stroke-linecap="round" stroke-dasharray="326.7" stroke-dashoffset="326.7" style="transition:stroke-dashoffset .6s,stroke .3s;filter:drop-shadow(0 0 6px rgba(124,255,1,.5))"/></svg>
+        <div class="c"><b id="rLeft">–</b><span id="rLbl">kcal ostalo</span></div>
+      </div>
+      <div class="mlist">
+        <div><div class="l"><span>Pojedeno</span><b id="rEat">0</b></div></div>
+        <div><div class="l"><span>Proteini</span><span id="rP">0 / 0 g</span></div><div class="bar"><i id="rPb"></i></div></div>
+        <div><div class="l"><span>Ugljikoh.</span><span id="rC">0 / 0 g</span></div><div class="bar"><i id="rCb" style="background:#4dc3ff"></i></div></div>
+        <div><div class="l"><span>Masti</span><span id="rF">0 / 0 g</span></div><div class="bar"><i id="rFb" style="background:#ffb84d"></i></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2><span class="h">✓</span>Obroci iz plana<span class="r">označi kad pojedeš</span></h2>
+    <div id="todayMeals"></div>
+  </div>
+
+  <div class="card">
+    <h2><span class="h">+</span>Dodatno pojedeno</h2>
+    <div class="fg">
+      <label class="f full">Namirnica<input class="in" id="fSearch" placeholder="traži: burek, banana, pivo…" autocomplete="off"></label>
+      <div class="res full" id="fRes"></div>
+      <label class="f">Količina (g / ml)<input class="in" id="fGram" type="number" inputmode="decimal" value="100"></label>
+      <div class="f" style="justify-content:flex-end"><button class="btn pri" id="fAdd">Dodaj</button></div>
+    </div>
+    <div class="tiny" id="fSel" style="margin-top:6px"></div>
+    <div id="extraList" style="margin-top:8px"></div>
+  </div>
+
+  <div class="card">
+    <h2><span class="h">💧</span>Voda<span class="r" id="wTxt"></span></h2>
+    <div class="water" id="water"></div>
+    <div class="tiny" style="margin-top:6px">1 čaša = 250 ml. Čaša vode prije obroka pomaže da pojedeš manje.</div>
+  </div>
+
+  <div class="card">
+    <h2><span class="h">⚖</span>Jutarnje vaganje</h2>
+    <div class="row"><input class="in" id="qW" type="number" step="0.1" inputmode="decimal" placeholder="kg" style="flex:1"><button class="btn pri" id="qWAdd">Spremi</button></div>
+    <div class="tiny" style="margin-top:6px">Važi se ujutro, nakon WC-a, prije doručka. Gledaj sedmični prosjek, ne dnevne skokove.</div>
+  </div>
+</section>
+
+<!-- ================= NAPREDAK ================= -->
+<section class="tab" id="t-napredak">
+  <div class="card">
+    <h2><span class="h">⚖</span>Unesi težinu</h2>
+    <div class="row"><input class="in" id="wDate" type="date" style="flex:1.2"><input class="in" id="wVal" type="number" step="0.1" inputmode="decimal" placeholder="kg" style="flex:1"><button class="btn pri" id="wAdd">+</button></div>
+  </div>
+  <div class="card">
+    <h2><span class="h">📈</span>Napredak<span class="r" id="trendTxt"></span></h2>
+    <canvas id="chart"></canvas>
+    <div class="legend"><span><i style="background:#7cff01"></i>težina</span><span><i style="background:#39ff88;opacity:.5"></i>7-dnevni prosjek</span><span><i style="background:#ffb84d"></i>cilj</span></div>
+    <div class="kpis" style="margin-top:12px">
+      <div class="kpi"><b id="sLost">–</b><span>skinuto ukupno</span></div>
+      <div class="kpi"><b id="sLeft">–</b><span>još do cilja</span></div>
+      <div class="kpi"><b id="sRate">–</b><span>prosjek / sedmica</span></div>
+    </div>
+  </div>
+  <div class="card">
+    <h2><span class="h">≡</span>Historija</h2>
+    <div id="wList"><p class="muted">Još nema unosa.</p></div>
+  </div>
+</section>
+
+<!-- ================= NAMIRNICE ================= -->
+<section class="tab" id="t-hrana">
+  <div class="card">
+    <h2><span class="h">🥦</span>Namirnice<span class="r">na 100 g</span></h2>
+    <input class="in" id="nSearch" placeholder="traži namirnicu…" autocomplete="off">
+    <div class="chips" id="nCat" style="margin-top:10px"></div>
+    <div class="legend"><span><i style="background:#7cff01"></i>jedi slobodno</span><span><i style="background:#ffb84d"></i>umjereno, mjeri</span><span><i style="background:#ff5a5a"></i>pažljivo / rijetko</span></div>
+    <div id="nList"></div>
+  </div>
+  <div class="card">
+    <h2><span class="h">⇄</span>Pametne zamjene</h2>
+    <div id="swaps"></div>
+  </div>
+  <div class="card">
+    <h2><span class="h">★</span>Pravila koja rade</h2>
+    <ul class="tips">
+      <li><b>Proteini u svakom obroku</b> (meso, riba, jaja, skyr, posni sir, leća) — najduže drže sitim i čuvaju mišiće.</li>
+      <li><b>Pola tanjira povrće.</b> Brokula, salata, paprika, tikvice — puno volumena, malo kalorija.</li>
+      <li><b>Mjeri ulje.</b> Jedna kašika ulja = ~90 kcal. Koristi sprej ili 1 kašičicu.</li>
+      <li><b>Ne pij kalorije.</b> Sok, kola, pivo i latte lako pojedu cijeli deficit.</li>
+      <li><b>8–10 hiljada koraka dnevno</b> sagori više nego što misliš, a ne povećava glad kao trening.</li>
+      <li><b>Trening snage 2–3× sedmično</b> da skidaš mast, a ne mišiće.</li>
+      <li><b>Spavaj 7–8 sati.</b> Neispavan čovjek pojede u prosjeku 300+ kcal više.</li>
+      <li><b>Važi se svaki dan, gledaj prosjek.</b> Voda i so mijenjaju vagu ±1 kg iz dana u dan.</li>
+      <li><b>Jedan loš dan ne kvari ništa.</b> Sutra nastavi po planu, bez “kažnjavanja” gladovanjem.</li>
+    </ul>
+  </div>
+</section>
+</main>
+
+<nav class="bot"><div class="in2">
+  <button data-go="ja" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Ja</button>
+  <button data-go="plan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 3v8a3 3 0 0 0 6 0V3M7 3v18M17 3c-2 0-3 2.5-3 6s1 4 3 4v8"/></svg>Plan</button>
+  <button data-go="danas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Danas</button>
+  <button data-go="napredak"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 6-6"/></svg>Napredak</button>
+  <button data-go="hrana"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7c-2-3-7-2-7 3 0 6 4 11 7 11s7-5 7-11c0-5-5-6-7-3z"/><path d="M12 7c0-2 1-4 3-4"/></svg>Namirnice</button>
+</div></nav>
+<div id="toast"></div>
+
+<script>
+(() => {
+'use strict';
+/* ============ BAZA NAMIRNICA (na 100 g) ============
+   k kcal, p protein, c ugljikohidrati, f masti, cat kategorija,
+   u = težina 1 komada (g), un = naziv komada, d = meat/fish, x = alergeni, top = preporuka */
+const F = {
+  oats:{n:'Zobene pahuljice',k:372,p:13.5,c:58.7,f:7,cat:'zit',x:['gluten'],top:1},
+  bread:{n:'Integralni / raženi hljeb',k:215,p:7,c:38,f:1.5,cat:'zit',u:45,un:'kriška',x:['gluten']},
+  tortilla:{n:'Integralna tortilja',k:300,p:9,c:47,f:7,cat:'zit',u:60,un:'kom',x:['gluten']},
+  ricecake:{n:'Rižini krekeri',k:385,p:8,c:81,f:2.8,cat:'zit',u:8,un:'kom'},
+  rice:{n:'Basmati riža (suha)',k:350,p:8,c:77,f:0.6,cat:'zit'},
+  pasta:{n:'Integralna tjestenina (suha)',k:350,p:13,c:64,f:2.5,cat:'zit',x:['gluten']},
+  quinoa:{n:'Kvinoja (suha)',k:368,p:14,c:64,f:6,cat:'zit',top:1},
+  potato:{n:'Krompir',k:77,p:2,c:17,f:0.1,cat:'zit',top:1},
+  sweetp:{n:'Batat (slatki krompir)',k:86,p:1.6,c:20,f:0.1,cat:'zit'},
+  skyr:{n:'Skyr natur',k:63,p:11,c:4,f:0.2,cat:'mlj',x:['mlijeko'],top:1},
+  quark:{n:'Posni sir / Magerquark',k:67,p:12,c:4,f:0.3,cat:'mlj',x:['mlijeko'],top:1},
+  cottage:{n:'Zrnati sir (Hüttenkäse)',k:92,p:12.3,c:2.6,f:4.3,cat:'mlj',x:['mlijeko'],top:1},
+  yogurt:{n:'Jogurt 1,5%',k:47,p:3.4,c:4.7,f:1.5,cat:'mlj',x:['mlijeko']},
+  kefir:{n:'Kefir 1,5%',k:50,p:3.4,c:4.5,f:1.5,cat:'mlj',x:['mlijeko']},
+  milk:{n:'Mlijeko 1,5%',k:47,p:3.4,c:4.8,f:1.5,cat:'mlj',x:['mlijeko']},
+  feta:{n:'Feta light',k:175,p:17,c:1,f:11,cat:'mlj',x:['mlijeko']},
+  pudding:{n:'Proteinski puding',k:75,p:10,c:6,f:1.5,cat:'mlj',x:['mlijeko']},
+  egg:{n:'Jaja',k:143,p:12.6,c:0.7,f:9.5,cat:'mlj',u:60,un:'kom',x:['jaja'],top:1},
+  eggw:{n:'Bjelanjci',k:52,p:11,c:0.7,f:0.2,cat:'mlj',x:['jaja']},
+  chicken:{n:'Pileća prsa (sirova)',k:110,p:23,c:0,f:1.5,cat:'mes',d:'meat',top:1},
+  turkey:{n:'Pureća prsa (sirova)',k:105,p:24,c:0,f:1,cat:'mes',d:'meat',top:1},
+  turkeym:{n:'Mljevena puretina',k:150,p:20,c:0,f:7.5,cat:'mes',d:'meat'},
+  beefm:{n:'Mljevena junetina 5%',k:125,p:21,c:0,f:5,cat:'mes',d:'meat'},
+  steak:{n:'Juneći odrezak (posni)',k:120,p:22,c:0,f:3.5,cat:'mes',d:'meat'},
+  ham:{n:'Pureća šunka (narezak)',k:105,p:20,c:1.5,f:2,cat:'mes',d:'meat'},
+  salmon:{n:'Losos',k:208,p:20,c:0,f:13,cat:'mes',d:'fish',x:['riba']},
+  pollock:{n:'Bijela riba (Seelachs/bakalar)',k:82,p:18,c:0,f:0.9,cat:'mes',d:'fish',x:['riba'],top:1},
+  tuna:{n:'Tuna u vlastitom soku',k:110,p:26,c:0,f:1,cat:'mes',d:'fish',x:['riba'],top:1},
+  tofu:{n:'Tofu natur',k:120,p:13,c:1.5,f:7,cat:'mah'},
+  lentil:{n:'Crvena leća (suha)',k:340,p:25,c:50,f:2,cat:'mah',top:1},
+  chick:{n:'Slanutak (kuhan, konzerva)',k:120,p:7,c:16,f:2.6,cat:'mah'},
+  beans:{n:'Crveni grah (kuhan)',k:105,p:7.5,c:15,f:0.5,cat:'mah'},
+  hummus:{n:'Humus',k:260,p:7,c:10,f:20,cat:'mah'},
+  broc:{n:'Brokula',k:34,p:2.8,c:4,f:0.4,cat:'pov',top:1},
+  cauli:{n:'Karfiol',k:25,p:2,c:3,f:0.3,cat:'pov',top:1},
+  zucc:{n:'Tikvice',k:17,p:1.2,c:2,f:0.3,cat:'pov',top:1},
+  spinach:{n:'Špinat',k:23,p:2.9,c:1.4,f:0.4,cat:'pov',top:1},
+  pepper:{n:'Paprika',k:30,p:1,c:6,f:0.3,cat:'pov'},
+  tomato:{n:'Paradajz',k:18,p:0.9,c:3.9,f:0.2,cat:'pov'},
+  cucumber:{n:'Krastavac',k:15,p:0.6,c:3,f:0.1,cat:'pov',top:1},
+  salad:{n:'Zelena salata (miks)',k:17,p:1.3,c:2,f:0.2,cat:'pov',top:1},
+  carrot:{n:'Mrkva',k:41,p:0.9,c:9.6,f:0.2,cat:'pov'},
+  beansg:{n:'Mahune',k:31,p:1.8,c:5,f:0.2,cat:'pov'},
+  wok:{n:'Wok povrće (smrznuto)',k:35,p:2,c:5,f:0.3,cat:'pov'},
+  mush:{n:'Šampinjoni',k:22,p:3.1,c:3.3,f:0.3,cat:'pov'},
+  passata:{n:'Paradajz pasata',k:30,p:1.4,c:5,f:0.2,cat:'pov'},
+  onion:{n:'Luk',k:40,p:1.1,c:9,f:0.1,cat:'pov'},
+  apple:{n:'Jabuka',k:52,p:0.3,c:14,f:0.2,cat:'voc',u:150,un:'kom',top:1},
+  banana:{n:'Banana',k:89,p:1.1,c:23,f:0.3,cat:'voc',u:120,un:'kom'},
+  orange:{n:'Narandža',k:47,p:0.9,c:12,f:0.1,cat:'voc',u:180,un:'kom'},
+  blueb:{n:'Borovnice',k:57,p:0.7,c:14,f:0.3,cat:'voc',top:1},
+  straw:{n:'Jagode',k:32,p:0.7,c:7.7,f:0.3,cat:'voc',top:1},
+  almond:{n:'Bademi',k:579,p:21,c:9.7,f:50,cat:'ora',x:['orasi']},
+  walnut:{n:'Orasi',k:654,p:15,c:7,f:65,cat:'ora',x:['orasi']},
+  chia:{n:'Chia sjemenke',k:486,p:17,c:8,f:31,cat:'ora'},
+  oil:{n:'Maslinovo ulje',k:884,p:0,c:0,f:100,cat:'ora'},
+  soy:{n:'Soja sos',k:55,p:8,c:6,f:0,cat:'ost',x:['gluten']},
+  /* samo za dnevnik / listu (nisu u planu) */
+  burek:{n:'Burek s mesom',k:290,p:10,c:24,f:17,cat:'lim',d:'meat'},
+  cevapi:{n:'Ćevapi',k:250,p:17,c:2,f:20,cat:'lim',d:'meat'},
+  pizza:{n:'Pizza (salama)',k:265,p:11,c:30,f:11,cat:'lim',d:'meat'},
+  doner:{n:'Döner / kebab',k:215,p:12,c:20,f:10,cat:'lim',d:'meat'},
+  fries:{n:'Pomfrit',k:290,p:3.4,c:36,f:15,cat:'lim'},
+  whitebread:{n:'Bijeli hljeb / somun',k:265,p:8.5,c:50,f:3,cat:'lim',x:['gluten']},
+  croissant:{n:'Kroasan',k:406,p:8,c:45,f:21,cat:'lim',x:['gluten']},
+  chips:{n:'Čips',k:540,p:6,c:50,f:34,cat:'lim'},
+  choco:{n:'Mliječna čokolada',k:540,p:7,c:57,f:31,cat:'lim'},
+  icecream:{n:'Sladoled',k:210,p:3.5,c:25,f:11,cat:'lim'},
+  cola:{n:'Kola / gazirani sok',k:42,p:0,c:10.6,f:0,cat:'pic'},
+  juice:{n:'Sok od narandže',k:45,p:0.7,c:10,f:0.2,cat:'pic'},
+  beer:{n:'Pivo',k:43,p:0.5,c:3.6,f:0,cat:'pic'},
+  wine:{n:'Vino',k:83,p:0.1,c:2.6,f:0,cat:'pic'},
+  latte:{n:'Latte (mlijeko 3,5%)',k:55,p:3,c:4.5,f:3,cat:'pic'},
+  zero:{n:'Kola Zero / Light',k:0.3,p:0,c:0,f:0,cat:'pic',top:1},
+  coffee:{n:'Crna kafa / čaj',k:2,p:0.1,c:0,f:0,cat:'pic',top:1},
+  popcorn:{n:'Kokice (bez ulja)',k:387,p:13,c:64,f:4.5,cat:'ost'},
+  darkch:{n:'Crna čokolada 85%',k:600,p:11,c:19,f:52,cat:'ost'},
+};
+const CAT = {mes:'Meso i riba',mlj:'Mliječno i jaja',zit:'Žitarice, hljeb, krompir',mah:'Mahunarke i tofu',pov:'Povrće',voc:'Voće',ora:'Orašasti i ulja',ost:'Ostalo',lim:'Ograniči',pic:'Pića'};
+
+/* ============ OBROCI ============
+   it: [namirnica, grama, fiksno?]  (fiksno = povrće koje se ne skalira) */
+const M = [
+ // doručak
+ {id:'b1',t:'b',n:'Zobena kaša sa skyrom i borovnicama',it:[['oats',50],['milk',150],['skyr',150],['blueb',100,1],['walnut',10]],p:'Skuhaj zob u mlijeku 3 min, umiješaj skyr kad se malo ohladi, preko borovnice i orasi. Cimet bez kalorija.'},
+ {id:'b2',t:'b',n:'Jaja na oko + integralni hljeb + povrće',it:[['egg',120],['bread',45],['tomato',150,1],['cucumber',100,1]],p:'Jaja na neljepljivoj tavi bez ulja (ili kap ulja sprejom). Povrće narezano sa strane.'},
+ {id:'b3',t:'b',n:'Skyr bowl s jagodama i chia',it:[['skyr',250],['straw',150,1],['oats',30],['chia',10]],p:'Sve u zdjelu, chia pusti 5 min da nabubri. Može i navečer pripremiti za jutro.'},
+ {id:'b4',t:'b',n:'Omlet od povrća s bjelanjcima',it:[['egg',120],['eggw',100],['spinach',100,1],['pepper',100,1],['bread',45]],p:'Umuti jaja i bjelanjke, povrće prodinstaj 2 min, prelij jajima i peci poklopljeno.'},
+ {id:'b5',t:'b',n:'Hljeb sa zrnatim sirom i paradajzom',it:[['bread',90],['cottage',150],['tomato',150,1],['cucumber',100,1]],p:'Namaži zrnati sir na kriške, preko paradajz, so, biber, origano.'},
+ {id:'b6',t:'b',n:'Proteinske palačinke od zobi',it:[['oats',40],['egg',60],['quark',150],['banana',60],['blueb',80,1]],p:'Izmiksaj zob, jaje, posni sir i pola banane. Peci male palačinke na suhoj tavi, preko borovnice.'},
+ {id:'b7',t:'b',n:'Sendvič s purećom šunkom i povrćem',it:[['bread',90],['ham',60],['cottage',50],['salad',50,1],['cucumber',100,1]],p:'Umjesto maslaca namaži zrnati sir, dodaj šunku, salatu i krastavac.'},
+ {id:'b8',t:'b',n:'Kefir + zob + jabuka',it:[['kefir',250],['oats',40],['apple',150],['almond',10]],p:'Naribaj jabuku u kefir, dodaj zob i sjeckane bademe. Brzo za posao.'},
+ // ručak
+ {id:'l1',t:'l',n:'Piletina, basmati riža i brokula',it:[['chicken',150],['rice',60],['broc',200,1],['oil',5]],p:'Piletinu začini (paprika, bijeli luk, so) i peci 5–6 min po strani. Brokulu kuhaj na pari 5 min.'},
+ {id:'l2',t:'l',n:'Losos s krompirom i mahunama',it:[['salmon',125],['potato',250],['beansg',200,1]],p:'Losos u rerni 180 °C 15 min s limunom. Krompir kuhaj u ljusci, mahune 7 min.'},
+ {id:'l3',t:'l',n:'Integralna tjestenina bolonjez od puretine',it:[['turkeym',125],['pasta',70],['passata',150,1],['onion',50,1],['zucc',100,1]],p:'Luk i mljevenu puretinu propirjaj, dodaj naribanu tikvicu i pasatu, kuhaj 10 min.'},
+ {id:'l4',t:'l',n:'Curry od crvene leće sa špinatom',it:[['lentil',70],['passata',150,1],['spinach',100,1],['onion',50,1],['rice',30],['oil',5]],p:'Luk na ulju, curry začin, leća + pasata + 300 ml vode, kuhaj 15 min, na kraju špinat.'},
+ {id:'l5',t:'l',n:'Salata s tunom i slanutkom',it:[['tuna',120],['chick',120],['salad',150,1],['tomato',150,1],['cucumber',100,1],['oil',10]],p:'Sve izmiješaj, preliv: maslinovo ulje, limun, so, biber. Odlično za ponijeti na posao.'},
+ {id:'l6',t:'l',n:'Juneći odrezak, krompir i salata',it:[['steak',150],['potato',250],['salad',150,1],['tomato',100,1],['oil',5]],p:'Odrezak na jako vrućoj tavi 2–3 min po strani. Krompir pečen u rerni bez ulja ili kuhan.'},
+ {id:'l7',t:'l',n:'Tofu wok s povrćem i rižom',it:[['tofu',200],['rice',60],['wok',250,1],['soy',15],['oil',5]],p:'Tofu narezan na kocke ispeci da bude hrskav, dodaj wok povrće i soja sos, 5 min.'},
+ {id:'l8',t:'l',n:'Pileći wrap s jogurt sosom',it:[['tortilla',60],['chicken',130],['yogurt',60],['salad',60,1],['tomato',100,1],['pepper',80,1]],p:'Piletinu ispeci u trakicama. Sos: jogurt, bijeli luk, so. Sve zamotaj u tortilju.'},
+ {id:'l9',t:'l',n:'Tjestenina s bolonjezom od leće',it:[['pasta',60],['lentil',40],['passata',200,1],['mush',100,1],['onion',50,1]],p:'Leću skuhaj u pasati s gljivama i lukom 15 min, prelij preko tjestenine. Bosiljak, origano.'},
+ {id:'l10',t:'l',n:'Piletina s batatom i salatom',it:[['chicken',150],['sweetp',220],['salad',150,1],['cucumber',100,1],['oil',5]],p:'Batat na kriške u rernu 200 °C 25 min, piletinu pecite uz njega zadnjih 15 min.'},
+ // večera
+ {id:'d1',t:'d',n:'Pečena bijela riba s povrćem',it:[['pollock',180],['zucc',200,1],['pepper',100,1],['potato',150],['oil',5]],p:'Ribu i povrće na papir za pečenje, limun, bijeli luk, 200 °C 18 min.'},
+ {id:'d2',t:'d',n:'Fritaja sa špinatom i fetom',it:[['egg',180],['feta',30],['spinach',150,1],['mush',100,1]],p:'Gljive i špinat kratko propirjaj, prelij umućenim jajima, mrvi fetu, peci poklopljeno 8 min.'},
+ {id:'d3',t:'d',n:'Velika salata s piletinom',it:[['chicken',130],['salad',200,1],['tomato',150,1],['cucumber',100,1],['feta',30],['oil',10]],p:'Grilana piletina na trakice preko salate, preliv od ulja i aceta balsamica.'},
+ {id:'d4',t:'d',n:'Zrnati sir, hljeb i svježe povrće',it:[['cottage',200],['bread',45],['pepper',150,1],['cucumber',150,1]],p:'Brza večera bez kuhanja. Začini sir vlascem, solju i biberom.'},
+ {id:'d5',t:'d',n:'Ćufte od puretine s pireom od karfiola',it:[['turkeym',150],['cauli',300,1],['milk',50],['egg',30]],p:'Puretina + pola jajeta + začini → ćufte, peci u rerni 20 min. Karfiol skuhaj i izmiksaj s mlijekom.'},
+ {id:'d6',t:'d',n:'Chili con carne',it:[['beefm',120],['beans',120],['passata',150,1],['pepper',100,1],['onion',50,1]],p:'Luk i meso propirjaj, dodaj papriku, grah, pasatu, kumin i čili. Kuhaj 15 min.'},
+ {id:'d7',t:'d',n:'Losos s brokulom i kvinojom',it:[['salmon',120],['quinoa',40],['broc',200,1]],p:'Kvinoju kuhaj 12 min, losos u tavi 4 min po strani, brokula na pari.'},
+ {id:'d8',t:'d',n:'Pečeni batat s grahom i jogurt sosom',it:[['sweetp',200],['beans',120],['yogurt',100],['pepper',100,1]],p:'Batat prepolovi i peci 30 min, napuni grahom i paprikom, preko jogurt s bijelim lukom.'},
+ {id:'d9',t:'d',n:'Tuna s mahunama i jajetom',it:[['tuna',120],['egg',60],['beansg',200,1],['tomato',100,1],['oil',5]],p:'Mahune kuhaj 7 min, jaje tvrdo 9 min. Sve u tanjir s tunom i paradajzom, malo ulja i limuna.'},
+ {id:'d10',t:'d',n:'Tofu sa povrćem iz rerne',it:[['tofu',200],['zucc',150,1],['pepper',150,1],['onion',50,1],['oil',5]],p:'Sve narezano, začini, 200 °C 25 min. Uz to može kašika jogurta.'},
+ // užine
+ {id:'s1',t:'s',n:'Jabuka i bademi',it:[['apple',150],['almond',15]],p:'Klasika za torbu.'},
+ {id:'s2',t:'s',n:'Skyr s borovnicama',it:[['skyr',150],['blueb',80]],p:'Ako ti je kiselo, malo zaslađivača ili cimeta.'},
+ {id:'s3',t:'s',n:'Mrkva i krastavac s humusom',it:[['carrot',120,1],['cucumber',100,1],['hummus',40]],p:'Narezano na štapiće.'},
+ {id:'s4',t:'s',n:'Dva kuhana jaja',it:[['egg',120],['tomato',100,1]],p:'Skuhaj više komada odjednom, drže 4–5 dana u frižideru.'},
+ {id:'s5',t:'s',n:'Posni sir s cimetom i jagodama',it:[['quark',200],['straw',100]],p:'Izmiješaj sa malo mlijeka da bude kremasto.'},
+ {id:'s6',t:'s',n:'Rižini krekeri s purećom šunkom',it:[['ricecake',24],['ham',50],['cucumber',80,1]],p:'Tri krekera, šunka i krastavac.'},
+ {id:'s7',t:'s',n:'Proteinski puding',it:[['pudding',200]],p:'Iz supermarketa (Ehrmann, Milbona…). Gotovo za 10 sekundi.'},
+ {id:'s8',t:'s',n:'Narandža i kefir',it:[['orange',180],['kefir',200]],p:'Osvježavajuće popodne.'},
+];
+const SLOTS = {
+  3:[['b','Doručak',.30],['l','Ručak',.40],['d','Večera',.30]],
+  4:[['b','Doručak',.25],['l','Ručak',.35],['s','Užina',.13],['d','Večera',.27]],
+  5:[['b','Doručak',.22],['s','Užina',.10],['l','Ručak',.33],['s','Užina',.10],['d','Večera',.25]],
+};
+const DN = ['Pon','Uto','Sri','Čet','Pet','Sub','Ned'];
+const DNL = ['Ponedjeljak','Utorak','Srijeda','Četvrtak','Petak','Subota','Nedjelja'];
+
+/* ============ STANJE ============ */
+const KEY = 'bashfit.v1';
+let S = load();
+function load(){ try{ const s = JSON.parse(localStorage.getItem(KEY)); if (s && typeof s==='object') return Object.assign(def(), s); }catch{} return def(); }
+function def(){ return {prof:null, plan:null, shop:{}, diary:{}, weights:[]}; }
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch{} }
+
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const r1 = v => Math.round(v*10)/10;
+const fmt = v => String(r1(v)).replace('.',',');
+const today = () => iso(new Date());
+function iso(d){ const z = new Date(d.getTime()-d.getTimezoneOffset()*60000); return z.toISOString().slice(0,10); }
+const dow = dStr => (new Date(dStr+'T12:00:00').getDay()+6)%7;
+const toast = m => { const t = $('#toast'); t.textContent = m; t.classList.add('on'); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('on'), 2300); };
+
+/* ============ NAVIGACIJA ============ */
+function go(t){
+  $$('.tab').forEach(x => x.classList.toggle('on', x.id==='t-'+t));
+  $$('nav.bot button').forEach(b => b.classList.toggle('on', b.dataset.go===t));
+  window.scrollTo({top:0});
+  if (t==='plan') renderPlan();
+  if (t==='danas') renderToday();
+  if (t==='napredak') renderProgress();
+  try{ history.replaceState(null,'','#'+t); }catch{}
+}
+document.addEventListener('click', e => { const b = e.target.closest('[data-go]'); if (b) go(b.dataset.go); });
+
+/* ============ PROFIL & KALKULACIJE ============ */
+function segVal(id){ const b = $('#'+id+' .on'); return b ? b.dataset.v : null; }
+$$('.seg').forEach(s => s.addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return;
+  s.querySelectorAll('button').forEach(x => x.classList.toggle('on', x===b)); s.dispatchEvent(new Event('change')); }));
+$('#sex').addEventListener('change', () => $('#hipW').classList.toggle('hide', segVal('sex')!=='f'));
+$('#excl').addEventListener('click', e => { const c = e.target.closest('.chip'); if (c) c.classList.toggle('on'); });
+
+function fillForm(p){
+  $$('#sex button').forEach(b => b.classList.toggle('on', b.dataset.v===p.sex));
+  $('#hipW').classList.toggle('hide', p.sex!=='f');
+  ['age','height','weight','goal','act','pace','diet','meals','waist','neck','hip'].forEach(k => { if (p[k]!=null && p[k]!=='') $('#'+k).value = p[k]; });
+  $$('#excl .chip').forEach(c => c.classList.toggle('on', (p.excl||[]).includes(c.dataset.v)));
+}
+function readForm(){
+  return { sex:segVal('sex'), age:+$('#age').value, height:+$('#height').value, weight:+$('#weight').value, goal:+$('#goal').value,
+    act:+$('#act').value, pace:+$('#pace').value, diet:$('#diet').value, meals:+$('#meals').value,
+    excl:$$('#excl .chip.on').map(c => c.dataset.v), waist:+$('#waist').value||'', neck:+$('#neck').value||'', hip:+$('#hip').value||'' };
+}
+
+function calc(p){
+  const h = p.height/100, bmi = p.weight/(h*h);
+  const bmr = 10*p.weight + 6.25*p.height - 5*p.age + (p.sex==='m' ? 5 : -161);
+  const tdee = bmr*p.act;
+  const floor = Math.max(p.sex==='m' ? 1500 : 1200, Math.round(bmr*0.95/10)*10);
+  const notes = [];
+  let target, pace = p.pace;
+  const minHealthy = 18.5*h*h, maxHealthy = 24.9*h*h;
+  if (bmi < 18.5){
+    target = tdee; pace = 0;
+    notes.push(['bad','BMI ti je ispod 18,5 — mršavljenje se <b>ne preporučuje</b>. Kalorije su postavljene na održavanje. Posavjetuj se s doktorom.']);
+  } else {
+    if (pace >= 1 && bmi < 30){ pace = 0.75; notes.push(['','Tempo od 1 kg sedmično je prebrz za tvoj BMI — smanjeno na 0,75 kg da ne gubiš mišiće.']); }
+    let def = pace*7700/7;
+    def = Math.min(def, tdee*0.30);
+    target = tdee - def;
+    if (target < floor){ target = floor; notes.push(['','Postavljen je siguran minimum od <b>'+floor+' kcal</b>. Za brži napredak dodaj šetnje / korake umjesto da jedeš manje.']); }
+    pace = Math.max(0,(tdee-target)*7/7700);
+  }
+  target = Math.round(target/10)*10;
+  const refW = Math.min(p.weight, 27*h*h);
+  const prot = Math.round(refW*1.8);
+  const fat = Math.round(target*0.27/9);
+  const carb = Math.max(50, Math.round((target - prot*4 - fat*9)/4));
+  const water = Math.min(4, Math.max(2, p.weight*0.035));
+  let weeks = null, date = null;
+  if (p.goal && p.goal < p.weight && pace > 0){ weeks = (p.weight-p.goal)/pace; date = new Date(Date.now()+weeks*7*864e5); }
+  if (p.goal && p.goal < minHealthy) notes.push(['bad','Ciljna težina daje BMI ispod 18,5. Zdravi minimum za tvoju visinu je oko <b>'+fmt(minHealthy)+' kg</b>.']);
+  if (p.goal && p.goal >= p.weight) notes.push(['','Ciljna težina nije manja od trenutne — plan je napravljen za održavanje/blagi deficit.']);
+  if (p.age < 18) notes.push(['bad','Za mlađe od 18 godina kalkulacije nisu pouzdane — dijetu dogovori s doktorom ili roditeljima.']);
+  if (bmi >= 18.5 && notes.length===0) notes.push(['ok','Odlično! Deficit je umjeren — skidaćeš mast, a da ne budeš stalno gladan.']);
+  return {bmi,bmr,tdee,target,pace,prot,fat,carb,water,weeks,date,minHealthy,maxHealthy,notes,def:tdee-target};
+}
+function bmiCat(b){ return b<18.5?['Pothranjenost','#4dc3ff']:b<25?['Normalna težina','#7cff01']:b<30?['Prekomjerna težina','#ffb84d']:b<35?['Gojaznost I','#ff8a3d']:b<40?['Gojaznost II','#ff5a5a']:['Gojaznost III','#ff5a5a']; }
+
+function renderResults(){
+  const p = S.prof; if (!p) return;
+  const R = calc(p); $('#results').classList.remove('hide');
+  const [cat,col] = bmiCat(R.bmi);
+  $('#bmiV').textContent = fmt(R.bmi); $('#bmiV').style.color = col;
+  $('#bmiCat').textContent = cat; $('#bmiCat').style.color = col;
+  $('#bmiTxt').textContent = 'kg/m²';
+  const pos = Math.min(100, Math.max(0, (R.bmi-15)/(40-15)*100));
+  // gauge segmenti: 15–18.5 (14%), 18.5–25 (26%), 25–30 (20%), 30–35 (20%), 35–40 (20%)
+  $('#bmiPin').style.left = pos+'%';
+  $('#idealW').innerHTML = 'Zdrava težina za '+p.height+' cm: <b class="g">'+fmt(R.minHealthy)+' – '+fmt(R.maxHealthy)+' kg</b>';
+  $('#kTarget').textContent = R.target;
+  $('#kBmr').textContent = Math.round(R.bmr);
+  $('#kTdee').textContent = Math.round(R.tdee);
+  $('#kDef').textContent = '−'+Math.round(R.def);
+  $('#kWater').textContent = fmt(R.water)+' L';
+  $('#kWeeks').textContent = R.weeks ? Math.ceil(R.weeks)+' sed.' : '–';
+  $('#kDate').textContent = R.date ? R.date.getDate()+'. '+['jan','feb','mar','apr','maj','jun','jul','aug','sep','okt','nov','dec'][R.date.getMonth()]+' '+String(R.date.getFullYear()).slice(2) : '–';
+  $('#mP').textContent = R.prot+' g'; $('#mC').textContent = R.carb+' g'; $('#mF').textContent = R.fat+' g';
+  const tot = R.prot*4 + R.carb*4 + R.fat*9;
+  $('#mPb').style.width = (R.prot*4/tot*100)+'%'; $('#mCb').style.width = (R.carb*4/tot*100)+'%'; $('#mFb').style.width = (R.fat*9/tot*100)+'%';
+  $('#notes').innerHTML = R.notes.map(([c,t]) => '<div class="note '+c+'">'+t+'</div>').join('');
+  renderBodyFat();
+}
+function renderBodyFat(){
+  const p = S.prof || readForm();
+  const w = +$('#waist').value, n = +$('#neck').value, hp = +$('#hip').value, h = p.height;
+  let bf = null;
+  if (h && w && n && w > n){
+    if (p.sex==='m') bf = 495/(1.0324 - 0.19077*Math.log10(w-n) + 0.15456*Math.log10(h)) - 450;
+    else if (hp) bf = 495/(1.29579 - 0.35004*Math.log10(w+hp-n) + 0.221*Math.log10(h)) - 450;
+  }
+  $('#bf').textContent = bf!=null && bf>2 && bf<70 ? fmt(bf)+'%' : '–';
+  $('#fm').textContent = bf!=null && bf>2 && bf<70 && p.weight ? fmt(p.weight*bf/100)+' kg' : '–';
+  if (h && w){ const r = w/h; $('#whtr').textContent = r.toFixed(2).replace('.',',');
+    $('#whtr').style.color = r<0.5 ? 'var(--g)' : r<0.6 ? 'var(--warn)' : 'var(--bad)'; }
+  else $('#whtr').textContent = '–';
+}
+['waist','neck','hip'].forEach(id => $('#'+id).addEventListener('input', () => { if (S.prof){ S.prof[id] = +$('#'+id).value||''; save(); } renderBodyFat(); }));
+
+$('#calc').addEventListener('click', () => {
+  const p = readForm();
+  if (!(p.age>=14 && p.age<=100)) return toast('Unesi godine');
+  if (!(p.height>=120 && p.height<=240)) return toast('Unesi visinu u cm');
+  if (!(p.weight>=35 && p.weight<=350)) return toast('Unesi težinu u kg');
+  const old = S.prof;
+  const planChanged = !old || old.diet!==p.diet || old.meals!==p.meals || String(old.excl)!==String(p.excl);
+  S.prof = p;
+  if (!S.weights.length || S.weights[S.weights.length-1].w !== p.weight) addWeight(today(), p.weight, true);
+  if (planChanged || !S.plan) genPlan();
+  save(); renderResults();
+  $('#results').scrollIntoView({behavior:'smooth',block:'start'});
+  toast('✓ Izračunato — plan ishrane je spreman');
+});
+
+/* ============ PLAN ============ */
+function allowed(t){
+  const p = S.prof, ex = p.excl||[];
+  const ok = m => m.it.every(([id]) => { const f = F[id];
+    if (p.diet==='veg' && f.d) return false;
+    if (p.diet==='pesc' && f.d==='meat') return false;
+    return !(f.x||[]).some(x => ex.includes(x)); });
+  let list = M.filter(m => m.t===t && ok(m));
+  if (!list.length) list = M.filter(m => m.t===t && m.it.every(([id]) => !(p.diet==='veg' && F[id].d) && !(p.diet==='pesc' && F[id].d==='meat')));
+  if (!list.length) list = M.filter(m => m.t===t);
+  return list;
+}
+function shuffle(a){ a = a.slice(); for (let i=a.length-1;i>0;i--){ const j = Math.random()*(i+1)|0; [a[i],a[j]] = [a[j],a[i]]; } return a; }
+function genPlan(){
+  const slots = SLOTS[S.prof.meals];
+  const pools = {}; ['b','l','d','s'].forEach(t => pools[t] = shuffle(allowed(t)));
+  const cnt = {b:0,l:0,d:0,s:0};
+  S.plan = {days:[], at:Date.now()};
+  for (let d=0; d<7; d++){
+    S.plan.days.push(slots.map(([t]) => { const pool = pools[t]; const m = pool[cnt[t]++ % pool.length]; return m.id; }));
+  }
+  S.shop = {};
+}
+function scaleMeal(m, kcal){
+  let fixedK = 0, varK = 0;
+  m.it.forEach(([id,g,fx]) => { if (id==='oil') fx = 1; const k = F[id].k*g/100; fx ? fixedK += k : varK += k; });
+  const fac = Math.min(2.2, Math.max(0.5, (kcal - fixedK)/(varK||1)));
+  const items = m.it.map(([id,g,fx]) => { if (id==='oil') fx = 1;
+    const f = F[id]; let gg = fx ? g : g*fac, label;
+    if (f.u){ const n = Math.max(1, Math.round(gg/f.u)); gg = n*f.u; label = fmt(n)+' '+f.un+' ('+Math.round(gg)+' g)'; }
+    else if (id==='oil'){ gg = Math.max(5, Math.round(gg/5)*5); label = gg+' ml'+(gg===5?' (1 kašičica)':gg===10?' (2 kašičice)':''); }
+    else { gg = Math.max(10, Math.round(gg/5)*5); label = gg+' g'; }
+    return {id, g:gg, label};
+  });
+  const tot = items.reduce((a,i) => { const f = F[i.id]; a.k += f.k*i.g/100; a.p += f.p*i.g/100; a.c += f.c*i.g/100; a.f += f.f*i.g/100; return a; }, {k:0,p:0,c:0,f:0});
+  return {items, tot};
+}
+function dayMeals(d){
+  const R = calc(S.prof), slots = SLOTS[S.prof.meals];
+  return S.plan.days[d].map((id,i) => { const m = M.find(x => x.id===id) || allowed(slots[i][0])[0];
+    return {m, slot:slots[i], ...scaleMeal(m, R.target*slots[i][2])}; });
+}
+let curDay = dow(today());
+function renderPlan(){
+  const has = !!(S.prof && S.plan);
+  $('#planEmpty').classList.toggle('hide', has); $('#planWrap').classList.toggle('hide', !has);
+  if (!has) return;
+  if (S.plan.days[0].length !== SLOTS[S.prof.meals].length){ genPlan(); save(); }
+  const td = dow(today());
+  $('#days').innerHTML = DN.map((n,i) => '<div class="day'+(i===curDay?' on':'')+(i===td?' td':'')+'" data-d="'+i+'">'+n+'<b>'+(i===td?'●':i+1)+'</b></div>').join('');
+  const ms = dayMeals(curDay), R = calc(S.prof);
+  const T = ms.reduce((a,x) => (a.k+=x.tot.k, a.p+=x.tot.p, a.c+=x.tot.c, a.f+=x.tot.f, a), {k:0,p:0,c:0,f:0});
+  $('#dayTot').innerHTML = '<span class="pill g"><b>'+Math.round(T.k)+'</b> / '+R.target+' kcal</span><span class="pill">P <b>'+Math.round(T.p)+'</b> g</span><span class="pill">UH <b>'+Math.round(T.c)+'</b> g</span><span class="pill">M <b>'+Math.round(T.f)+'</b> g</span>';
+  $('#mealsList').innerHTML = ms.map((x,i) => '<div class="meal"><div class="mh"><span class="slot">'+x.slot[1]+'</span><span class="kc">'+Math.round(x.tot.k)+' kcal</span></div>'+
+    '<h3>'+x.m.n+'</h3><ul class="items">'+x.items.map(it => '<li><span>'+F[it.id].n+'</span><span>'+it.label+'</span></li>').join('')+'</ul>'+
+    '<div class="prep">👨‍🍳 '+x.m.p+'</div>'+
+    '<div class="row" style="margin-top:8px"><span class="mm">P '+Math.round(x.tot.p)+' g · UH '+Math.round(x.tot.c)+' g · M '+Math.round(x.tot.f)+' g</span><span class="sp"></span><button class="btn sm" data-swap="'+i+'">↻ zamijeni</button></div></div>').join('');
+  renderShop();
+}
+$('#days').addEventListener('click', e => { const d = e.target.closest('.day'); if (d){ curDay = +d.dataset.d; renderPlan(); } });
+$('#mealsList').addEventListener('click', e => {
+  const b = e.target.closest('[data-swap]'); if (!b) return;
+  const i = +b.dataset.swap, t = SLOTS[S.prof.meals][i][0], pool = allowed(t), cur = S.plan.days[curDay][i];
+  if (pool.length < 2) return toast('Nema drugih opcija za tvoje filtere');
+  const idx = pool.findIndex(m => m.id===cur);
+  S.plan.days[curDay][i] = pool[(idx+1) % pool.length].id;
+  S.shop = {}; save(); renderPlan(); toast('↻ Obrok zamijenjen');
+});
+$('#newPlan').addEventListener('click', () => { genPlan(); save(); renderPlan(); toast('✓ Novi sedmični plan'); });
+$('#planView').addEventListener('change', () => { const v = segVal('planView'); $('#pvDay').classList.toggle('hide', v!=='day'); $('#pvShop').classList.toggle('hide', v!=='shop'); });
+
+function shopData(){
+  const agg = {};
+  for (let d=0; d<7; d++) dayMeals(d).forEach(x => x.items.forEach(it => agg[it.id] = (agg[it.id]||0) + it.g));
+  return agg;
+}
+function qty(id,g){
+  const f = F[id];
+  if (f.u) return Math.ceil(g/f.u)+' '+f.un;
+  if (id==='oil') return Math.round(g)+' ml';
+  return g>=1000 ? fmt(g/1000)+' kg' : Math.round(g)+' g';
+}
+function renderShop(){
+  const agg = shopData(), groups = {};
+  Object.keys(agg).forEach(id => (groups[F[id].cat] = groups[F[id].cat] || []).push(id));
+  $('#shopList').innerHTML = Object.keys(CAT).filter(c => groups[c]).map(c => '<h4>'+CAT[c]+'</h4>'+groups[c].sort((a,b) => F[a].n.localeCompare(F[b].n)).map(id =>
+    '<label><input type="checkbox" data-sh="'+id+'"'+(S.shop[id]?' checked':'')+'><span>'+F[id].n+'</span><em>'+qty(id,agg[id])+'</em></label>').join('')).join('');
+}
+$('#shopList').addEventListener('change', e => { const c = e.target.closest('[data-sh]'); if (c){ S.shop[c.dataset.sh] = c.checked; save(); } });
+$('#shopClr').addEventListener('click', () => { S.shop = {}; save(); renderShop(); });
+$('#shopCopy').addEventListener('click', async () => {
+  const agg = shopData();
+  const txt = '🛒 #Bash Fit — lista za 7 dana\n' + Object.keys(CAT).map(c => { const ids = Object.keys(agg).filter(id => F[id].cat===c); return ids.length ? '\n'+CAT[c]+':\n'+ids.map(id => '• '+F[id].n+' — '+qty(id,agg[id])).join('\n') : ''; }).join('');
+  try{ await navigator.clipboard.writeText(txt); toast('📋 Lista kopirana'); }catch{ toast('Kopiranje nije uspjelo'); }
+});
+
+/* ============ DANAS ============ */
+let curDate = today();
+function diary(d){ return S.diary[d] || (S.diary[d] = {eaten:{}, extra:[], water:0}); }
+function renderToday(){
+  const d = diary(curDate), t = today();
+  $('#dLabel').textContent = curDate===t ? 'Danas · '+DNL[dow(curDate)] : DNL[dow(curDate)]+' · '+(d2 => d2.getDate()+'.'+(d2.getMonth()+1)+'.')(new Date(curDate+'T12:00:00'));
+  $('#dNext').disabled = curDate >= t;
+  let E = {k:0,p:0,c:0,f:0};
+  if (S.prof && S.plan){
+    const ms = dayMeals(dow(curDate));
+    $('#todayMeals').innerHTML = ms.map((x,i) => { const on = !!d.eaten[i]; if (on){ E.k+=x.tot.k; E.p+=x.tot.p; E.c+=x.tot.c; E.f+=x.tot.f; }
+      return '<label class="eat"><input type="checkbox" data-eat="'+i+'"'+(on?' checked':'')+'><div class="nm">'+x.m.n+'<small>'+x.slot[1]+'</small></div><span class="kk">'+Math.round(x.tot.k)+' kcal</span></label>'; }).join('');
+  } else $('#todayMeals').innerHTML = '<p class="muted">Prvo unesi podatke u tabu “Ja”.</p>';
+  $('#extraList').innerHTML = d.extra.map((x,i) => { const f = F[x.id]; if (!f) return ''; const k = f.k*x.g/100;
+    E.k+=k; E.p+=f.p*x.g/100; E.c+=f.c*x.g/100; E.f+=f.f*x.g/100;
+    return '<div class="eat"><div class="nm">'+f.n+'<small>'+x.g+' g</small></div><span class="kk">'+Math.round(k)+' kcal</span><button class="xb" data-rm="'+i+'" aria-label="obriši">×</button></div>'; }).join('');
+  const R = S.prof ? calc(S.prof) : {target:2000,prot:120,carb:200,fat:60,water:2.5};
+  const left = R.target - E.k, frac = Math.min(1, E.k/R.target);
+  $('#rLeft').textContent = Math.abs(Math.round(left)); $('#rLbl').textContent = left>=0 ? 'kcal ostalo' : 'kcal preko';
+  $('#rLeft').style.color = left>=0 ? '' : 'var(--bad)';
+  $('#ringC').style.strokeDashoffset = 326.7*(1-frac); $('#ringC').style.stroke = left>=0 ? '#7cff01' : '#ff5a5a';
+  $('#rEat').textContent = Math.round(E.k)+' / '+R.target+' kcal';
+  [['P',E.p,R.prot],['C',E.c,R.carb],['F',E.f,R.fat]].forEach(([k,v,t]) => { $('#r'+k).textContent = Math.round(v)+' / '+t+' g'; $('#r'+k+'b').style.width = Math.min(100,v/t*100)+'%'; });
+  const gl = Math.ceil(R.water*1000/250);
+  $('#water').innerHTML = Array.from({length:gl}, (_,i) => '<div class="glass'+(i<d.water?' on':'')+'" data-w="'+i+'"></div>').join('');
+  $('#wTxt').textContent = fmt(d.water*0.25)+' / '+fmt(R.water)+' L';
+}
+$('#todayMeals').addEventListener('change', e => { const c = e.target.closest('[data-eat]'); if (!c) return; diary(curDate).eaten[c.dataset.eat] = c.checked; save(); renderToday(); });
+$('#extraList').addEventListener('click', e => { const b = e.target.closest('[data-rm]'); if (!b) return; diary(curDate).extra.splice(+b.dataset.rm,1); save(); renderToday(); });
+$('#water').addEventListener('click', e => { const g = e.target.closest('.glass'); if (!g) return; const d = diary(curDate), i = +g.dataset.w; d.water = d.water===i+1 ? i : i+1; save(); renderToday(); });
+$('#dPrev').addEventListener('click', () => { const x = new Date(curDate+'T12:00:00'); x.setDate(x.getDate()-1); curDate = iso(x); renderToday(); });
+$('#dNext').addEventListener('click', () => { if (curDate>=today()) return; const x = new Date(curDate+'T12:00:00'); x.setDate(x.getDate()+1); curDate = iso(x); renderToday(); });
+
+const norm = s => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/đ/g,'dj');
+let selFood = null, resIdx = [];
+function searchFood(q){
+  q = norm(q.trim());
+  if (!q){ $('#fRes').classList.remove('on'); return; }
+  resIdx = Object.keys(F).filter(id => norm(F[id].n).includes(q)).slice(0,12);
+  $('#fRes').innerHTML = resIdx.length ? resIdx.map(id => '<div data-f="'+id+'"><span>'+F[id].n+'</span><span>'+Math.round(F[id].k)+' kcal/100g</span></div>').join('') : '<div><span class="muted">Nema rezultata</span></div>';
+  $('#fRes').classList.add('on');
+}
+$('#fSearch').addEventListener('input', e => { selFood = null; $('#fSel').textContent = ''; searchFood(e.target.value); });
+$('#fRes').addEventListener('click', e => { const r = e.target.closest('[data-f]'); if (!r) return; pickFood(r.dataset.f); });
+function pickFood(id){ selFood = id; const f = F[id]; $('#fSearch').value = f.n; $('#fRes').classList.remove('on');
+  if (f.u) $('#fGram').value = f.u; else if (f.cat==='pic') $('#fGram').value = id==='beer'?500:330;
+  $('#fSel').innerHTML = '<b class="g">'+f.n+'</b>: '+f.k+' kcal · P '+f.p+' · UH '+f.c+' · M '+f.f+' (na 100 g)'+(f.u?' · 1 '+f.un+' ≈ '+f.u+' g':''); }
+$('#fSearch').addEventListener('keydown', e => { if (e.key==='Enter' && resIdx[0] && !selFood){ e.preventDefault(); pickFood(resIdx[0]); } });
+$('#fAdd').addEventListener('click', () => {
+  const g = +$('#fGram').value;
+  if (!selFood) return toast('Izaberi namirnicu iz liste');
+  if (!(g>0 && g<5000)) return toast('Unesi količinu');
+  diary(curDate).extra.push({id:selFood, g:Math.round(g)}); save();
+  toast('+ '+Math.round(F[selFood].k*g/100)+' kcal'); selFood = null; $('#fSearch').value = ''; $('#fSel').textContent = ''; renderToday();
+});
+$('#qWAdd').addEventListener('click', () => { const v = +$('#qW').value; if (!(v>=30 && v<=350)) return toast('Unesi težinu u kg'); addWeight(curDate, v); $('#qW').value = ''; toast('✓ Spremljeno: '+fmt(v)+' kg'); });
+
+/* ============ NAPREDAK ============ */
+function addWeight(date, w, silent){
+  w = r1(w); S.weights = S.weights.filter(x => x.d!==date); S.weights.push({d:date, w}); S.weights.sort((a,b) => a.d.localeCompare(b.d));
+  const last = S.weights[S.weights.length-1];
+  if (S.prof && last.d===date){ S.prof.weight = w; $('#weight').value = w; }
+  save(); if (!silent){ renderResults(); renderProgress(); }
+}
+$('#wDate').value = today();
+$('#wAdd').addEventListener('click', () => { const v = +$('#wVal').value, d = $('#wDate').value || today();
+  if (!(v>=30 && v<=350)) return toast('Unesi težinu u kg'); addWeight(d, v); $('#wVal').value = ''; toast('✓ '+fmt(v)+' kg'); $('#wDate').value = today(); });
+$('#wList').addEventListener('click', e => { const b = e.target.closest('[data-wd]'); if (!b) return; S.weights = S.weights.filter(x => x.d!==b.dataset.wd); save(); renderProgress(); });
+
+function renderProgress(){
+  const W = S.weights, goal = S.prof && S.prof.goal;
+  if (W.length){
+    const first = W[0], last = W[W.length-1], lost = first.w - last.w;
+    $('#sLost').textContent = (lost>=0?'−':'+')+fmt(Math.abs(lost))+' kg'; $('#sLost').style.color = lost>=0 ? 'var(--g)' : 'var(--warn)';
+    $('#sLeft').textContent = goal ? fmt(Math.max(0,last.w-goal))+' kg' : '–';
+    const days = (new Date(last.d) - new Date(first.d))/864e5;
+    $('#sRate').textContent = days>=6 ? (lost>=0?'−':'+')+fmt(Math.abs(lost/days*7))+' kg' : '–';
+    $('#trendTxt').textContent = W.length+' unosa';
+    $('#wList').innerHTML = W.slice().reverse().map((x,i,a) => { const nx = a[i+1]; const df = nx ? x.w - nx.w : 0;
+      return '<div class="wl"><span>'+(d2 => DN[(d2.getDay()+6)%7]+' '+d2.getDate()+'.'+(d2.getMonth()+1)+'.'+String(d2.getFullYear()).slice(2))(new Date(x.d+'T12:00:00'))+'</span><span><b>'+fmt(x.w)+' kg</b> '+(nx?'<em class="'+(df<=0?'g':'warn')+'">'+(df<=0?'▼':'▲')+fmt(Math.abs(df))+'</em>':'')+' <button class="xb" data-wd="'+x.d+'">×</button></span></div>'; }).join('');
+  } else { ['sLost','sLeft','sRate'].forEach(id => $('#'+id).textContent = '–'); $('#wList').innerHTML = '<p class="muted">Još nema unosa.</p>'; $('#trendTxt').textContent = ''; }
+  drawChart();
+}
+function drawChart(){
+  const cv = $('#chart'), dpr = window.devicePixelRatio||1, w = cv.clientWidth, h = cv.clientHeight;
+  if (!w) return;
+  cv.width = w*dpr; cv.height = h*dpr; const c = cv.getContext('2d'); c.scale(dpr,dpr); c.clearRect(0,0,w,h);
+  const W = S.weights, goal = S.prof && S.prof.goal;
+  c.font = '11px JetBrains Mono, monospace';
+  if (!W.length){ c.fillStyle = '#555'; c.textAlign = 'center'; c.fillText('Unesi prvu težinu da vidiš graf', w/2, h/2); return; }
+  const t0 = new Date(W[0].d).getTime(), t1 = Math.max(new Date(W[W.length-1].d).getTime(), t0+6*864e5);
+  let lo = Math.min(...W.map(x => x.w)), hi = Math.max(...W.map(x => x.w));
+  if (goal && goal < lo && lo-goal < 25) lo = goal;
+  lo = Math.floor(lo-1); hi = Math.ceil(hi+1);
+  const L = 38, Rr = 10, T = 12, B = 24;
+  const X = t => L + (t-t0)/(t1-t0)*(w-L-Rr), Y = v => T + (hi-v)/(hi-lo)*(h-T-B);
+  c.strokeStyle = '#161616'; c.fillStyle = '#555'; c.textAlign = 'right'; c.lineWidth = 1;
+  const step = Math.max(1, Math.ceil((hi-lo)/5));
+  for (let v=lo; v<=hi; v+=step){ c.beginPath(); c.moveTo(L,Y(v)); c.lineTo(w-Rr,Y(v)); c.stroke(); c.fillText(v, L-6, Y(v)+4); }
+  c.textAlign = 'center';
+  [W[0], W[W.length-1]].forEach((x,i) => { if (i && W.length<2) return; const d = new Date(x.d+'T12:00:00'); c.fillText(d.getDate()+'.'+(d.getMonth()+1)+'.', Math.min(w-24,Math.max(L+14,X(new Date(x.d).getTime()))), h-6); });
+  if (goal && goal>=lo && goal<=hi){ c.strokeStyle = '#ffb84d'; c.setLineDash([5,5]); c.beginPath(); c.moveTo(L,Y(goal)); c.lineTo(w-Rr,Y(goal)); c.stroke(); c.setLineDash([]);
+    c.fillStyle = '#ffb84d'; c.textAlign = 'left'; c.fillText('cilj '+fmt(goal), L+4, Y(goal)-5); }
+  // 7-dnevni prosjek
+  if (W.length > 2){
+    c.strokeStyle = 'rgba(57,255,136,.45)'; c.lineWidth = 6; c.lineJoin = 'round'; c.beginPath();
+    W.forEach((x,i) => { const tx = new Date(x.d).getTime(); const win = W.filter(y => { const ty = new Date(y.d).getTime(); return ty<=tx && ty>tx-7*864e5; });
+      const avg = win.reduce((a,y) => a+y.w, 0)/win.length; i ? c.lineTo(X(tx),Y(avg)) : c.moveTo(X(tx),Y(avg)); });
+    c.stroke();
+  }
+  c.strokeStyle = '#7cff01'; c.lineWidth = 2; c.shadowColor = '#7cff01'; c.shadowBlur = 8; c.beginPath();
+  W.forEach((x,i) => { const px = X(new Date(x.d).getTime()), py = Y(x.w); i ? c.lineTo(px,py) : c.moveTo(px,py); }); c.stroke(); c.shadowBlur = 0;
+  c.fillStyle = '#7cff01'; W.forEach(x => { c.beginPath(); c.arc(X(new Date(x.d).getTime()), Y(x.w), 3, 0, 7); c.fill(); });
+}
+window.addEventListener('resize', () => { if ($('#t-napredak').classList.contains('on')) drawChart(); });
+
+/* ============ NAMIRNICE ============ */
+let nCat = 'top';
+const NCATS = [['top','⭐ top'],['all','sve'],['mes','meso/riba'],['mlj','mliječno'],['pov','povrće'],['voc','voće'],['zit','žitarice'],['mah','mahunarke'],['ora','orašasti'],['lim','ograniči'],['pic','pića']];
+$('#nCat').innerHTML = NCATS.map(([v,n]) => '<span class="chip'+(v===nCat?' on':'')+'" data-c="'+v+'">'+n+'</span>').join('');
+$('#nCat').addEventListener('click', e => { const c = e.target.closest('.chip'); if (!c) return; nCat = c.dataset.c; $$('#nCat .chip').forEach(x => x.classList.toggle('on', x===c)); renderFoods(); });
+$('#nSearch').addEventListener('input', renderFoods);
+function dens(f, id){
+  if (f.cat==='lim' || id==='cola' || id==='juice' || id==='beer' || id==='wine' || id==='oil') return '#ff5a5a';
+  if (f.k <= 100 || (f.p/f.k*400 >= 40 && f.k <= 160)) return '#7cff01';
+  if (f.k <= 400 && f.cat!=='ora') return '#ffb84d';
+  return '#ff5a5a';
+}
+function renderFoods(){
+  const q = norm($('#nSearch').value.trim());
+  const ids = Object.keys(F).filter(id => { const f = F[id];
+    if (q) return norm(f.n).includes(q);
+    return nCat==='all' || (nCat==='top' ? f.top : f.cat===nCat); }).sort((a,b) => F[a].k/Math.max(1,F[a].p) - F[b].k/Math.max(1,F[b].p) || 0);
+  if (nCat!=='top' || q) ids.sort((a,b) => F[a].n.localeCompare(F[b].n));
+  $('#nList').innerHTML = ids.map(id => { const f = F[id];
+    return '<div class="food"><span class="dot" style="background:'+dens(f,id)+'"></span><div class="n">'+f.n+'<small>'+CAT[f.cat]+(f.u?' · 1 '+f.un+' ≈ '+f.u+' g':'')+'</small></div><div class="v"><b>'+Math.round(f.k)+'</b> kcal<small>P '+f.p+' · UH '+f.c+' · M '+f.f+'</small></div></div>'; }).join('') || '<p class="muted" style="margin-top:10px">Nema rezultata.</p>';
+}
+const SW = [
+  ['Bijeli hljeb / somun','Integralni ili raženi hljeb','više vlakana, duže sit'],
+  ['Pavlaka / majoneza','Skyr ili jogurt sa bijelim lukom','−150 kcal po porciji'],
+  ['Kola, sok','Kola Zero, voda s limunom','−200 kcal po 0,5 L'],
+  ['Pivo 0,5 L','Bezalkoholno ili mineralna','−100 do −200 kcal'],
+  ['Burek','Integralni wrap s piletinom','pola kalorija, 3× više proteina'],
+  ['Mliječna čokolada','2 kocke crne 85% ili proteinski puding','slatko, a manje kalorija'],
+  ['Čips','Kokice bez ulja ili rižini krekeri','isti “crunch”, pola kcal'],
+  ['Pržena piletina / pohano','Piletina iz rerne ili air fryera','−200 kcal'],
+  ['Ulje iz flaše “od oka”','Ulje u spreju / 1 kašičica','−100+ kcal po kuhanju'],
+  ['Voćni jogurt','Skyr + svježe voće','manje šećera, duplo proteina'],
+  ['Latte s punim mlijekom','Crna kafa ili s 1,5% mlijekom','−100 kcal'],
+  ['Riža kao glavno jelo','Pola riže + pola brokule/karfiola','isti tanjir, −150 kcal'],
+];
+$('#swaps').innerHTML = SW.map(([a,b,c]) => '<div class="swap"><div style="flex:1"><div class="a">'+a+'</div><div><span class="ar">→</span> <b>'+b+'</b></div><div class="tiny">'+c+'</div></div></div>').join('');
+
+/* ============ IZVOZ / UVOZ ============ */
+$('#exp').addEventListener('click', () => { const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(S,null,1)],{type:'application/json'})); a.download = 'bashfit-'+today()+'.json'; a.click(); });
+$('#imp').addEventListener('change', e => { const f = e.target.files[0]; if (!f) return; const r = new FileReader();
+  r.onload = () => { try{ const d = JSON.parse(r.result); if (!d || typeof d!=='object' || !('weights' in d)) throw 0; S = Object.assign(def(), d); save(); boot(); toast('✓ Podaci uvezeni'); }catch{ toast('Neispravan fajl'); } };
+  r.readAsText(f); });
+$('#reset').addEventListener('click', () => { if (!confirm('Obrisati sve podatke iz #Bash Fit?')) return; localStorage.removeItem(KEY); S = def(); location.reload(); });
+
+/* ============ START ============ */
+function boot(){
+  if (S.prof){ fillForm(S.prof); renderResults(); if (!S.plan) genPlan(); }
+  renderFoods();
+  const h = location.hash.slice(1);
+  if (['ja','plan','danas','napredak','hrana'].includes(h)) go(h);
+  else if (S.prof) go('danas');
+}
+boot();
+})();
+</script>
+</body>
+</html>
