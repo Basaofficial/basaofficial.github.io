@@ -466,6 +466,13 @@ window.addEventListener('message', async e => {
   if (d.net !== undefined) myNet = d.net;
   if (d.cmd === 'join') {
     myName = d.name || myName; W('name', myName);
+    if (d.ecPriv && d.ecPub && myPub !== d.ecPub) {
+      // isti ključ kao usluga u aplikaciji → privatne poruke stižu i kad je aplikacija zatvorena
+      try {
+        const pk = await crypto.subtle.importKey('pkcs8', unb64(d.ecPriv), {name:'ECDH', namedCurve:'P-256'}, false, ['deriveKey']);
+        ecdh = { privateKey: pk, pub: d.ecPub }; myPub = d.ecPub; for (const k in dmKeys) delete dmKeys[k];
+      } catch (err) {}
+    }
     const nr = d.room || 'javna', np = d.pass || '';
     if (nr !== room || np !== pass || !client) { if (client && client.connected) presence(false); room = nr; pass = np; await connect(); }
   } else if (d.cmd === 'send') {
