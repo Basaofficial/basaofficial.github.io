@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>bashlab — basaofficial dev</title>
 <meta name="description" content="bashlab — portfolio od basaofficial: web aplikacije, igre i Android APK projekti.">
-<meta name="theme-color" content="#050505">
+<meta name="theme-color" content="#04070a">
 <meta property="og:title" content="bashlab — basaofficial dev">
 <meta property="og:description" content="Web aplikacije, igre i Android APK projekti.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23050505'/%3E%3Ctext x='50%25' y='58%25' text-anchor='middle' dominant-baseline='middle' font-family='monospace' font-weight='bold' font-size='30' fill='%237cff01'%3E%3E_%3C/text%3E%3C/svg%3E">
@@ -16,7 +16,7 @@
 :root{
   --bg:#050505; --bg2:#0b0b0b; --line:#1c1c1c; --line2:#2a2a2a;
   --g:#7cff01; --g2:#39ff88; --gdim:rgba(124,255,1,.12);
-  --t:#e8e8e8; --t2:#8a8a8a; --t3:#555;
+  --t:#eef2f0; --t2:#9aa3a8; --t3:#76818a;
   --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
   --hand:"Kaushan Script",cursive;
 }
@@ -163,9 +163,69 @@ footer b{color:var(--g)}
   *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition:none!important}
   .rv{opacity:1;transform:none}
 }
+
+/* ================= GLASSMORPHISM ================= */
+:root{ --glass:rgba(255,255,255,.055); --glass2:rgba(255,255,255,.09); --gb:rgba(255,255,255,.13); --gb2:rgba(255,255,255,.22);
+  --blur:blur(20px) saturate(170%); --sh:0 20px 50px -20px rgba(0,0,0,.75), inset 0 1px 0 rgba(255,255,255,.12); }
+body{background:#04070a}
+.scan{display:none}
+.vignette{background:radial-gradient(ellipse at 50% 35%,transparent 0%,rgba(4,7,10,.15) 70%,rgba(4,7,10,.7) 100%)}
+/* svjetla iza stakla */
+.blobs{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;filter:blur(60px);opacity:1}
+.blobs i{position:absolute;border-radius:50%;animation:blob 22s ease-in-out infinite alternate}
+.blobs i:nth-child(1){width:46vmax;height:46vmax;left:-12vmax;top:-10vmax;background:radial-gradient(circle,rgba(124,255,1,.5),transparent 62%)}
+.blobs i:nth-child(2){width:40vmax;height:40vmax;right:-14vmax;top:22vh;background:radial-gradient(circle,rgba(0,220,200,.6),transparent 62%);animation-duration:27s}
+.blobs i:nth-child(3){width:38vmax;height:38vmax;left:18vw;bottom:-18vmax;background:radial-gradient(circle,rgba(150,90,255,.6),transparent 62%);animation-duration:31s}
+.blobs i:nth-child(4){width:26vmax;height:26vmax;right:20vw;top:-8vmax;background:radial-gradient(circle,rgba(57,255,136,.35),transparent 65%);animation-duration:19s}
+.blobs i:nth-child(5){width:30vmax;height:30vmax;left:-8vmax;top:55vh;background:radial-gradient(circle,rgba(150,90,255,.45),transparent 62%);animation-duration:24s}
+@keyframes blob{0%{transform:translate(0,0) scale(1)}50%{transform:translate(6vw,8vh) scale(1.15)}100%{transform:translate(-5vw,-4vh) scale(.92)}}
+#fx{opacity:.55}
+
+/* staklo */
+.glass,.card,.panel,.contact,.arch,.btn,.tag,.filters button,#toast,header nav{
+  background:var(--glass);border:1px solid var(--gb);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);box-shadow:var(--sh)}
+
+header{top:12px;left:50%;right:auto;transform:translateX(-50%);width:min(1100px,calc(100% - 24px));padding:10px 12px 10px 18px;border-radius:18px;
+  background:rgba(10,14,18,.45);border:1px solid var(--gb);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);box-shadow:var(--sh)}
+header nav{padding:3px;border-radius:12px;background:rgba(255,255,255,.04);box-shadow:none}
+nav a{border-radius:9px}
+nav a:hover{background:rgba(124,255,1,.14);color:var(--g)}
+
+.tag{background:rgba(124,255,1,.08);border-color:rgba(124,255,1,.35)}
+.btn{background:var(--glass2);border-color:var(--gb);color:var(--t)}
+.btn:hover{background:rgba(255,255,255,.14);border-color:rgba(124,255,1,.55);box-shadow:0 12px 34px -12px rgba(124,255,1,.5),inset 0 1px 0 rgba(255,255,255,.18)}
+.btn.pri{background:linear-gradient(135deg,rgba(124,255,1,.95),rgba(57,255,136,.85));color:#031000;border-color:rgba(255,255,255,.35);
+  box-shadow:0 12px 34px -12px rgba(124,255,1,.75),inset 0 1px 0 rgba(255,255,255,.5)}
+.btn.pri:hover{background:linear-gradient(135deg,#a6ff4d,#5dffa0)}
+.filters button{background:var(--glass);color:var(--t2);box-shadow:none}
+.filters button.on,.filters button:hover{background:rgba(124,255,1,.85);color:#031000;border-color:rgba(255,255,255,.3)}
+
+.card{border-radius:22px;background:linear-gradient(150deg,rgba(255,255,255,.09),rgba(255,255,255,.025))}
+.card::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:linear-gradient(120deg,rgba(255,255,255,.14),transparent 35%);opacity:.6}
+.card::before{background:radial-gradient(380px circle at var(--mx,50%) var(--my,50%),rgba(124,255,1,.18),transparent 45%)}
+.card:hover{border-color:var(--gb2);box-shadow:0 26px 60px -24px rgba(124,255,1,.35),inset 0 1px 0 rgba(255,255,255,.2)}
+.ic{background:rgba(255,255,255,.07);border-color:var(--gb);box-shadow:inset 0 1px 0 rgba(255,255,255,.15),0 6px 18px -8px rgba(124,255,1,.5)}
+.chip{background:rgba(255,255,255,.05);border-color:var(--gb)}
+.card p{color:#a9b0b6}
+
+.panel{border-radius:22px;background:linear-gradient(150deg,rgba(255,255,255,.08),rgba(255,255,255,.02))}
+.panel .bar{border-bottom-color:var(--gb);background:rgba(255,255,255,.03)}
+.panel .bar i{background:rgba(255,255,255,.18)}
+.panel pre{color:#a9b0b6}
+.stat{background:rgba(255,255,255,.05);border:1px solid var(--gb);box-shadow:inset 0 1px 0 rgba(255,255,255,.1)}
+.contact{border-radius:28px;background:radial-gradient(ellipse at 50% 0%,rgba(124,255,1,.16),transparent 60%),linear-gradient(150deg,rgba(255,255,255,.09),rgba(255,255,255,.02))}
+.ig{box-shadow:0 12px 34px -12px rgba(124,255,1,.75),inset 0 1px 0 rgba(255,255,255,.5)!important}
+#toast{background:rgba(12,18,14,.6);border-color:rgba(124,255,1,.45)}
+.sh .ln{background:linear-gradient(90deg,var(--gb2),transparent)}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  .card,.panel,.contact,header{background:rgba(14,18,22,.92)}
+}
+@media(max-width:560px){header{top:8px;width:calc(100% - 16px)} .blobs{filter:blur(55px)}}
 </style>
 </head>
 <body>
+<div class="blobs" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
 <canvas id="fx" aria-hidden="true"></canvas>
 <div class="glow" id="glow"></div>
 <div class="vignette"></div>
