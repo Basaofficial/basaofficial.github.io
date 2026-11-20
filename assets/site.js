@@ -19,6 +19,11 @@ const UI = {
     news:'Šta je novo', newsNone:'Changelog trenutno nije dostupan.', size:'Veličina', version:'Verzija', platform:'Radi na',
     infoH:'Informacije', dev:'Developer', cat:'Kategorija', compat:'Kompatibilnost', price:'Cijena', free:'Besplatno', source:'Izvorni kod', shots:'Pregled',
     cats:{ games:'Igre', health:'Zdravlje i fitness', social:'Komunikacija', prod:'Produktivnost', tools:'Alati' },
+    fH:'Pitaj me za aplikaciju', fP:'Napiši šta ti treba – nova aplikacija, igra, web stranica ili tvoja verzija neke od mojih. Javim ti se da li to mogu napraviti.',
+    fName:'Ime', fContact:'Mail ili Instagram', fContactPh:'tvoj@mail.com ili @instagram', fType:'Šta trebaš?',
+    fTypes:['Android APK','Web aplikacija','Igra','Web stranica','Nešto drugo'], fAbout:'Odnosi se na', fNew:'Nova ideja',
+    fMsg:'Opiši ideju', fMsgPh:'Npr. trebam aplikaciju za… Treba da ima… Na kojem telefonu…', fSend:'Pošalji upit', fSending:'Šaljem…',
+    fOk:'✓ Upit je poslan! Javim ti se uskoro.', fErr:'Nije uspjelo slanje. Pošalji mi direktno na mail:', fReq:'Upiši kontakt i opis ideje.', fAsk:'Želim sličnu',
     contactH:'Hajmo <span>raditi</span> zajedno', contactP:'Imaš ideju za aplikaciju, igru ili alat? Piši mi na Instagram ili mail.',
     mailCopied:'✓ Mail kopiran: ', palhint:'↑↓ biraj · Enter otvori · Esc zatvori', palPh:'upiši projekat ili komandu…',
     cLang:'Jezik', cTop:'Na početak', cInst:'Instaliraj bashlab kao aplikaciju', cMail:'Kopiraj mail', cCoffee:'Buy me a coffee',
@@ -34,6 +39,11 @@ const UI = {
     news:'Neuigkeiten', newsNone:'Changelog gerade nicht verfügbar.', size:'Größe', version:'Version', platform:'Läuft auf',
     infoH:'Informationen', dev:'Entwickler', cat:'Kategorie', compat:'Kompatibilität', price:'Preis', free:'Gratis', source:'Quellcode', shots:'Vorschau',
     cats:{ games:'Spiele', health:'Gesundheit & Fitness', social:'Kommunikation', prod:'Produktivität', tools:'Dienstprogramme' },
+    fH:'Frag mich nach einer App', fP:'Schreib, was du brauchst – eine neue App, ein Spiel, eine Website oder deine Version einer meiner Apps. Ich melde mich, ob ich das bauen kann.',
+    fName:'Name', fContact:'Mail oder Instagram', fContactPh:'deine@mail.de oder @instagram', fType:'Was brauchst du?',
+    fTypes:['Android-APK','Web-App','Spiel','Website','Etwas anderes'], fAbout:'Bezieht sich auf', fNew:'Neue Idee',
+    fMsg:'Beschreib deine Idee', fMsgPh:'Z. B. ich brauche eine App für… Sie soll… Auf welchem Handy…', fSend:'Anfrage senden', fSending:'Sende…',
+    fOk:'✓ Anfrage gesendet! Ich melde mich bald.', fErr:'Senden fehlgeschlagen. Schreib mir direkt per Mail:', fReq:'Bitte Kontakt und Beschreibung angeben.', fAsk:'Will ich auch',
     contactH:'Lass uns <span>zusammen</span> arbeiten', contactP:'Du hast eine Idee für eine App, ein Spiel oder ein Tool? Schreib mir auf Instagram oder per Mail.',
     mailCopied:'✓ Mail kopiert: ', palhint:'↑↓ wählen · Enter öffnen · Esc schließen', palPh:'Projekt oder Befehl eingeben…',
     cLang:'Sprache', cTop:'Nach oben', cInst:'bashlab als App installieren', cMail:'Mail kopieren', cCoffee:'Buy me a coffee',
@@ -49,6 +59,11 @@ const UI = {
     news:"What's new", newsNone:'Changelog not available right now.', size:'Size', version:'Version', platform:'Runs on',
     infoH:'Information', dev:'Developer', cat:'Category', compat:'Compatibility', price:'Price', free:'Free', source:'Source code', shots:'Preview',
     cats:{ games:'Games', health:'Health & Fitness', social:'Communication', prod:'Productivity', tools:'Utilities' },
+    fH:'Ask me for an app', fP:'Tell me what you need – a new app, a game, a website or your own version of one of mine. I\'ll get back to you on whether I can build it.',
+    fName:'Name', fContact:'Email or Instagram', fContactPh:'you@mail.com or @instagram', fType:'What do you need?',
+    fTypes:['Android APK','Web app','Game','Website','Something else'], fAbout:'About', fNew:'New idea',
+    fMsg:'Describe your idea', fMsgPh:'E.g. I need an app for… It should… Which phone…', fSend:'Send request', fSending:'Sending…',
+    fOk:'✓ Request sent! I\'ll get back to you soon.', fErr:'Sending failed. Email me directly:', fReq:'Please add your contact and a description.', fAsk:'I want one',
     contactH:"Let's <span>work</span> together", contactP:'Got an idea for an app, a game or a tool? Message me on Instagram or by mail.',
     mailCopied:'✓ Mail copied: ', palhint:'↑↓ choose · Enter open · Esc close', palPh:'type a project or command…',
     cLang:'Language', cTop:'Back to top', cInst:'Install bashlab as an app', cMail:'Copy mail', cCoffee:'Buy me a coffee',
@@ -166,6 +181,7 @@ function actions(p, small){
   else {
     if (p.alt) a.push(`<a class="btn" href="${esc(p.alt.href)}">${esc(p.alt.label[L] || p.alt.label.bs)}</a>`);
     if (p.code) a.push(`<a class="btn" href="${esc(p.code)}" target="_blank" rel="noopener">${I_GH}${t('code')}</a>`);
+    a.push(`<button class="btn" type="button" data-ask="${esc(p.name)}">${I_MAIL}${t('fAsk')}</button>`);
   }
   return a.join('');
 }
@@ -259,7 +275,48 @@ function contactHtml(){
       <button class="btn" data-mail type="button">${I_MAIL}basagtm@gmail.com</button>
       <a class="btn" href="https://paypal.me/basagtm" target="_blank" rel="noopener">☕ Buy me a coffee</a>
       <a class="btn" href="https://github.com/Basaofficial" target="_blank" rel="noopener">${I_GH}GitHub</a>
-    </div></div></section>`;
+    </div>
+    <form class="req" id="req" novalidate>
+      <div class="req-h">${esc(t('fH'))}</div>
+      <p class="req-p">${esc(t('fP'))}</p>
+      <div class="req-row">
+        <label><span>${esc(t('fName'))}</span><input name="ime" autocomplete="name" maxlength="80"></label>
+        <label><span>${esc(t('fContact'))} *</span><input name="kontakt" required maxlength="120" placeholder="${esc(t('fContactPh'))}"></label>
+      </div>
+      <div class="req-l">${esc(t('fType'))}</div>
+      <div class="req-chips">${t('fTypes').map((x, i) => `<label class="chip"><input type="radio" name="vrsta" value="${esc(x)}" ${i === 0 ? 'checked' : ''}><span>${esc(x)}</span></label>`).join('')}</div>
+      <label><span>${esc(t('fAbout'))}</span><select name="app"><option value="">${esc(t('fNew'))}</option>${P.map(p => `<option value="${esc(p.name)}">${esc(p.name)}</option>`).join('')}</select></label>
+      <label><span>${esc(t('fMsg'))} *</span><textarea name="poruka" required rows="5" maxlength="3000" placeholder="${esc(t('fMsgPh'))}"></textarea></label>
+      <input type="text" name="_honey" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <button class="btn pri req-send" type="submit">${I_MAIL}<span>${esc(t('fSend'))}</span></button>
+      <div class="req-st" role="status" aria-live="polite"></div>
+    </form></div></section>`;
+}
+async function sendReq(e){
+  e.preventDefault();
+  const f = e.currentTarget, st = f.querySelector('.req-st'), btn = f.querySelector('.req-send');
+  const d = Object.fromEntries(new FormData(f));
+  if (d._honey) return;
+  if (!d.kontakt.trim() || !d.poruka.trim()) { st.className = 'req-st err'; st.textContent = t('fReq'); return; }
+  btn.disabled = true; btn.querySelector('span').textContent = t('fSending'); st.className = 'req-st'; st.textContent = '';
+  const body = { 'Ime': d.ime || '-', 'Kontakt': d.kontakt, 'Vrsta': d.vrsta, 'Aplikacija': d.app || 'Nova ideja', 'Poruka': d.poruka, 'Jezik': L,
+    _subject: `bashlab upit: ${d.vrsta}${d.app ? ' – ' + d.app : ''}`, _template: 'table', _captcha: 'false' };
+  if (/^\S+@\S+\.\S+$/.test(d.kontakt.trim())) body._replyto = d.kontakt.trim();
+  try {
+    const r = await fetch('https://formsubmit.co/ajax/basagtm@gmail.com', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body: JSON.stringify(body) });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok || String(j.success) !== 'true') throw new Error(j.message || r.status);
+    f.reset(); st.className = 'req-st ok'; st.textContent = t('fOk'); count('upit', 'Upit poslan', true);
+  } catch (err) {
+    st.className = 'req-st err';
+    st.innerHTML = `${esc(t('fErr'))} <a href="mailto:basagtm@gmail.com?subject=${encodeURIComponent('bashlab upit')}&body=${encodeURIComponent(d.poruka)}">basagtm@gmail.com</a>`;
+  } finally { btn.disabled = false; btn.querySelector('span').textContent = t('fSend'); }
+}
+function askFor(name){
+  const f = $('#req'); if (!f) return;
+  const sel = f.querySelector('select[name=app]'); if (sel) sel.value = name;
+  f.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+  setTimeout(() => f.querySelector('textarea').focus({ preventScroll: true }), 600);
 }
 
 /* ---------------- render: stranica projekta (App Store) ---------------- */
@@ -403,6 +460,8 @@ function bind(){
   $$('a[href="#/kontakt"]').forEach(a => a.addEventListener('click', e => { e.preventDefault(); $('#kontakt').scrollIntoView({ behavior: 'smooth' }); }));
   $$('[data-apk]').forEach(a => a.addEventListener('click', () => count('apk/' + a.dataset.apk, 'APK ' + a.dataset.apk, true)));
   $$('[data-mail]').forEach(b => b.addEventListener('click', copyMail));
+  $$('[data-ask]').forEach(b => b.addEventListener('click', () => askFor(b.dataset.ask)));
+  const rq = $('#req'); if (rq) rq.addEventListener('submit', sendReq);
   $$('[data-lb]').forEach(b => b.addEventListener('click', () => lightbox(+b.dataset.lb)));
   // magnetni dugmići (samo miš)
   if (fine && !reduce) $$('.btn:not(.dis)').forEach(b => {
