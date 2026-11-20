@@ -24,7 +24,7 @@ const UI = {
     cLang:'Jezik', cTop:'Na početak', cInst:'Instaliraj bashlab kao aplikaciju', cMail:'Kopiraj mail', cCoffee:'Buy me a coffee',
     installApp:'⤓ Instaliraj bashlab', installed:'✓ bashlab je instaliran', offline:'Offline si — prikazujem sačuvanu verziju.',
     activeP:'aktivnih projekata', firstLine:'prva linija koda', coffee:'kafa', inLab:'u labu', unknown:'nije poznato',
-    typed:['whoami → anel aka basa','ls ./projekti → armory  igre  metar  electro  bashtalk  fit','./build --apk --web','echo "dobrodošli u bashlab"'] },
+    typed:['whoami → anel aka basa','ls ./projekti → armory  igre  metar  zvucnik  electro  bashtalk  fit','./build --apk --web','echo "dobrodošli u bashlab"'] },
   de: { search:'suchen', projects:'Projekte', about:'Über mich', contact:'Kontakt', all:'alle', web:'web', apk:'apk', game:'spiele',
     lead:'Ich baue Apps, die ich selbst benutze — fürs Handy, fürs Gaming und für die Arbeit.', nproj:'Apps', napk:'APKs', updated:'aktualisiert',
     featured:'Empfohlen', newL:'Neu',
@@ -39,7 +39,7 @@ const UI = {
     cLang:'Sprache', cTop:'Nach oben', cInst:'bashlab als App installieren', cMail:'Mail kopieren', cCoffee:'Buy me a coffee',
     installApp:'⤓ bashlab installieren', installed:'✓ bashlab ist installiert', offline:'Du bist offline — zeige gespeicherte Version.',
     activeP:'aktive Projekte', firstLine:'erste Codezeile', coffee:'Kaffee', inLab:'im Lab', unknown:'unbekannt',
-    typed:['whoami → anel aka basa','ls ./projekte → armory  igre  metar  electro  bashtalk  fit','./build --apk --web','echo "willkommen im bashlab"'] },
+    typed:['whoami → anel aka basa','ls ./projekte → armory  igre  metar  zvucnik  electro  bashtalk  fit','./build --apk --web','echo "willkommen im bashlab"'] },
   en: { search:'search', projects:'Projects', about:'About', contact:'Contact', all:'all', web:'web', apk:'apk', game:'games',
     lead:'I build apps I actually use — for my phone, for gaming and for work.', nproj:'apps', napk:'APKs', updated:'updated',
     featured:'Featured', newL:'New',
@@ -54,7 +54,7 @@ const UI = {
     cLang:'Language', cTop:'Back to top', cInst:'Install bashlab as an app', cMail:'Copy mail', cCoffee:'Buy me a coffee',
     installApp:'⤓ Install bashlab', installed:'✓ bashlab is installed', offline:"You're offline — showing the saved version.",
     activeP:'active projects', firstLine:'first line of code', coffee:'coffee', inLab:'in the lab', unknown:'unknown',
-    typed:['whoami → anel aka basa','ls ./projects → armory  igre  metar  electro  bashtalk  fit','./build --apk --web','echo "welcome to bashlab"'] }
+    typed:['whoami → anel aka basa','ls ./projects → armory  igre  metar  zvucnik  electro  bashtalk  fit','./build --apk --web','echo "welcome to bashlab"'] }
 };
 const qLang = new URLSearchParams(location.search).get('lang');
 let L = (qLang && UI[qLang] && qLang) || localStorage.getItem('bl_lang') || ((navigator.language || '').toLowerCase().startsWith('de') ? 'de' : 'bs');
@@ -79,7 +79,8 @@ const IC = {
   radio:'<rect x="7" y="2" width="10" height="20" rx="3"/><path d="M12 6v3M10 13h4M10 16h4"/><path d="M3 9a6 6 0 0 0 0 6M21 9a6 6 0 0 1 0 6"/>',
   bolt:'<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>',
   hand:'<path d="M18 11V6a2 2 0 0 0-4 0M14 10V4a2 2 0 0 0-4 0v2M10 10.5V6a2 2 0 0 0-4 0v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.9-6-2.4l-3.6-3.6a2 2 0 0 1 2.8-2.8L7 15"/>',
-  ruler:'<path d="M3 16.5L16.5 3 21 7.5 7.5 21z"/><path d="M7 12.5l2 2M9.8 9.7l1.4 1.4M12.5 7l2 2M15.3 4.2l1.4 1.4"/>'
+  ruler:'<path d="M3 16.5L16.5 3 21 7.5 7.5 21z"/><path d="M7 12.5l2 2M9.8 9.7l1.4 1.4M12.5 7l2 2M15.3 4.2l1.4 1.4"/>',
+  speaker:'<path d="M4 9h3l5-4v14l-5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18.5 6a8 8 0 0 1 0 12"/>'
 };
 const svg = (k, sw = 1.8) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round">${IC[k] || ''}</svg>`;
 const appIc = (p, cls = '') => `<div class="appic ${cls}" style="--c1:${p.c[0]};--c2:${p.c[1]}">${svg(p.icon, 1.9)}</div>`;

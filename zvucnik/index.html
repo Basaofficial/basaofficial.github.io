@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#0b0f1a">
+<title>#Bash Zvučnik</title>
+<style>
+:root{
+  --bg:#070a12; --glass:rgba(255,255,255,.06); --glass2:rgba(255,255,255,.1);
+  --line:rgba(255,255,255,.14); --txt:#e8f0ff; --mut:#8fa0bf;
+  --acc:#39ff9f; --acc2:#4cc9ff; --hot:#ff4d6d; --warn:#ffb84d;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--txt);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+body{min-height:100vh;overflow-x:hidden}
+.blob{position:fixed;border-radius:50%;filter:blur(80px);opacity:.35;z-index:-1;pointer-events:none}
+.b1{width:340px;height:340px;background:#1b6dff;top:-80px;left:-100px;animation:fl 14s ease-in-out infinite}
+.b2{width:300px;height:300px;background:#00d68f;bottom:-60px;right:-80px;animation:fl 18s ease-in-out infinite reverse}
+.b3{width:220px;height:220px;background:#b13cff;top:40%;left:55%;animation:fl 22s ease-in-out infinite}
+@keyframes fl{50%{transform:translate(40px,30px) scale(1.1)}}
+
+header{position:sticky;top:0;z-index:10;padding:12px 14px 10px;background:rgba(7,10,18,.65);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.top{display:flex;align-items:center;gap:10px}
+h1{font-size:18px;margin:0;font-weight:800;letter-spacing:.5px}
+h1 span{color:var(--acc)}
+.lat{margin-left:auto;font-size:11px;color:var(--mut);text-align:right}
+.bar{display:flex;align-items:center;gap:10px;margin-top:10px}
+.vu{flex:1;height:10px;border-radius:6px;background:rgba(255,255,255,.08);overflow:hidden;border:1px solid var(--line)}
+.vu i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--acc),var(--warn) 70%,var(--hot));transition:width .05s}
+
+.micbtn{width:58px;height:58px;border-radius:50%;border:2px solid var(--line);background:var(--glass);
+  color:var(--txt);font-size:24px;display:grid;place-items:center;cursor:pointer;flex-shrink:0;
+  backdrop-filter:blur(10px);transition:.2s}
+.micbtn.on{border-color:var(--hot);box-shadow:0 0 0 0 rgba(255,77,109,.6);animation:pulse 1.4s infinite;color:var(--hot)}
+@keyframes pulse{70%{box-shadow:0 0 0 14px rgba(255,77,109,0)}100%{box-shadow:0 0 0 0 rgba(255,77,109,0)}}
+
+nav{display:flex;gap:6px;margin-top:10px}
+nav button{flex:1;padding:9px 4px;border-radius:12px;border:1px solid var(--line);background:transparent;
+  color:var(--mut);font-size:13px;font-weight:600;cursor:pointer}
+nav button.act{color:var(--acc);border-color:var(--acc);background:rgba(57,255,159,.07)}
+
+main{padding:14px;max-width:720px;margin:0 auto 60px}
+.tab{display:none;animation:in .25s ease}
+.tab.act{display:block}
+@keyframes in{from{opacity:0;transform:translateY(6px)}}
+.card{background:var(--glass);border:1px solid var(--line);border-radius:18px;padding:14px;margin-bottom:14px;
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.card h2{font-size:13px;margin:0 0 12px;color:var(--acc2);text-transform:uppercase;letter-spacing:1.2px}
+.note{font-size:12px;color:var(--mut);line-height:1.45}
+.note b{color:var(--warn)}
+
+.sl{display:grid;grid-template-columns:96px 1fr 52px;align-items:center;gap:8px;margin:8px 0}
+.sl label{font-size:13px;color:var(--mut)}
+.sl output{font-size:12px;text-align:right;font-variant-numeric:tabular-nums}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:4px;background:rgba(255,255,255,.12);outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--bg);border:2px solid var(--acc);cursor:pointer}
+input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--bg);border:2px solid var(--acc)}
+
+.eq{display:flex;justify-content:space-between;gap:6px;height:170px;padding-top:4px}
+.eqb{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px}
+.eqb .vw{flex:1;position:relative;width:100%}
+.eqb input{position:absolute;top:50%;left:50%;width:120px;transform:translate(-50%,-50%) rotate(-90deg)}
+.eqb small{font-size:11px;color:var(--mut)}
+.eqb output{font-size:11px}
+
+.btn{padding:10px 14px;border-radius:12px;border:1px solid var(--line);background:transparent;color:var(--txt);
+  font-size:14px;font-weight:600;cursor:pointer;transition:.15s}
+.btn:active{transform:scale(.96)}
+.btn.on{border-color:var(--acc);color:var(--acc);background:rgba(57,255,159,.08)}
+.btn.red{border-color:var(--hot);color:var(--hot)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chips .btn{padding:8px 11px;font-size:13px}
+
+.player .now{font-size:15px;font-weight:700;margin:2px 0 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ctrl{display:flex;justify-content:center;gap:14px;margin:10px 0}
+.ctrl button{width:52px;height:52px;border-radius:50%;border:1px solid var(--line);background:transparent;color:var(--txt);font-size:20px;cursor:pointer}
+.ctrl button.big{width:64px;height:64px;border-color:var(--acc);color:var(--acc);font-size:24px}
+.time{display:flex;justify-content:space-between;font-size:11px;color:var(--mut)}
+.pl{list-style:none;margin:10px 0 0;padding:0;max-height:220px;overflow:auto}
+.pl li{padding:9px 10px;border-radius:10px;font-size:13px;cursor:pointer;display:flex;gap:8px;align-items:center;border:1px solid transparent}
+.pl li.cur{border-color:var(--acc);color:var(--acc)}
+.pl li span{flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.pl li em{font-style:normal;color:var(--mut);padding:0 4px}
+.file{display:block;text-align:center;padding:16px;border:1.5px dashed var(--line);border-radius:14px;cursor:pointer;color:var(--mut);font-size:14px}
+.file input{display:none}
+
+.sirens{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.siren{padding:14px 10px;border-radius:16px;border:1px solid var(--line);background:transparent;color:var(--txt);cursor:pointer;text-align:center}
+.siren .ic{font-size:28px;display:block;margin-bottom:6px}
+.siren b{font-size:13px;display:block}
+.siren small{font-size:11px;color:var(--mut)}
+.siren.on{border-color:var(--hot);color:var(--hot);background:rgba(255,77,109,.08);animation:blink .6s steps(2) infinite}
+@keyframes blink{50%{border-color:var(--acc2)}}
+.switch{display:flex;align-items:center;justify-content:space-between;padding:6px 0;font-size:14px}
+.tg{width:48px;height:28px;border-radius:20px;border:1px solid var(--line);position:relative;cursor:pointer;background:transparent;flex-shrink:0}
+.tg::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:var(--mut);transition:.2s}
+.tg.on{border-color:var(--acc)}
+.tg.on::after{left:23px;background:var(--acc)}
+a.dl{color:var(--acc2);font-size:13px}
+.recs{list-style:none;padding:0;margin:10px 0 0}
+.recs li{padding:8px 0;border-bottom:1px solid var(--line);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.recs audio{width:100%;height:36px}
+footer{text-align:center;font-size:11px;color:var(--mut);padding:10px 0 30px}
+footer a{color:var(--mut)}
+</style>
+</head>
+<body>
+<div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+
+<header>
+  <div class="top">
+    <h1>#Bash <span>Zvučnik</span></h1>
+    <div class="lat" id="lat">Dodirni 🎤 za start</div>
+  </div>
+  <div class="bar">
+    <button class="micbtn" id="micBtn" title="Mikrofon">🎤</button>
+    <div style="flex:1">
+      <div class="vu"><i id="vu"></i></div>
+      <div class="sl" style="grid-template-columns:62px 1fr 42px;margin:8px 0 0">
+        <label>Glavno</label><input type="range" id="master" min="0" max="150" value="90"><output id="masterO">90%</output>
+      </div>
+    </div>
+  </div>
+  <nav>
+    <button data-t="mic" class="act">🎤 Mikrofon</button>
+    <button data-t="mus">🎵 Matrica</button>
+    <button data-t="sir">🚨 Sirene</button>
+    <button data-t="rec">⏺ Snimi</button>
+  </nav>
+</header>
+
+<main>
+<!-- MIKROFON -->
+<section class="tab act" id="t-mic">
+  <div class="card">
+    <h2>Glas</h2>
+    <div id="micSliders"></div>
+    <div class="note" style="margin-top:6px">Efekt glasa:</div>
+    <div class="chips" id="fxChips" style="margin-top:8px"></div>
+  </div>
+  <div class="card">
+    <h2>Equalizer mikrofona</h2>
+    <div class="eq" id="micEq"></div>
+  </div>
+  <div class="card">
+    <h2>Jeka i hall</h2>
+    <div id="fxSliders"></div>
+  </div>
+  <div class="card note">
+    <b>Savjet:</b> Bluetooth zvučnik kasni 0,1–0,3 s pa ćeš čuti svoj glas s malim zakašnjenjem. Za karaoke je najbolje <b>AUX kabel</b> ili USB/BT mikrofon sa slušalicama. Drži mobitel dalje od zvučnika i ne okreći ga prema njemu da ne zviždi (feedback) — ako zviždi, smanji <i>Bas</i>/<i>Prisutnost</i> ili jačinu mikrofona.
+  </div>
+</section>
+
+<!-- MATRICA -->
+<section class="tab" id="t-mus">
+  <div class="card player">
+    <h2>Matrica / MP3</h2>
+    <label class="file">➕ Dodaj pjesme (MP3, M4A, WAV…)<input type="file" id="files" accept="audio/*" multiple></label>
+    <div class="now" id="now" style="margin-top:12px">Nema pjesme</div>
+    <input type="range" id="seek" min="0" max="1000" value="0">
+    <div class="time"><span id="tCur">0:00</span><span id="tDur">0:00</span></div>
+    <div class="ctrl">
+      <button id="prev">⏮</button>
+      <button id="play" class="big">▶</button>
+      <button id="next">⏭</button>
+    </div>
+    <div id="musSliders"></div>
+    <div class="switch">Ukloni vokal iz pjesme (samo matrica)<button class="tg" id="vocTg"></button></div>
+    <div class="note">Radi na većini studijskih pjesama gdje je pjevač u sredini — nije savršeno kao prava matrica, ali za karaoke je super.</div>
+    <div class="switch">Ponavljaj listu<button class="tg on" id="loopTg"></button></div>
+    <ul class="pl" id="pl"></ul>
+  </div>
+  <div class="card">
+    <h2>Equalizer muzike</h2>
+    <div class="eq" id="musEq"></div>
+    <div class="chips" id="musPresets" style="margin-top:12px"></div>
+  </div>
+</section>
+
+<!-- SIRENE -->
+<section class="tab" id="t-sir">
+  <div class="card">
+    <h2>Sirene i zvukovi</h2>
+    <div id="sirSliders"></div>
+    <div class="row" style="margin:6px 0 12px">
+      <button class="btn red" id="stopAll">⏹ Ugasi sve</button>
+      <span class="note">Dodirni za uključi / isključi</span>
+    </div>
+    <div class="sirens" id="sirens"></div>
+  </div>
+  <div class="card note">Kombiniraj sirenu s efektom glasa <b>Megafon</b> u kartici Mikrofon — zvuči kao prava policija. 😄 Pazi gdje koristiš sirene — u javnosti mogu zbuniti ljude.</div>
+</section>
+
+<!-- SNIMANJE -->
+<section class="tab" id="t-rec">
+  <div class="card">
+    <h2>Snimanje</h2>
+    <div class="note">Snima sve što ide na zvučnik: glas s efektima, matricu i sirene.</div>
+    <div class="row" style="margin-top:12px">
+      <button class="btn" id="recBtn">⏺ Počni snimanje</button>
+      <span id="recTime" class="note"></span>
+    </div>
+    <ul class="recs" id="recs"></ul>
+  </div>
+</section>
+
+<footer>#Bash Zvučnik · <a href="https://instagram.com/basa.gtm">@basa.gtm</a> · <a href="https://paypal.me/basagtm">☕ buy me a coffee</a></footer>
+</main>
+
+<script>
+/* ================= AUDIO ENGINE ================= */
+let ctx, N = {}, micStream = null, micOn = false;
+const $ = id => document.getElementById(id);
+
+const WORKLET = `
+class PitchShift extends AudioWorkletProcessor{
+  static get parameterDescriptors(){return [{name:'ratio',defaultValue:1,minValue:0.25,maxValue:4,automationRate:'k-rate'}];}
+  constructor(o){super();this.size=16384;this.mask=16383;this.buf=[new Float32Array(16384),new Float32Array(16384)];
+    this.w=0;this.ph=0;this.win=(o.processorOptions&&o.processorOptions.win)||1800;}
+  rd(b,x){while(x<0)x+=this.size;const i=Math.floor(x),f=x-i;return b[i&this.mask]*(1-f)+b[(i+1)&this.mask]*f;}
+  process(inputs,outputs,p){
+    const inp=inputs[0],out=outputs[0],r=p.ratio[0],n=out[0].length,ch=out.length;
+    if(!inp||!inp.length){for(const c of out)c.fill(0);return true;}
+    const W=this.win,step=(1-r)/W,by=Math.abs(r-1)<1e-3;
+    for(let i=0;i<n;i++){
+      for(let c=0;c<ch;c++)this.buf[c][this.w]=inp[Math.min(c,inp.length-1)][i];
+      if(by){for(let c=0;c<ch;c++)out[c][i]=inp[Math.min(c,inp.length-1)][i];}
+      else{
+        const p1=this.ph;let p2=p1+.5;if(p2>=1)p2-=1;
+        const g1=Math.sin(Math.PI*p1)**2,g2=Math.sin(Math.PI*p2)**2;
+        for(let c=0;c<ch;c++){const b=this.buf[c];out[c][i]=this.rd(b,this.w-(p1*W+1))*g1+this.rd(b,this.w-(p2*W+1))*g2;}
+      }
+      this.ph+=step;if(this.ph>=1)this.ph-=1;else if(this.ph<0)this.ph+=1;
+      this.w=(this.w+1)&this.mask;
+    }
+    return true;
+  }
+}
+registerProcessor('pitch-shift',PitchShift);`;
+
+function biq(type, f, q=1, g=0){const b=ctx.createBiquadFilter();b.type=type;b.frequency.value=f;b.Q.value=q;b.gain.value=g;return b;}
+function gain(v=1){const g=ctx.createGain();g.gain.value=v;return g;}
+function chain(...n){for(let i=0;i<n.length-1;i++)n[i].connect(n[i+1]);return n[n.length-1];}
+function impulse(sec=2.6, decay=2.8){
+  const len=ctx.sampleRate*sec, b=ctx.createBuffer(2,len,ctx.sampleRate);
+  for(let c=0;c<2;c++){const d=b.getChannelData(c);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/len,decay);}
+  return b;
+}
+function distCurve(k=30){const n=1024,c=new Float32Array(n);for(let i=0;i<n;i++){const x=i*2/n-1;c[i]=(1+k)*x/(1+k*Math.abs(x));}return c;}
+
+let initP = null;
+function init(){
+  if(initP) return initP;
+  initP = (async()=>{
+    ctx = new (window.AudioContext||window.webkitAudioContext)({latencyHint:'interactive'});
+    const url = URL.createObjectURL(new Blob([WORKLET],{type:'application/javascript'}));
+    await ctx.audioWorklet.addModule(url);
+
+    // MASTER
+    N.master = gain(.9);
+    N.limiter = ctx.createDynamicsCompressor();
+    Object.assign(N.limiter,{});N.limiter.threshold.value=-3;N.limiter.knee.value=0;N.limiter.ratio.value=20;N.limiter.attack.value=.002;N.limiter.release.value=.15;
+    N.analyser = ctx.createAnalyser(); N.analyser.fftSize=1024;
+    N.recDest = ctx.createMediaStreamDestination();
+    chain(N.master, N.limiter, ctx.destination);
+    N.limiter.connect(N.analyser); N.limiter.connect(N.recDest);
+
+    // FX buses (echo + reverb) shared
+    N.delay = ctx.createDelay(2); N.delay.delayTime.value=.32;
+    N.fb = gain(.35); N.echoLp = biq('lowpass',3500);
+    N.delay.connect(N.echoLp); N.echoLp.connect(N.fb); N.fb.connect(N.delay);
+    N.echoWet = gain(0); N.echoLp.connect(N.echoWet); N.echoWet.connect(N.master);
+    N.rev = ctx.createConvolver(); N.rev.buffer = impulse(); N.revWet = gain(0);
+    chain(N.rev, N.revWet, N.master);
+
+    // MIC CHAIN: src -> pitch -> fx select -> eq -> micGain -> master (+ sends)
+    N.micIn = gain(1);
+    N.micPitch = new AudioWorkletNode(ctx,'pitch-shift',{outputChannelCount:[1],processorOptions:{win:1400}});
+    N.micIn.connect(N.micPitch);
+    N.fxOut = gain(1);
+    // normal
+    N.fxNormal = gain(1); N.micPitch.connect(N.fxNormal); N.fxNormal.connect(N.fxOut);
+    // robot (ring mod)
+    N.robotOsc = ctx.createOscillator(); N.robotOsc.frequency.value=55; N.robotOsc.start();
+    N.robotVca = gain(0); N.robotOsc.connect(N.robotVca.gain);
+    N.fxRobot = gain(0); N.micPitch.connect(N.robotVca); chain(N.robotVca, N.fxRobot, N.fxOut);
+    // megaphone / radio
+    N.megaShape = ctx.createWaveShaper(); N.megaShape.curve = distCurve(40); N.megaShape.oversample='2x';
+    N.fxMega = gain(0);
+    chain(N.micPitch, biq('highpass',550,.9), N.megaShape, biq('lowpass',3200,.9), biq('peaking',1800,1.2,8), N.fxMega, N.fxOut);
+    // EQ
+    N.mEq = [biq('lowshelf',120,1,0), biq('peaking',500,1,0), biq('peaking',3000,1,0), biq('highshelf',8000,1,0)];
+    N.micHp = biq('highpass',80,.7);
+    N.micGain = gain(1);
+    chain(N.fxOut, N.micHp, ...N.mEq, N.micGain, N.master);
+    N.micGain.connect(N.delay); N.micGain.connect(N.rev);
+    N.musEchoSend = null;
+
+    // MUSIC CHAIN
+    N.audio = new Audio(); N.audio.preload='auto';
+    N.musSrc = ctx.createMediaElementSource(N.audio);
+    N.vocNormal = gain(1); N.vocRem = gain(0);
+    N.musSrc.connect(N.vocNormal);
+    const sp = ctx.createChannelSplitter(2), side = gain(1), rInv = gain(-1), bassSum = gain(.5), bassLp = biq('lowpass',170,.7), bassLp2 = biq('lowpass',170,.7);
+    N.musSrc.connect(sp);
+    sp.connect(side,0); sp.connect(rInv,1); rInv.connect(side);
+    sp.connect(bassSum,0); sp.connect(bassSum,1); chain(bassSum,bassLp,bassLp2);
+    const remMix = gain(1); side.connect(remMix); bassLp2.connect(remMix);
+    remMix.connect(N.vocRem);
+    N.musPitch = new AudioWorkletNode(ctx,'pitch-shift',{outputChannelCount:[2],processorOptions:{win:2400}});
+    N.vocNormal.connect(N.musPitch); N.vocRem.connect(N.musPitch);
+    N.musEq = [[60,'lowshelf'],[230,'peaking'],[910,'peaking'],[3600,'peaking'],[12000,'highshelf']].map(([f,t])=>biq(t,f,1,0));
+    N.musGain = gain(.8);
+    chain(N.musPitch, ...N.musEq, N.musGain, N.master);
+    setupAudioEvents();
+
+    // SIRENS
+    N.sirGain = gain(.5); N.sirLp = biq('lowpass',5000,.7);
+    chain(N.sirGain, N.sirLp, N.master);
+
+    applyAll();
+    meter();
+    showLat();
+  })();
+  return initP;
+}
+function showLat(){
+  const ms = Math.round(((ctx.baseLatency||0)+(ctx.outputLatency||0))*1000);
+  $('lat').innerHTML = `Kašnjenje ≈ ${ms||'?'} ms<br>${ctx.sampleRate/1000} kHz`;
+}
+function meter(){
+  const a = new Float32Array(N.analyser.fftSize);
+  (function loop(){
+    N.analyser.getFloatTimeDomainData(a);
+    let pk=0;for(const v of a){const x=Math.abs(v);if(x>pk)pk=x;}
+    $('vu').style.width = Math.min(100, pk*100)+'%';
+    requestAnimationFrame(loop);
+  })();
+}
+
+/* ================= MIC ================= */
+let wakeLock=null;
+async function toggleMic(){
+  await init(); await ctx.resume();
+  if(micOn){
+    N.micNode && N.micNode.disconnect();
+    micStream.getTracks().forEach(t=>t.stop()); micStream=null; micOn=false;
+    $('micBtn').classList.remove('on');
+    try{wakeLock && wakeLock.release();}catch(e){}
+    return;
+  }
+  try{
+    micStream = await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false,latency:0}});
+  }catch(e){
+    $('lat').textContent='Mikrofon nije dozvoljen ✖';
+    return;
+  }
+  N.micNode = ctx.createMediaStreamSource(micStream);
+  N.micNode.connect(N.micIn);
+  micOn = true; $('micBtn').classList.add('on'); showLat();
+  try{ wakeLock = await navigator.wakeLock.request('screen'); }catch(e){}
+}
+$('micBtn').onclick = toggleMic;
+
+/* ================= UI HELPERS ================= */
+const S = { // state
+  master:90, micVol:100, micPitch:0, gate:0,
+  echo:0, echoTime:320, echoFb:35, reverb:0,
+  musVol:80, musKey:0, sirVol:50, fx:'normal',
+  mEq:[0,0,0,0], musEq:[0,0,0,0,0], voc:false, loop:true
+};
+try{ Object.assign(S, JSON.parse(localStorage.getItem('bashZvucnik')||'{}')); S.voc=false; }catch(e){}
+function save(){ try{localStorage.setItem('bashZvucnik',JSON.stringify(S));}catch(e){} }
+
+function slider(parent, key, label, min, max, step, fmt, onCh){
+  const d=document.createElement('div'); d.className='sl';
+  d.innerHTML=`<label>${label}</label><input type="range" min="${min}" max="${max}" step="${step}" value="${S[key]}"><output></output>`;
+  const inp=d.querySelector('input'), out=d.querySelector('output');
+  const upd=()=>{S[key]=+inp.value; out.textContent=fmt(S[key]); onCh&&onCh(); save();};
+  inp.oninput=upd; out.textContent=fmt(S[key]);
+  inp.ondblclick=()=>{}; parent.appendChild(d); return inp;
+}
+function eqUI(parent, arr, labels, onCh){
+  arr.forEach((v,i)=>{
+    const b=document.createElement('div'); b.className='eqb';
+    b.innerHTML=`<output>${fmtDb(v)}</output><div class="vw"><input type="range" min="-12" max="12" step="1" value="${v}"></div><small>${labels[i]}</small>`;
+    const inp=b.querySelector('input'), o=b.querySelector('output');
+    inp.oninput=()=>{arr[i]=+inp.value;o.textContent=fmtDb(arr[i]);onCh();save();};
+    b.querySelector('small').onclick=()=>{arr[i]=0;inp.value=0;o.textContent=fmtDb(0);onCh();save();};
+    parent.appendChild(b);
+  });
+}
+const fmtDb = v => (v>0?'+':'')+v+'dB';
+const pct = v => v+'%';
+const semi = v => (v>0?'+':'')+v;
+const ratio = s => Math.pow(2, s/12);
+function set(param, v){ if(ctx) param.setTargetAtTime(v, ctx.currentTime, .03); }
+
+function applyAll(){
+  if(!ctx) return;
+  set(N.master.gain, S.master/100);
+  set(N.micGain.gain, S.micVol/100);
+  N.micPitch.parameters.get('ratio').value = ratio(S.micPitch);
+  set(N.echoWet.gain, S.echo/100); set(N.delay.delayTime, S.echoTime/1000); set(N.fb.gain, S.echoFb/100*.85);
+  set(N.revWet.gain, S.reverb/100*1.2);
+  set(N.musGain.gain, S.musVol/100);
+  N.musPitch.parameters.get('ratio').value = ratio(S.musKey);
+  set(N.sirGain.gain, S.sirVol/100);
+  S.mEq.forEach((v,i)=>set(N.mEq[i].gain,v));
+  S.musEq.forEach((v,i)=>set(N.musEq[i].gain,v));
+  set(N.vocNormal.gain, S.voc?0:1); set(N.vocRem.gain, S.voc?1.4:0);
+  set(N.fxNormal.gain, S.fx==='normal'||S.fx==='deep'||S.fx==='chip'?1:0);
+  set(N.fxRobot.gain, S.fx==='robot'?1.6:0);
+  set(N.fxMega.gain, S.fx==='mega'?.55:0);
+}
+
+/* master */
+const mI=$('master'); mI.value=S.master; $('masterO').textContent=S.master+'%';
+mI.oninput=()=>{S.master=+mI.value;$('masterO').textContent=S.master+'%';applyAll();save();};
+
+/* mic sliders */
+slider($('micSliders'),'micVol','Jačina mic',0,200,1,pct,applyAll);
+const pitchInp = slider($('micSliders'),'micPitch','Pitch glasa',-12,12,1,semi,applyAll);
+eqUI($('micEq'), S.mEq, ['Bas','Sredina','Vokal','Visoki'], applyAll);
+slider($('fxSliders'),'echo','Jeka',0,100,1,pct,applyAll);
+slider($('fxSliders'),'echoTime','Vrijeme jeke',60,900,10,v=>v+'ms',applyAll);
+slider($('fxSliders'),'echoFb','Ponavljanje',0,95,1,pct,applyAll);
+slider($('fxSliders'),'reverb','Hall',0,100,1,pct,applyAll);
+
+const FX = [['normal','🎙 Normalno',0],['deep','🐻 Dubok',-5],['chip','🐿 Čipmank',7],['robot','🤖 Robot',0],['mega','📢 Megafon',0]];
+FX.forEach(([id,name,p])=>{
+  const b=document.createElement('button'); b.className='btn'+(S.fx===id?' on':''); b.textContent=name;
+  b.onclick=async()=>{
+    await init();
+    S.fx=id; if(id==='deep'||id==='chip'||id==='normal'){S.micPitch=p;}
+    pitchInp.value=S.micPitch; pitchInp.oninput();
+    document.querySelectorAll('#fxChips .btn').forEach(x=>x.classList.remove('on')); b.classList.add('on');
+    applyAll(); save();
+  };
+  $('fxChips').appendChild(b);
+});
+
+/* ================= MUSIC ================= */
+let list=[], cur=-1;
+slider($('musSliders'),'musVol','Jačina',0,150,1,pct,applyAll);
+slider($('musSliders'),'musKey','Tonalitet',-6,6,1,semi,applyAll);
+eqUI($('musEq'), S.musEq, ['60','230','910','3.6k','12k'], applyAll);
+const PRE = {'Ravno':[0,0,0,0,0],'Bas boost':[8,4,0,0,1],'Party':[6,2,-1,2,5],'Vokal':[-2,-1,3,4,1],'Rock':[5,2,-2,3,4],'Noć (tiho)':[-3,0,1,1,-3]};
+Object.entries(PRE).forEach(([n,v])=>{
+  const b=document.createElement('button'); b.className='btn'; b.textContent=n;
+  b.onclick=async()=>{await init(); S.musEq.splice(0,5,...v); const ins=$('musEq').querySelectorAll('input'), os=$('musEq').querySelectorAll('output');
+    v.forEach((x,i)=>{ins[i].value=x;os[i].textContent=fmtDb(x);}); applyAll(); save();};
+  $('musPresets').appendChild(b);
+});
+
+$('files').onchange = async e=>{
+  await init();
+  for(const f of e.target.files) list.push({name:f.name.replace(/\.[^.]+$/,''), url:URL.createObjectURL(f)});
+  renderPl();
+  if(cur<0) load(0,true);
+  e.target.value='';
+};
+function renderPl(){
+  $('pl').innerHTML='';
+  list.forEach((t,i)=>{
+    const li=document.createElement('li'); if(i===cur) li.className='cur';
+    li.innerHTML=`<span>${i===cur?'▶ ':''}${esc(t.name)}</span><em>✕</em>`;
+    li.querySelector('span').onclick=()=>load(i,true);
+    li.querySelector('em').onclick=ev=>{ev.stopPropagation(); URL.revokeObjectURL(t.url); list.splice(i,1);
+      if(i===cur){N.audio.pause(); cur=-1; if(list.length) load(Math.min(i,list.length-1),false); else {$('now').textContent='Nema pjesme';$('play').textContent='▶';}}
+      else if(i<cur) cur--; renderPl();};
+    $('pl').appendChild(li);
+  });
+}
+const esc = s => s.replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+async function load(i, play){
+  await init(); cur=i; N.audio.src=list[i].url; $('now').textContent=list[i].name; renderPl();
+  if(play){ await ctx.resume(); N.audio.play().catch(()=>{}); }
+}
+$('play').onclick = async()=>{
+  await init(); await ctx.resume();
+  if(cur<0){ if(list.length) load(0,true); else $('files').click(); return; }
+  N.audio.paused ? N.audio.play() : N.audio.pause();
+};
+$('next').onclick=()=>{ if(list.length) load((cur+1)%list.length,true); };
+$('prev').onclick=()=>{ if(!list.length) return; if(N.audio.currentTime>3){N.audio.currentTime=0;return;} load((cur-1+list.length)%list.length,true); };
+const fmtT = s => isFinite(s)? Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0') : '0:00';
+let seeking=false;
+$('seek').oninput=()=>{seeking=true; if(N.audio&&N.audio.duration) $('tCur').textContent=fmtT($('seek').value/1000*N.audio.duration);};
+$('seek').onchange=()=>{ if(N.audio&&N.audio.duration) N.audio.currentTime=$('seek').value/1000*N.audio.duration; seeking=false; };
+function setupAudioEvents(){
+  const a=N.audio;
+  a.onplay=()=>$('play').textContent='⏸';
+  a.onpause=()=>$('play').textContent='▶';
+  a.ontimeupdate=()=>{ if(!seeking&&a.duration){ $('seek').value=a.currentTime/a.duration*1000; $('tCur').textContent=fmtT(a.currentTime); $('tDur').textContent=fmtT(a.duration);} };
+  a.onloadedmetadata=()=>$('tDur').textContent=fmtT(a.duration);
+  a.onended=()=>{ if(cur<list.length-1) load(cur+1,true); else if(S.loop&&list.length) load(0,true); };
+}
+function toggle(el, key){ el.classList.toggle('on', S[key]); el.onclick=async()=>{await init(); S[key]=!S[key]; el.classList.toggle('on',S[key]); applyAll(); save();}; }
+toggle($('vocTg'),'voc'); toggle($('loopTg'),'loop');
+
+/* ================= SIRENS ================= */
+slider($('sirSliders'),'sirVol','Jačina sirene',0,100,1,pct,applyAll);
+
+// generic siren builder
+function lfoSiren({type='square', base, depth, lfoType='triangle', rate, filt=3500, gate=null, extra=[] }){
+  const out=gain(1), nodes=[];
+  const mk=(mult)=>{
+    const o=ctx.createOscillator(); o.type=type; o.frequency.value=base*mult;
+    const l=ctx.createOscillator(); l.type=lfoType; l.frequency.value=rate;
+    const lg=gain(depth*mult); l.connect(lg); lg.connect(o.frequency);
+    o.connect(out); o.start(); l.start(); nodes.push(o,l);
+  };
+  mk(1); extra.forEach(m=>mk(m));
+  const lp=biq('lowpass',filt,.8); const lvl=gain(extra.length?0.22:0.3);
+  let last=chain(out, lp, lvl);
+  if(gate){ // amplitude gate
+    const g=gain(.5), gl=ctx.createOscillator(); gl.type='square'; gl.frequency.value=gate;
+    const gg=gain(.5); gl.connect(gg); gg.connect(g.gain); gl.start(); nodes.push(gl);
+    last.connect(g); last=g;
+  }
+  const env=gain(0); last.connect(env); env.connect(N.sirGain);
+  env.gain.setTargetAtTime(1, ctx.currentTime, .02);
+  return ()=>{ env.gain.setTargetAtTime(0, ctx.currentTime, .04); setTimeout(()=>nodes.forEach(n=>{try{n.stop()}catch(e){}}), 300); };
+}
+function chordHorn(freqs, filt=1800){
+  const out=gain(0), nodes=[];
+  freqs.forEach(f=>{ [-4,4].forEach(dt=>{ const o=ctx.createOscillator(); o.type='sawtooth'; o.frequency.value=f; o.detune.value=dt; o.connect(out); o.start(); nodes.push(o); }); });
+  const sh=ctx.createWaveShaper(); sh.curve=distCurve(6);
+  chain(out, sh, biq('lowpass',filt,.9), gain(.9/freqs.length), N.sirGain);
+  out.gain.setTargetAtTime(.35, ctx.currentTime, .03);
+  return ()=>{ out.gain.setTargetAtTime(0, ctx.currentTime, .05); setTimeout(()=>nodes.forEach(n=>n.stop()),400); };
+}
+// sequence siren (car alarm style) — switches patterns
+function carAlarm(){
+  let stopCur=null, step=0, alive=true;
+  const pats=[()=>lfoSiren({type:'square',base:1500,depth:700,lfoType:'sawtooth',rate:6,filt:4000}),
+              ()=>lfoSiren({type:'square',base:2000,depth:1,rate:1,gate:5,filt:4500}),
+              ()=>lfoSiren({type:'square',base:1100,depth:400,lfoType:'square',rate:2.5,filt:4000}),
+              ()=>lfoSiren({type:'square',base:1200,depth:800,lfoType:'triangle',rate:1.2,filt:4000})];
+  const nxt=()=>{ if(!alive) return; stopCur&&stopCur(); stopCur=pats[step++%pats.length](); setTimeout(nxt,2600); };
+  nxt();
+  return ()=>{ alive=false; stopCur&&stopCur(); };
+}
+
+const SIRENS = [
+  {id:'wail',  ic:'🚓', n:'Policija – Wail', d:'klasično zavijanje', f:()=>lfoSiren({type:'square',base:1050,depth:420,rate:.28})},
+  {id:'yelp',  ic:'🚔', n:'Policija – Yelp', d:'brzo zavijanje',     f:()=>lfoSiren({type:'square',base:1100,depth:420,rate:3.2})},
+  {id:'phaser',ic:'🚨', n:'Policija – Phaser', d:'hiper brzo',        f:()=>lfoSiren({type:'square',base:1200,depth:450,lfoType:'sawtooth',rate:11})},
+  {id:'tatu',  ic:'🇩🇪', n:'Tatütata (DE)',  d:'njemački Martinshorn', f:()=>lfoSiren({type:'square',base:(440+587)/2,depth:(587-440)/2,lfoType:'square',rate:.7,extra:[1.5]})},
+  {id:'amb',   ic:'🚑', n:'Hitna pomoć',     d:'dvotonska EU',         f:()=>lfoSiren({type:'square',base:(660+880)/2,depth:110,lfoType:'square',rate:.9})},
+  {id:'fire',  ic:'🚒', n:'Vatrogasci',      d:'spora mehanička',      f:()=>lfoSiren({type:'sawtooth',base:780,depth:520,lfoType:'triangle',rate:.13,filt:2200,extra:[1.25]})},
+  {id:'air',   ic:'⚠️', n:'Uzbuna',          d:'zračna opasnost',      f:()=>lfoSiren({type:'sawtooth',base:420,depth:260,lfoType:'sine',rate:.07,filt:1300,extra:[1.2]})},
+  {id:'us',    ic:'🇺🇸', n:'Američka hitna',  d:'hi-lo + yelp',         f:()=>lfoSiren({type:'square',base:1000,depth:300,lfoType:'square',rate:1.6})},
+  {id:'horn',  ic:'📯', n:'Air Horn',        d:'truba kamiona',         f:()=>chordHorn([233,294,349])},
+  {id:'ship',  ic:'🚢', n:'Brodska sirena',  d:'duboka truba',          f:()=>chordHorn([98,147],900)},
+  {id:'car',   ic:'🚗', n:'Auto alarm',      d:'mijenja uzorke',        f:carAlarm},
+  {id:'alarm', ic:'⏰', n:'Alarm / budilica', d:'pip-pip-pip',          f:()=>lfoSiren({type:'square',base:2100,depth:1,rate:1,gate:4,filt:5000})},
+  {id:'rev',   ic:'🚛', n:'Rikverc',         d:'pip kamiona',           f:()=>lfoSiren({type:'sine',base:1050,depth:1,rate:1,gate:1,filt:5000})},
+  {id:'nuke',  ic:'☢️', n:'Atomski alarm',   d:'brzi uspon',            f:()=>lfoSiren({type:'sawtooth',base:700,depth:350,lfoType:'sawtooth',rate:.6,filt:2500,extra:[1.5]})},
+];
+const active = {};
+SIRENS.forEach(s=>{
+  const b=document.createElement('button'); b.className='siren';
+  b.innerHTML=`<span class="ic">${s.ic}</span><b>${s.n}</b><small>${s.d}</small>`;
+  b.onclick=async()=>{
+    await init(); await ctx.resume();
+    if(active[s.id]){ active[s.id](); delete active[s.id]; b.classList.remove('on'); }
+    else { active[s.id]=s.f(); b.classList.add('on'); }
+  };
+  s.btn=b; $('sirens').appendChild(b);
+});
+$('stopAll').onclick=()=>{ SIRENS.forEach(s=>{ if(active[s.id]){active[s.id](); delete active[s.id]; s.btn.classList.remove('on');} }); };
+
+/* ================= RECORDING ================= */
+let rec=null, chunks=[], recT0=0, recTimer=null, recN=0;
+$('recBtn').onclick = async()=>{
+  await init(); await ctx.resume();
+  if(rec && rec.state==='recording'){ rec.stop(); return; }
+  const types=['audio/webm;codecs=opus','audio/mp4','audio/ogg;codecs=opus','audio/webm'];
+  const mt=types.find(t=>window.MediaRecorder&&MediaRecorder.isTypeSupported(t));
+  if(!window.MediaRecorder){ $('recTime').textContent='Snimanje nije podržano na ovom pregledniku'; return; }
+  rec = new MediaRecorder(N.recDest.stream, mt?{mimeType:mt}:undefined);
+  chunks=[];
+  rec.ondataavailable=e=>e.data.size&&chunks.push(e.data);
+  rec.onstop=()=>{
+    clearInterval(recTimer); $('recBtn').textContent='⏺ Počni snimanje'; $('recBtn').classList.remove('red'); $('recTime').textContent='';
+    const blob=new Blob(chunks,{type:rec.mimeType}), url=URL.createObjectURL(blob);
+    const ext = rec.mimeType.includes('mp4')?'m4a':rec.mimeType.includes('ogg')?'ogg':'webm';
+    const name=`bash-zvucnik-${++recN}.${ext}`;
+    const li=document.createElement('li');
+    li.innerHTML=`<b style="font-size:13px">${name}</b> <a class="dl" href="${url}" download="${name}">⬇ Spremi</a><audio controls src="${url}"></audio>`;
+    if(window.BashAndroid){
+      li.querySelector('a').onclick=e=>{
+        e.preventDefault();
+        const fr=new FileReader();
+        fr.onload=()=>{ const b64=fr.result.split(',')[1]; const p=BashAndroid.save(b64,name,blob.type.split(';')[0]);
+          e.target.textContent = p ? '✔ Spremljeno u Music/BashZvucnik' : '✖ Greška pri spremanju'; };
+        fr.readAsDataURL(blob);
+      };
+    }
+    $('recs').prepend(li);
+  };
+  rec.start(500); recT0=Date.now();
+  $('recBtn').textContent='⏹ Zaustavi'; $('recBtn').classList.add('red');
+  recTimer=setInterval(()=>$('recTime').textContent='● '+fmtT((Date.now()-recT0)/1000),500);
+};
+
+/* ================= TABS ================= */
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('act',x===b));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('act',t.id==='t-'+b.dataset.t));
+});
+// resume audio when app comes back
+document.addEventListener('visibilitychange',()=>{ if(ctx&&!document.hidden) ctx.resume(); });
+</script>
+</body>
+</html>

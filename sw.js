@@ -9,7 +9,7 @@ self.addEventListener('fetch', e => {
   if (r.method !== 'GET') return;
   const own = u.origin === location.origin;
   // podaplikacije, APK i statistika idu uvijek na mrežu
-  if (own && /^\/(igre|fit|bashtalk|armory|ne-ljuti-se|bash-electro|metar)\//.test(u.pathname)) return;
+  if (own && /^\/(igre|fit|bashtalk|armory|ne-ljuti-se|bash-electro|metar|zvucnik)\//.test(u.pathname)) return;
   if (/\.apk$/i.test(u.pathname) || u.hostname.endsWith('goatcounter.com') || u.hostname === 'gc.zgo.at' || u.hostname === 'api.github.com') return;
   // stranica: prvo mreža (svježe), pa keš ako si offline
   if (r.mode === 'navigate') {

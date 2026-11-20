@@ -52,7 +52,7 @@ window.PROJECTS = [
   }
 },
 {
-  id: "metar", name: "Bash Metar", tags: ["web"], status: "live", isNew: true,
+  id: "metar", name: "Bash Metar", tags: ["web"], status: "live",
   group: "apps", cat: "prod", icon: "ruler", c: ["#3b82f6", "#06b6d4"],
   web: "metar/",
   gh: { repo: "Basaofficial/basaofficial.github.io", path: "metar" },
@@ -74,6 +74,31 @@ window.PROJECTS = [
           long: "Enter the lengths you measure with a tape measure, and the app draws the floor plan, works out the area, perimeter and wall surface, and shows how long each side is on a 1:50 plan.",
           more: "If the walls aren't square, measure a check diagonal and the shape corrects itself. Add doors, windows and electrical symbols, put rooms together into a whole flat and export the plan as a to-scale PDF.",
           feats: ["Floor plan from measured lengths", "Area, perimeter, walls and volume", "Fix skewed walls with a diagonal", "Doors, windows and electrical symbols", "Combine rooms into a flat", "To-scale PDF, PNG and SVG export", "Laminate, tiles, skirting and paint"] }
+  }
+},
+{
+  id: "zvucnik", name: "Bash Zvučnik", tags: ["web"], status: "live", isNew: true,
+  group: "apps", cat: "tools", icon: "speaker", c: ["#ff4d6d", "#4cc9ff"],
+  web: "zvucnik/",
+  gh: { repo: "Basaofficial/basaofficial.github.io", path: "zvucnik" },
+  shots: ["zvucnik-1", "zvucnik-2", "zvucnik-3"],
+  platform: "Web",
+  t: {
+    bs: { sub: "Mikrofon, karaoke i sirene",
+          short: "Telefon kao mikrofon za zvučnik, uz matricu, equalizer i sirene.",
+          long: "Pričaš ili pjevaš u telefon, a glas ide uživo na Bluetooth ili AUX zvučnik. Uz to pustiš MP3 matricu, podesiš equalizer i dodaš jeku, hall ili efekte glasa.",
+          more: "Prekidač za uklanjanje vokala od obične pjesme napravi matricu za karaoke, a tonalitet pjesme se mijenja bez promjene brzine. Ima 14 sirena, od policije i hitne do air horna, i snimanje svega što ide na zvučnik.",
+          feats: ["Mikrofon uživo na zvučnik", "Pitch glasa, Robot, Megafon, Čipmank", "EQ za mikrofon i muziku", "MP3 matrica, tonalitet i uklanjanje vokala", "Jeka i hall", "14 sirena: policija, hitna, vatrogasci…", "Snimanje glasa i muzike"] },
+    de: { sub: "Mikrofon, Karaoke und Sirenen",
+          short: "Handy als Mikrofon für die Box, mit Playback, Equalizer und Sirenen.",
+          long: "Du sprichst oder singst ins Handy und die Stimme kommt live aus der Bluetooth- oder AUX-Box. Dazu ein MP3-Playback abspielen, den Equalizer einstellen und Echo, Hall oder Stimmeffekte hinzufügen.",
+          more: "Der Schalter zum Entfernen des Gesangs macht aus einem normalen Song ein Karaoke-Playback, und die Tonart lässt sich ohne Tempoänderung verschieben. Dazu 14 Sirenen von Polizei und Rettung bis Air Horn und eine Aufnahme von allem, was auf die Box geht.",
+          feats: ["Live-Mikrofon auf die Box", "Stimm-Pitch, Roboter, Megafon, Chipmunk", "EQ für Mikrofon und Musik", "MP3-Playback, Tonart, Gesang entfernen", "Echo und Hall", "14 Sirenen: Polizei, Rettung, Feuerwehr…", "Aufnahme von Stimme und Musik"] },
+    en: { sub: "Mic, karaoke and sirens",
+          short: "Your phone as a mic for the speaker, with backing tracks, EQ and sirens.",
+          long: "Talk or sing into your phone and your voice comes out live on a Bluetooth or AUX speaker. Play an MP3 backing track, tune the equalizer and add echo, reverb or voice effects.",
+          more: "The vocal remover turns a normal song into a karaoke track, and you can change the song's key without changing its speed. There are 14 sirens, from police and ambulance to an air horn, plus recording of everything that goes to the speaker.",
+          feats: ["Live mic to the speaker", "Voice pitch, Robot, Megaphone, Chipmunk", "EQ for mic and music", "MP3 backing track, key shift, vocal remover", "Echo and reverb", "14 sirens: police, ambulance, fire…", "Record voice and music"] }
   }
 },
 {
