@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Bash Metar – izmjeri prostoriju metrom i dobij tlocrt 1:50, kvadraturu, zidove i materijal.">
+<meta name="theme-color" content="#1b1f24">
+<title>#Bash Metar</title>
+<style>
+:root{--bg:#f4f5f7;--card:#fff;--ink:#1b1f24;--mut:#6b7280;--line:#e3e6ea;--acc:#2563eb;--acc2:#e8efff;--ok:#0f9d58;--warn:#d97706;--bad:#dc2626;--el:#c2410c}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--ink);font-size:15px}
+header{background:var(--ink);color:#fff;padding:12px 14px;display:flex;align-items:center;gap:10px}
+header h1{font-size:17px;margin:0;flex:1}
+header label{font-size:13px;opacity:.85}
+select,input,button{font:inherit;color:inherit}
+header select{background:#2b3138;color:#fff;border:1px solid #444;border-radius:8px;padding:5px 6px}
+.tabs{display:flex;background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+.tabs button{flex:1;border:0;background:none;padding:11px 4px;font-weight:600;color:var(--mut);border-bottom:3px solid transparent;font-size:14px}
+.tabs button.on{color:var(--acc);border-color:var(--acc)}
+main{max-width:900px;margin:0 auto;padding:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:12px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 12px;font-weight:600}
+.btn.p{background:var(--acc);color:#fff;border-color:var(--acc)}
+.btn.s{font-size:13px;padding:6px 10px}
+.btn.d{color:var(--bad)}
+.btn.on{background:var(--el);color:#fff;border-color:var(--el)}
+.rooms{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px}
+.rooms button{white-space:nowrap;border:1px solid var(--line);background:#fff;border-radius:20px;padding:6px 12px}
+.rooms button.on{background:var(--acc2);border-color:var(--acc);color:var(--acc);font-weight:600}
+.wrap{background:#fbfcfd;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.wrap svg{display:block;width:100%;height:auto;max-height:62vh}
+#flatwrap{touch-action:none}
+.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.pad button{font-size:24px;padding:12px 0;border-radius:12px;border:1px solid var(--line);background:#fff}
+.pad button:active{background:var(--acc2)}
+.pad .mid{font-size:13px;font-weight:700;background:var(--acc2);color:var(--acc)}
+.lenin{display:flex;gap:8px;align-items:center}
+.lenin input{flex:1;font-size:22px;padding:10px 12px;border:2px solid var(--acc);border-radius:12px;min-width:0}
+.unit{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.unit button{border:0;background:#fff;padding:10px 12px;font-weight:600}
+.unit button.on{background:var(--ink);color:#fff}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.stat{background:var(--bg);border-radius:10px;padding:8px 10px}
+.stat b{display:block;font-size:19px}
+.stat span{font-size:12px;color:var(--mut)}
+.stat.big{grid-column:span 2;background:var(--acc2)}
+.stat.big b{font-size:28px;color:var(--acc)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;color:var(--mut);font-weight:600;font-size:12px;padding:6px 4px;border-bottom:1px solid var(--line)}
+td{padding:5px 4px;border-bottom:1px solid var(--line)}
+td input{width:76px;padding:5px;border:1px solid var(--line);border-radius:6px}
+td select{padding:4px;border:1px solid var(--line);border-radius:6px;background:#fff}
+.note{font-size:13px;color:var(--mut);margin:6px 0 0}
+.msg{padding:8px 10px;border-radius:10px;font-size:14px;margin-top:8px}
+.msg.w{background:#fff6e6;color:#8a4b00}
+.msg.ok{background:#e7f7ee;color:#0b6b3c}
+.msg.e{background:#fdecec;color:#991b1b}
+h2{font-size:15px;margin:0 0 8px}
+.f label{display:block;font-size:12px;color:var(--mut);margin-top:6px}
+.f input,.f select{width:100%;font-size:17px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:#fff}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.hide{display:none!important}
+.tb{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;align-items:center}
+.tb span{font-size:12px;color:var(--mut);font-weight:600}
+.chk{display:flex;gap:8px;align-items:flex-start;font-size:14px}
+.chk input{width:20px;height:20px;margin-top:1px}
+#modal{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center;padding:20px;z-index:9}
+#modal .card{max-width:360px;width:100%}
+#modal input{width:100%;padding:10px;font-size:17px;border:1px solid var(--line);border-radius:10px;margin:8px 0}
+.nudge{display:grid;grid-template-columns:repeat(3,48px);gap:6px}
+.nudge button{height:44px;font-size:20px;border:1px solid var(--line);border-radius:10px;background:#fff}
+</style>
+</head>
+<body>
+<header>
+  <a href="../" style="color:#9aa3a8;text-decoration:none;font-size:13px;margin-right:4px" aria-label="bashlab">←</a><h1>#Bash Metar</h1>
+  <label>Mjerilo</label>
+  <select id="scale">
+    <option value="20">1:20</option><option value="25">1:25</option><option value="50">1:50</option><option value="100">1:100</option><option value="200">1:200</option>
+  </select>
+</header>
+<div class="tabs" id="tabs"><button data-t="room">Prostorija</button><button data-t="flat">Stan</button><button data-t="mat">Materijal</button><button data-t="conv">Pretvarač</button></div>
+
+<main>
+<!-- ================= PROSTORIJA ================= -->
+<section id="t-room">
+  <div class="card">
+    <div class="rooms" id="rooms"></div>
+    <div class="row">
+      <button class="btn s" id="addRoom">+ Prostorija</button>
+      <button class="btn s" id="renRoom">Preimenuj</button>
+      <button class="btn s" id="rotRoom">↻ 90°</button>
+      <button class="btn s d" id="delRoom">Obriši</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="tb" id="emBar"><span>Elektro:</span>
+      <button class="btn s" data-em="s">🔌 Utičnica</button>
+      <button class="btn s" data-em="p">Prekidač</button>
+      <button class="btn s" data-em="l">💡 Svjetlo</button>
+      <button class="btn s" data-em="b">UV kutija</button>
+      <button class="btn s d" data-em="x">Briši</button>
+    </div>
+    <div class="wrap" id="svgwrap"></div>
+    <div id="status"></div>
+  </div>
+
+  <div class="card">
+    <h2>Unesi izmjerenu stranicu</h2>
+    <div class="lenin">
+      <input id="len" inputmode="decimal" placeholder="npr. 4,20" autocomplete="off">
+      <div class="unit" id="unit"><button data-u="m">m</button><button data-u="cm">cm</button></div>
+    </div>
+    <p class="note">Upiši dužinu pa pritisni strelicu u smjeru u kojem zid ide (gledano na plan).</p>
+    <div class="pad" id="pad"></div>
+    <div class="row" style="margin-top:10px">
+      <button class="btn s" id="undo">↶ Poništi zadnju</button>
+      <button class="btn s d" id="clear">Očisti oblik</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Rezultat</h2>
+    <div class="g2 f" style="margin-bottom:10px">
+      <div><label>Visina prostorije (cm)</label><input id="hIn" inputmode="decimal"></div>
+      <div><label>Debljina zida (cm, 0 = bez)</label><input id="tIn" inputmode="decimal"></div>
+    </div>
+    <div class="stats" id="stats"></div>
+  </div>
+
+  <div class="card">
+    <h2>Stranice i kutovi</h2>
+    <table><thead><tr><th>#</th><th>Smjer</th><th id="thLen">Stvarno</th><th>Plan</th><th>Kut</th><th></th></tr></thead><tbody id="segs"></tbody></table>
+    <p class="note">Kut = unutarnji kut u početnom uglu stranice (A, B, C…). Sve se može ispraviti u tablici.</p>
+    <div class="row" style="margin-top:8px"><button class="btn s" id="copy">Kopiraj mjere</button><span id="copied" class="note"></span></div>
+  </div>
+
+  <div class="card">
+    <h2>Kontrolne dijagonale</h2>
+    <div id="diagBox"></div>
+  </div>
+
+  <div class="card">
+    <h2>Vrata i prozori</h2>
+    <div class="g3 f">
+      <div><label>Zid</label><select id="oSeg"></select></div>
+      <div><label>Vrsta</label><select id="oK"><option value="d">Vrata</option><option value="w">Prozor</option></select></div>
+      <div><label>Od početka zida (cm)</label><input id="oP" inputmode="decimal" placeholder="npr. 30"></div>
+      <div><label>Širina (cm)</label><input id="oW" inputmode="decimal" value="90"></div>
+      <div><label>Visina (cm)</label><input id="oH" inputmode="decimal" value="205"></div>
+      <div id="oSWrap" class="hide"><label>Parapet (cm)</label><input id="oS" inputmode="decimal" value="90"></div>
+    </div>
+    <div class="row" style="margin-top:10px"><button class="btn p s" id="oAdd">+ Dodaj otvor</button></div>
+    <div id="oMsg"></div>
+    <table style="margin-top:8px"><tbody id="openList"></tbody></table>
+    <p class="note">„Od početka zida“ = udaljenost od ugla gdje zid počinje (npr. zid b počinje u uglu B).</p>
+  </div>
+
+  <div class="card">
+    <h2>Elektro</h2>
+    <div id="elBox"></div>
+  </div>
+
+  <div class="card exp">
+    <h2>Izvoz u mjerilu</h2>
+    <div class="row">
+      <button class="btn s" data-x="pdf" data-w="room">PDF</button>
+      <button class="btn s" data-x="png" data-w="room">PNG</button>
+      <button class="btn s" data-x="svg" data-w="room">SVG</button>
+    </div>
+    <div class="expMsg"></div>
+  </div>
+</section>
+
+<!-- ================= STAN ================= -->
+<section id="t-flat" class="hide">
+  <div class="card">
+    <p class="note" style="margin:0 0 8px">Povuci prostoriju prstom – sama se „zalijepi“ uz drugu prostoriju (i uz debljinu zida).</p>
+    <div class="wrap" id="flatwrap"></div>
+    <div class="row" style="margin-top:10px;align-items:flex-start;justify-content:space-between">
+      <div class="nudge">
+        <span></span><button data-n="0,-1">↑</button><span></span>
+        <button data-n="-1,0">←</button><button id="fRot" style="font-size:15px">↻</button><button data-n="1,0">→</button>
+        <span></span><button data-n="0,1">↓</button><span></span>
+      </div>
+      <div class="f" style="min-width:130px">
+        <label>Korak</label>
+        <select id="step"><option value="1">1 cm</option><option value="10" selected>10 cm</option><option value="50">50 cm</option><option value="100">1 m</option></select>
+        <label class="chk" style="margin-top:10px;color:var(--ink)"><input type="checkbox" id="flatLabels"> Prikaži mjere</label>
+      </div>
+    </div>
+    <p class="note" id="selName"></p>
+  </div>
+  <div class="card">
+    <h2>Sve prostorije</h2>
+    <table><thead><tr><th>Prostorija</th><th>Neto m²</th><th>Opseg</th><th>Zidovi m²</th></tr></thead><tbody id="all"></tbody></table>
+  </div>
+  <div class="card exp">
+    <h2>Izvoz cijelog stana</h2>
+    <div class="row">
+      <button class="btn s" data-x="pdf" data-w="flat">PDF</button>
+      <button class="btn s" data-x="png" data-w="flat">PNG</button>
+      <button class="btn s" data-x="svg" data-w="flat">SVG</button>
+    </div>
+    <div class="expMsg"></div>
+  </div>
+</section>
+
+<!-- ================= MATERIJAL ================= -->
+<section id="t-mat" class="hide">
+  <div class="card f">
+    <h2>Postavke</h2>
+    <div class="g2">
+      <div><label>Laminat – m² u paketu</label><input data-m="lam" inputmode="decimal"></div>
+      <div><label>Pločice – m² u paketu</label><input data-m="tile" inputmode="decimal"></div>
+      <div><label>Otpad / rezanje (%)</label><input data-m="waste" inputmode="decimal"></div>
+      <div><label>Letvica – dužina (cm)</label><input data-m="skirt" inputmode="decimal"></div>
+      <div><label>Farba – m² po litri</label><input data-m="cov" inputmode="decimal"></div>
+      <div><label>Broj premaza</label><input data-m="coats" inputmode="decimal"></div>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Pod</h2>
+    <table><thead><tr><th>Prostorija</th><th>Pod</th><th>m²</th><th>Paketa</th><th>Letvice</th></tr></thead><tbody id="matFloor"></tbody></table>
+  </div>
+  <div class="card">
+    <h2>Zidovi i strop (farba)</h2>
+    <table><thead><tr><th>Prostorija</th><th>Zidovi m²</th><th>Strop m²</th><th>Farba L</th></tr></thead><tbody id="matWall"></tbody></table>
+    <p class="note">Zidovi = opseg × visina − vrata i prozori. Letvice = opseg − širine vrata (+5 %).</p>
+  </div>
+</section>
+
+<!-- ================= PRETVARAČ ================= -->
+<section id="t-conv" class="hide">
+  <div class="card f">
+    <h2>Dužina</h2>
+    <label>Izmjereno ravnalom na planu (cm)</label><input id="cPlan" inputmode="decimal" placeholder="npr. 8,4">
+    <label>U stvarnosti (m)</label><input id="cReal" inputmode="decimal" placeholder="npr. 4,20">
+    <p class="note" id="cRule"></p>
+  </div>
+  <div class="card f">
+    <h2>Površina</h2>
+    <label>Površina na planu (cm²)</label><input id="aPlan" inputmode="decimal">
+    <label>U stvarnosti (m²)</label><input id="aReal" inputmode="decimal">
+  </div>
+  <div class="card f">
+    <h2>Pravokutnik na brzinu</h2>
+    <div class="g2"><div><label>Dužina (m)</label><input id="rA" inputmode="decimal"></div><div><label>Širina (m)</label><input id="rB" inputmode="decimal"></div></div>
+    <div class="stats" id="rOut" style="margin-top:10px"></div>
+  </div>
+</section>
+</main>
+
+<div id="modal"><div class="card"><h2 id="mTitle">Naziv</h2><input id="mIn"><div class="row" style="justify-content:flex-end"><button class="btn" id="mNo">Odustani</button><button class="btn p" id="mOk">OK</button></div></div></div>
+
+<script>
+const $=id=>document.getElementById(id);
+const num=v=>{const n=parseFloat(String(v??'').replace(',','.'));return isFinite(n)?n:NaN};
+const f=(n,d=2)=>(Math.round(n*10**d)/10**d).toFixed(d).replace('.',',');
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const LS=i=>String.fromCharCode(97+i%26), LV=i=>String.fromCharCode(65+i%26);
+const DIRS=[{a:135,s:'↖'},{a:90,s:'↑'},{a:45,s:'↗'},{a:180,s:'←'},null,{a:0,s:'→'},{a:225,s:'↙'},{a:270,s:'↓'},{a:315,s:'↘'}];
+const DIRNAME={0:'→',45:'↗',90:'↑',135:'↖',180:'←',225:'↙',270:'↓',315:'↘'};
+const ELN={s:'Utičnica',p:'Prekidač',l:'Svjetlo',b:'UV kutija'};
+const MATDEF={lam:2.22,tile:1.44,waste:10,skirt:240,cov:7,coats:2};
+const newRoom=name=>({name,segs:[],h:250,t:0,diag:{},useDiag:false,open:[],el:[],ox:0,oy:0,floor:'lam'});
+
+let S={scale:50,unit:'m',cur:0,tab:'room',flatLabels:false,rooms:[newRoom('Prostorija 1')],mat:{...MATDEF}};
+try{
+  const s=JSON.parse(localStorage.getItem('bashmetar')||localStorage.getItem('bashplan')||'null');
+  if(s&&s.rooms&&s.rooms.length){
+    S=Object.assign(S,s);
+    S.rooms=s.rooms.map(r=>Object.assign(newRoom(r.name||'Prostorija'),r));
+    S.mat=Object.assign({...MATDEF},s.mat||{});
+  }
+}catch(e){}
+if(!(S.cur<S.rooms.length))S.cur=0;
+S.em=null;
+const save=()=>{try{const c={...S};delete c.em;localStorage.setItem('bashmetar',JSON.stringify(c))}catch(e){}};
+const room=()=>S.rooms[S.cur];
+
+function fmtLen(cm){return S.unit==='m'?f(cm/100,2)+' m':f(cm,cm%1?1:0)+' cm'}
+function fmtPlan(cm){const p=cm/S.scale;return f(p,p<10?2:1)+' cm'}
+const toCm=v=>S.unit==='m'?v*100:v;
+const fromCm=cm=>S.unit==='m'?+(cm/100).toFixed(3):+cm.toFixed(1);
+const inUnit=cm=>String(fromCm(cm)).replace('.',',');
+
+/* ================= GEOMETRIJA ================= */
+const dist=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1]);
+function arrowPts(segs){let x=0,y=0;const p=[[0,0]];for(const s of segs){const r=s.a*Math.PI/180;x+=s.l*Math.cos(r);y-=s.l*Math.sin(r);p.push([x,y])}return p}
+function pip(pt,V){let c=false;for(let i=0,j=V.length-1;i<V.length;j=i++){const a=V[i],b=V[j];if((a[1]>pt[1])!=(b[1]>pt[1])&&pt[0]<(b[0]-a[0])*(pt[1]-a[1])/(b[1]-a[1])+a[0])c=!c}return c}
+function circ(c0,r0,c1,r1){
+  const dx=c1[0]-c0[0],dy=c1[1]-c0[1],d=Math.hypot(dx,dy);
+  if(d===0||d>r0+r1+0.5||d<Math.abs(r0-r1)-0.5)return null;
+  const a=(r0*r0-r1*r1+d*d)/(2*d),h=Math.sqrt(Math.max(0,r0*r0-a*a));
+  const xm=c0[0]+a*dx/d,ym=c0[1]+a*dy/d;
+  return[[xm+h*dy/d,ym-h*dx/d],[xm-h*dy/d,ym+h*dx/d]];
+}
+function lineX(p,d,q,e){const den=d[0]*e[1]-d[1]*e[0];if(Math.abs(den)<1e-9)return null;const t=((q[0]-p[0])*e[1]-(q[1]-p[1])*e[0])/den;return[p[0]+d[0]*t,p[1]+d[1]*t]}
+function solveDiag(r,P){
+  const s=r.segs,n=s.length,a0=s[0].a*Math.PI/180;
+  const V=[[0,0],[s[0].l*Math.cos(a0),-s[0].l*Math.sin(a0)]];
+  for(let k=2;k<=n-1;k++){
+    const d0=k===n-1?s[n-1].l:num(r.diag[k]);
+    if(!(d0>0))return{err:`Upiši dijagonalu A–${LV(k)}`};
+    const res=circ(V[0],d0,V[k-1],s[k-1].l);
+    if(!res)return{err:`Mjere se ne slažu u trokutu A–${LV(k-1)}–${LV(k)}. Provjeri dužine i dijagonale.`};
+    V[k]=dist(res[0],P[k])<=dist(res[1],P[k])?res[0]:res[1];
+  }
+  return{V};
+}
+function G(r){
+  const segs=r.segs,n=segs.length,P=arrowPts(segs);
+  const gap=dist(P[n],P[0]);
+  let V=null,closed=false,corr=false,err=null;
+  if(r.useDiag&&n>=3){const res=solveDiag(r,P);if(res.err)err=res.err;else{V=res.V;closed=true;corr=true}}
+  if(!V){if(n>=3&&gap<1){closed=true;V=P.slice(0,n)}else V=P}
+  const m=closed?V.length:V.length-1,E=[];
+  for(let i=0;i<m;i++){
+    const A=V[i],B=V[(i+1)%V.length],L=dist(A,B)||1e-9,u=[(B[0]-A[0])/L,(B[1]-A[1])/L];
+    let no=[u[1],-u[0]];
+    if(closed){const mid=[(A[0]+B[0])/2+no[0],(A[1]+B[1])/2+no[1]];if(pip(mid,V))no=[-no[0],-no[1]]}
+    E.push({A,B,L,u,no});
+  }
+  let signed=0,ang=[],bis=[],outer=null,outerArea=0,cen=null;
+  if(closed){
+    for(let i=0;i<V.length;i++){const a=V[i],b=V[(i+1)%V.length];signed+=a[0]*b[1]-b[0]*a[1]}
+    signed/=2;
+    const turns=[];let sum=0;
+    for(let i=0;i<m;i++){const u1=E[(i-1+m)%m].u,u2=E[i].u;const t=Math.atan2(u1[0]*u2[1]-u1[1]*u2[0],u1[0]*u2[0]+u1[1]*u2[1])*180/Math.PI;turns.push(t);sum+=t}
+    const sg=sum>=0?1:-1;
+    for(let i=0;i<m;i++){
+      ang.push(180-sg*turns[i]);
+      const u1=E[(i-1+m)%m].u,u2=E[i].u;let b=[-u1[0]+u2[0],-u1[1]+u2[1]];let bl=Math.hypot(b[0],b[1]);
+      if(bl<1e-6){b=[-E[i].no[0],-E[i].no[1]];bl=1}
+      b=[b[0]/bl,b[1]/bl];if(!pip([V[i][0]+b[0]*2,V[i][1]+b[1]*2],V))b=[-b[0],-b[1]];
+      bis.push(b);
+    }
+    if(r.t>0){
+      outer=[];
+      for(let j=0;j<m;j++){const p=E[(j-1+m)%m],q=E[j];const pp=[p.A[0]+p.no[0]*r.t,p.A[1]+p.no[1]*r.t],qq=[q.A[0]+q.no[0]*r.t,q.A[1]+q.no[1]*r.t];outer.push(lineX(pp,p.u,qq,q.u)||qq)}
+      for(let i=0;i<outer.length;i++){const a=outer[i],b=outer[(i+1)%outer.length];outerArea+=a[0]*b[1]-b[0]*a[1]}
+      outerArea=Math.abs(outerArea/2);
+    }
+    if(Math.abs(signed)>1){let cx=0,cy=0;for(let i=0;i<V.length;i++){const a=V[i],b=V[(i+1)%V.length],c=a[0]*b[1]-b[0]*a[1];cx+=(a[0]+b[0])*c;cy+=(a[1]+b[1])*c}cen=[cx/(6*signed),cy/(6*signed)];if(!pip(cen,V))cen=null}
+  }
+  const all=V.concat(outer||[]),xs=all.map(v=>v[0]),ys=all.map(v=>v[1]);
+  const g={V,E,P,closed,corr,err,gap,per:segs.reduce((t,s)=>t+s.l,0),area:Math.abs(signed),ang,bis,outer,outerArea,
+    minx:Math.min(...xs),maxx:Math.max(...xs),miny:Math.min(...ys),maxy:Math.max(...ys)};
+  g.cen=cen||[(g.minx+g.maxx)/2,(g.miny+g.maxy)/2];
+  return g;
+}
+function calc(r){
+  const g=G(r);
+  const openA=r.open.reduce((t,o)=>t+o.w*o.h,0)/1e4;
+  const doorW=r.open.filter(o=>o.k==='d').reduce((t,o)=>t+o.w,0);
+  const floor=g.closed?g.area/1e4:0;
+  const wallsG=g.per*r.h/1e4;
+  return{g,floor,wallsG,walls:Math.max(0,wallsG-openA),openA,vol:floor*r.h/100,skirt:Math.max(0,g.per-doorW)/100,bruto:g.outer?g.outerArea/1e4:null};
+}
+function cable(r){
+  const box=r.el.find(e=>e.k==='b');if(!box)return null;
+  const h=r.h,z=h-30;let t=0,n=0;
+  r.el.forEach(e=>{if(e===box)return;const v=e.k==='s'?z-30:e.k==='p'?z-105:e.k==='l'?h-z:z-150;t+=Math.abs(e.x-box.x)+Math.abs(e.y-box.y)+Math.max(0,v)+Math.max(0,z-150)+30;n++});
+  return{m:t*1.1/100,n};
+}
+
+/* ================= CRTANJE ================= */
+function sym(k,x,y,fs){
+  const c='#c2410c',r=fs*.45,w=fs/9;
+  if(k==='s')return `<g stroke="${c}" stroke-width="${w}" fill="#fff"><circle cx="${x}" cy="${y}" r="${r}"/><line x1="${x-r}" y1="${y}" x2="${x+r}" y2="${y}"/><line x1="${x}" y1="${y-r}" x2="${x}" y2="${y-r*1.6}"/></g>`;
+  if(k==='p')return `<g stroke="${c}" stroke-width="${w}"><circle cx="${x}" cy="${y}" r="${r*.55}" fill="#fff"/><line x1="${x+r*.4}" y1="${y-r*.4}" x2="${x+r*1.5}" y2="${y-r*1.5}"/><line x1="${x+r*1.5}" y1="${y-r*1.5}" x2="${x+r*1.9}" y2="${y-r*1.1}"/></g>`;
+  if(k==='l')return `<g stroke="${c}" stroke-width="${w}" fill="#fff"><circle cx="${x}" cy="${y}" r="${r*1.1}"/><line x1="${x-r*.78}" y1="${y-r*.78}" x2="${x+r*.78}" y2="${y+r*.78}"/><line x1="${x-r*.78}" y1="${y+r*.78}" x2="${x+r*.78}" y2="${y-r*.78}"/></g>`;
+  return `<g><rect x="${x-fs*.8}" y="${y-fs*.42}" width="${fs*1.6}" height="${fs*.84}" fill="${c}" rx="${fs*.1}"/><text x="${x}" y="${y+fs*.2}" font-size="${fs*.55}" text-anchor="middle" fill="#fff" font-weight="700">UV</text></g>`;
+}
+function body(r,g,fs,o){
+  const sw=fs/4,bg=o.bg||'#fbfcfd',tw=g.outer?r.t:0;let s='';
+  const pp=g.V.map(v=>v[0].toFixed(2)+','+v[1].toFixed(2)).join(' ');
+  const dr=o.ri!=null?` data-r="${o.ri}"`:'';
+  if(g.closed){
+    if(g.outer){
+      const path=pts=>'M'+pts.map(v=>v[0].toFixed(2)+','+v[1].toFixed(2)).join('L')+'Z';
+      s+=`<path d="${path(g.outer)} ${path(g.V)}" fill="#c9ced6" fill-rule="evenodd" stroke="#1b1f24" stroke-width="${sw*.6}"${dr}/>`;
+    }
+    s+=`<polygon points="${pp}" fill="${o.fill||'rgba(37,99,235,.08)'}" stroke="#1b1f24" stroke-width="${g.outer?sw*.6:sw}" stroke-linejoin="round"${dr}/>`;
+  }else if(g.V.length>1){
+    s+=`<polyline points="${pp}" fill="none" stroke="#1b1f24" stroke-width="${sw}" stroke-linejoin="round" stroke-linecap="round"${dr}/>`;
+    if(o.gapline){const l=g.V[g.V.length-1];s+=`<line x1="${l[0]}" y1="${l[1]}" x2="0" y2="0" stroke="#d97706" stroke-width="${sw/2}" stroke-dasharray="${fs/2} ${fs/3}"/>`}
+  }
+  // otvori
+  r.open.forEach(op=>{
+    const e=g.E[op.s];if(!e)return;
+    const P=t=>[e.A[0]+e.u[0]*t,e.A[1]+e.u[1]*t],n=e.no,ni=[-n[0],-n[1]];
+    const p0=P(op.p),p1=P(Math.min(e.L,op.p+op.w));
+    const off=(p,k)=>[p[0]+n[0]*k,p[1]+n[1]*k];
+    const lo=-sw,hi=tw+sw;
+    const q=[off(p0,lo),off(p1,lo),off(p1,hi),off(p0,hi)];
+    s+=`<polygon points="${q.map(v=>v.join(',')).join(' ')}" fill="${bg}"/>`;
+    const L=(a,b,w,c)=>`<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="${c||'#1b1f24'}" stroke-width="${w}"/>`;
+    s+=L(off(p0,0),off(p0,tw),sw*.6)+L(off(p1,0),off(p1,tw),sw*.6);
+    if(op.k==='w'){
+      const ks=tw>0?[0,tw/2,tw]:[-fs*.25,0,fs*.25];
+      ks.forEach(k=>s+=L(off(p0,k),off(p1,k),sw*.45,'#2563eb'));
+    }else{
+      const w=dist(p0,p1),st=[p0[0]+ni[0]*w,p0[1]+ni[1]*w];
+      const cr=(st[0]-p0[0])*(p1[1]-p0[1])-(st[1]-p0[1])*(p1[0]-p0[0]);
+      s+=L(p0,st,sw*.5);
+      s+=`<path d="M${st[0]},${st[1]} A${w},${w} 0 0 ${cr>0?1:0} ${p1[0]},${p1[1]}" fill="none" stroke="#1b1f24" stroke-width="${sw*.35}" stroke-dasharray="${fs/4} ${fs/6}"/>`;
+    }
+  });
+  // mjere
+  if(o.labels)g.E.forEach((e,i)=>{
+    // uz unutarnji (konkavni) ugao pomakni natpis dalje od ugla da se ne preklapa
+    let k=.5;const m=g.E.length;
+    if(g.closed){if(g.ang[i]>185)k+=.2;if(g.ang[(i+1)%m]>185)k-=.2}
+    const mx=e.A[0]+(e.B[0]-e.A[0])*k,my=e.A[1]+(e.B[1]-e.A[1])*k,off=tw+fs*1.2;
+    const tx=mx+e.no[0]*off,ty=my+e.no[1]*off;
+    let an=Math.atan2(e.u[1],e.u[0])*180/Math.PI;if(an>90)an-=180;if(an<-90)an+=180;
+    const L=r.segs[i]?r.segs[i].l:e.L;
+    s+=`<g transform="translate(${tx},${ty}) rotate(${an})"><text text-anchor="middle" font-size="${fs}" font-weight="700" fill="#1b1f24" y="${o.plan?fs*.05:fs*.35}">${o.letters?LS(i)+' = ':''}${fmtLen(L)}</text>${o.plan?`<text text-anchor="middle" font-size="${fs*.68}" fill="#2563eb" y="${fs*.95}">plan ${fmtPlan(L)}</text>`:''}</g>`;
+  });
+  // uglovi
+  if(o.letters){
+    g.V.forEach((v,i)=>{
+      if(!g.closed&&i===g.V.length-1&&g.V.length>1)return;
+      if(i===0)s+=`<circle cx="${v[0]}" cy="${v[1]}" r="${fs/3}" fill="#0f9d58"/>`;
+      if(g.closed){
+        const b=g.bis[i],x=v[0]+b[0]*fs*1.25,y=v[1]+b[1]*fs*1.25,a=g.ang[i],odd=Math.abs(a-90)>0.5&&Math.abs(a-270)>0.5&&Math.abs(a-180)>0.5;
+        s+=`<text x="${x}" y="${y+fs*.3}" text-anchor="middle" font-size="${fs*.75}" font-weight="700" fill="#6b7280">${LV(i)}</text>`;
+        if(odd)s+=`<text x="${x}" y="${y+fs*1.1}" text-anchor="middle" font-size="${fs*.6}" fill="#d97706" font-weight="700">${f(a,1)}°</text>`;
+      }else s+=`<text x="${v[0]+fs*.5}" y="${v[1]-fs*.5}" font-size="${fs*.7}" font-weight="700" fill="#6b7280">${LV(i)}</text>`;
+    });
+  }
+  if(o.elec)r.el.forEach(e=>s+=sym(e.k,e.x,e.y,fs*.9));
+  if(g.closed&&(o.area||o.name)){
+    const [cx,cy]=g.cen;
+    if(o.name)s+=`<text x="${cx}" y="${cy-fs*.2}" text-anchor="middle" font-size="${fs*.9}" font-weight="700" fill="#1b1f24">${esc(r.name)}</text>`;
+    s+=`<text x="${cx}" y="${cy+(o.name?fs*1.05:fs*.45)}" text-anchor="middle" font-size="${o.name?fs:fs*1.4}" font-weight="800" fill="#2563eb">${f(g.area/1e4)} m²</text>`;
+  }else if(o.name&&g.V.length>1){s+=`<text x="${g.V[0][0]}" y="${g.V[0][1]-fs*.6}" font-size="${fs*.9}" font-weight="700" fill="#1b1f24">${esc(r.name)}</text>`}
+  return s;
+}
+function grid(vx,vy,vw,vh,fs){
+  const step=Math.max(vw,vh)>3000?500:100;let s='';
+  for(let x=Math.ceil(vx/step)*step;x<vx+vw;x+=step)s+=`<line x1="${x}" y1="${vy}" x2="${x}" y2="${vy+vh}" stroke="#e8ebef" stroke-width="${fs/12}"/>`;
+  for(let y=Math.ceil(vy/step)*step;y<vy+vh;y+=step)s+=`<line x1="${vx}" y1="${y}" x2="${vx+vw}" y2="${y}" stroke="#e8ebef" stroke-width="${fs/12}"/>`;
+  return s;
+}
+let fsCur=10;
+function drawRoom(){
+  const r=room(),g=G(r);
+  let minx=g.minx,maxx=g.maxx,miny=g.miny,maxy=g.maxy;
+  r.el.forEach(e=>{minx=Math.min(minx,e.x);maxx=Math.max(maxx,e.x);miny=Math.min(miny,e.y);maxy=Math.max(maxy,e.y)});
+  const w=Math.max(maxx-minx,100),h=Math.max(maxy-miny,100);
+  const fs=Math.max(w,h)/24,m=fs*3.2+r.t;fsCur=fs;
+  const vx=minx-m,vy=miny-m,vw=w+2*m,vh=h+2*m;
+  let s=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="${vx} ${vy} ${vw} ${vh}" style="cursor:${S.em?'crosshair':'default'}">`+grid(vx,vy,vw,vh,fs);
+  if(!r.segs.length)s+=`<text x="50" y="50" font-size="${fs*.7}" text-anchor="middle" fill="#9aa1ab">Kreni od bilo kojeg ugla</text>`;
+  s+=body(r,g,fs,{labels:true,plan:true,letters:true,elec:true,area:true,gapline:true});
+  $('svgwrap').innerHTML=s+'</svg>';
+  const st=$('status');
+  if(g.err)st.innerHTML=`<div class="msg e">${g.err}</div>`;
+  else if(!r.segs.length)st.innerHTML='<div class="msg w">Upiši prvu izmjerenu dužinu i pritisni strelicu. Zelena točka je početak (ugao A).</div>';
+  else if(g.closed)st.innerHTML=`<div class="msg ok">✔ Oblik je zatvoren${g.corr?' i ispravljen dijagonalama':''} – kvadratura izračunata.</div>`;
+  else if(r.segs.length>=2)st.innerHTML=`<div class="msg w">Do početka nedostaje <b>${fmtLen(g.gap)}</b> (narančasta crta). <button class="btn s" id="autoClose" style="margin-left:6px">Zatvori automatski</button>${r.segs.length>=3?' ili izmjeri dijagonale (dolje) ako kutovi nisu točno 90°.':''}</div>`;
+  else st.innerHTML='';
+  if(S.em)st.innerHTML+=`<div class="msg ok">Dodirni plan da postaviš: <b>${S.em==='x'?'brisanje (dodirni simbol)':ELN[S.em]}</b>. Utičnice, prekidači i UV se lijepe uz zid.</div>`;
+  const ac=$('autoClose');if(ac)ac.onclick=autoClose;
+  return g;
+}
+function drawFlat(vbFixed){
+  const list=S.rooms.map((r,i)=>({r,i,g:G(r)}));
+  let minx=Infinity,maxx=-Infinity,miny=Infinity,maxy=-Infinity;
+  list.forEach(({r,g})=>{minx=Math.min(minx,g.minx+r.ox);maxx=Math.max(maxx,g.maxx+r.ox);miny=Math.min(miny,g.miny+r.oy);maxy=Math.max(maxy,g.maxy+r.oy)});
+  const w=Math.max(maxx-minx,200),h=Math.max(maxy-miny,200),fs=Math.max(w,h)/32,m=fs*4;
+  const vb=vbFixed||`${minx-m} ${miny-m} ${w+2*m} ${h+2*m}`;
+  const [vx,vy,vw,vh]=vb.split(' ').map(Number);
+  let s=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="${vb}">`+grid(vx,vy,vw,vh,fs);
+  list.forEach(({r,i,g})=>{
+    s+=`<g transform="translate(${r.ox},${r.oy})">`+body(r,g,fs,{ri:i,labels:S.flatLabels,plan:false,letters:false,elec:true,name:true,fill:i===S.cur?'rgba(37,99,235,.2)':'rgba(0,0,0,.03)'})+'</g>';
+  });
+  $('flatwrap').innerHTML=s+'</svg>';
+  $('selName').textContent='Odabrano: '+room().name;
+}
+
+function autoClose(){
+  const g=G(room()),l=g.P[g.P.length-1];
+  let a=Math.atan2(l[1],-l[0])*180/Math.PI;if(a<0)a+=360;
+  room().segs.push({a:+a.toFixed(2),l:+g.gap.toFixed(1)});render();
+}
+
+/* ================= PANELI ================= */
+function stats(){
+  const r=room(),c=calc(r),g=c.g,w=g.maxx-g.minx,h=g.maxy-g.miny;
+  $('stats').innerHTML=
+   `<div class="stat big"><span>Kvadratura (neto, pod)</span><b>${g.closed?f(c.floor)+' m²':'— zatvori oblik'}</b></div>`+
+   (c.bruto&&g.closed?`<div class="stat"><span>Bruto (sa zidovima)</span><b>${f(c.bruto)} m²</b></div>`:'')+
+   `<div class="stat"><span>Opseg</span><b>${f(g.per/100)} m</b></div>`+
+   (g.closed?`<div class="stat"><span>Zidovi (bez otvora)</span><b>${f(c.walls)} m²</b></div><div class="stat"><span>Strop</span><b>${f(c.floor)} m²</b></div><div class="stat"><span>Volumen</span><b>${f(c.vol)} m³</b></div>`:'')+
+   `<div class="stat"><span>Ukupno š × v</span><b>${f(w/100)} × ${f(h/100)} m</b></div>`+
+   `<div class="stat"><span>Na planu 1:${S.scale}</span><b>${f(w/S.scale,1)} × ${f(h/S.scale,1)} cm</b></div>`+
+   (g.closed?`<div class="stat"><span>Površina na planu</span><b>${f(g.area/(S.scale*S.scale),1)} cm²</b></div>`:'');
+  return g;
+}
+function table(g){
+  const r=room();$('thLen').textContent='Stvarno ('+S.unit+')';
+  $('segs').innerHTML=r.segs.map((s,i)=>{
+    const known=DIRNAME[s.a]!==undefined;
+    const opts=Object.keys(DIRNAME).map(k=>`<option value="${k}" ${+k===s.a?'selected':''}>${DIRNAME[k]}</option>`).join('')+(known?'':`<option value="${s.a}" selected>${f(s.a,1)}°</option>`);
+    const a=g.closed&&g.ang[i]!=null?g.ang[i]:null;
+    return `<tr><td><b>${LS(i)}</b></td><td><select data-i="${i}" class="eA">${opts}</select></td><td><input data-i="${i}" class="eL" inputmode="decimal" value="${inUnit(s.l)}"></td><td style="color:var(--acc)">${fmtPlan(s.l)}</td><td style="color:${a!=null&&Math.abs(a-90)>0.5&&Math.abs(a-270)>0.5?'var(--warn)':'inherit'}">${a!=null?LV(i)+' '+f(a,1)+'°':'—'}</td><td><button class="btn s d eD" data-i="${i}">✕</button></td></tr>`;
+  }).join('')||'<tr><td colspan="6" class="note">Još nema stranica.</td></tr>';
+  document.querySelectorAll('#segs .eA').forEach(e=>e.onchange=()=>{room().segs[e.dataset.i].a=+e.value;render()});
+  document.querySelectorAll('#segs .eL').forEach(e=>e.onchange=()=>{const v=num(e.value);if(v>0){room().segs[e.dataset.i].l=+toCm(v).toFixed(1);render()}});
+  document.querySelectorAll('#segs .eD').forEach(e=>e.onclick=()=>{const i=+e.dataset.i;const r=room();r.segs.splice(i,1);r.open=r.open.filter(o=>o.s!==i).map(o=>({...o,s:o.s>i?o.s-1:o.s}));render()});
+}
+function diagPanel(g){
+  const r=room(),n=r.segs.length,box=$('diagBox');
+  if(n<3){box.innerHTML='<p class="note" style="margin:0">Unesi barem 3 stranice. Dijagonale služe kad zidovi nisu točno pod 90° – tada se oblik i kvadratura računaju točno.</p>';return}
+  let h=`<label class="chk"><input type="checkbox" id="useDiag" ${r.useDiag?'checked':''}> <span>Ispravi oblik pomoću izmjerenih dijagonala<br><small style="color:var(--mut)">Zadnja stranica (${LS(n-1)}) se vraća u ugao A. Strelice služe samo kao približan smjer.</small></span></label>`;
+  if(n===3)h+='<p class="note">Trokut je određen samo stranicama – dijagonala nije potrebna.</p>';
+  else{
+    h+=`<p class="note">Izmjeri metrom iz ugla A do svakog navedenog ugla (${S.unit}):</p><div class="g3 f">`;
+    for(let k=2;k<=n-2;k++)h+=`<div><label>A – ${LV(k)}</label><input class="dg" data-k="${k}" inputmode="decimal" value="${r.diag[k]?inUnit(r.diag[k]):''}"></div>`;
+    h+='</div>';
+  }
+  if(r.useDiag&&g.err)h+=`<div class="msg e">${g.err}</div>`;
+  else if(g.corr)h+='<div class="msg ok">Oblik ispravljen – kutovi su izračunati iz mjera.</div>';
+  box.innerHTML=h;
+  $('useDiag').onchange=e=>{r.useDiag=e.target.checked;render()};
+  box.querySelectorAll('.dg').forEach(i=>i.onchange=()=>{const v=num(i.value);if(v>0)r.diag[i.dataset.k]=+toCm(v).toFixed(1);else delete r.diag[i.dataset.k];render()});
+}
+function openPanel(g){
+  const r=room(),sel=$('oSeg'),prev=sel.value;
+  sel.innerHTML=g.E.map((e,i)=>`<option value="${i}">${LS(i)} (${fmtLen(r.segs[i]?r.segs[i].l:e.L)})</option>`).join('');
+  if(prev!==''&&+prev<g.E.length)sel.value=prev;
+  $('openList').innerHTML=r.open.map((o,i)=>`<tr><td>${o.k==='d'?'🚪 Vrata':'🪟 Prozor'}</td><td>zid <b>${LS(o.s)}</b></td><td>${o.p} cm od ${LV(o.s)}</td><td>${o.w}×${o.h}${o.k==='w'?` · par. ${o.sill}`:''}</td><td><button class="btn s d" data-oi="${i}">✕</button></td></tr>`).join('')||'<tr><td class="note">Nema otvora.</td></tr>';
+  document.querySelectorAll('#openList [data-oi]').forEach(b=>b.onclick=()=>{r.open.splice(+b.dataset.oi,1);render()});
+}
+function elPanel(){
+  const r=room(),cnt={s:0,p:0,l:0,b:0};r.el.forEach(e=>cnt[e.k]++);
+  const c=cable(r);
+  $('elBox').innerHTML=`<div class="stats">
+    <div class="stat"><span>🔌 Utičnice</span><b>${cnt.s}</b></div><div class="stat"><span>Prekidači</span><b>${cnt.p}</b></div>
+    <div class="stat"><span>💡 Svjetla</span><b>${cnt.l}</b></div><div class="stat"><span>UV kutija</span><b>${cnt.b}</b></div>
+    <div class="stat big"><span>Kabel (procjena, NYM)</span><b>${c?'≈ '+f(c.m,1)+' m':'—'}</b></div></div>
+    <p class="note">${c?`Računato od UV kutije do svake točke: vodoravno po zoni ispod stropa (30 cm), okomito do visine utičnice 30 cm / prekidača 105 cm / stropa, +30 cm po spoju i +10 % rezerve. Okvirno – nije zamjena za projekt.`:'Postavi UV kutiju (razvodnu) na plan da se izračuna kabel. Simbole dodaješ gumbima iznad plana.'}</p>`;
+}
+function rooms(){
+  $('rooms').innerHTML=S.rooms.map((r,i)=>`<button class="${i===S.cur?'on':''}" data-i="${i}">${esc(r.name)}</button>`).join('');
+  $('rooms').querySelectorAll('button').forEach(b=>b.onclick=()=>{S.cur=+b.dataset.i;render()});
+  let tf=0,tw=0,tp=0,rows='';
+  S.rooms.forEach((r,i)=>{const c=calc(r);tf+=c.floor;tw+=c.g.closed?c.walls:0;tp+=c.g.per;rows+=`<tr data-sel="${i}" style="${i===S.cur?'background:var(--acc2)':''}"><td>${esc(r.name)}</td><td>${c.g.closed?f(c.floor):'—'}</td><td>${f(c.g.per/100)} m</td><td>${c.g.closed?f(c.walls):'—'}</td></tr>`});
+  rows+=`<tr><td><b>Ukupno</b></td><td><b>${f(tf)}</b></td><td>${f(tp/100)} m</td><td><b>${f(tw)}</b></td></tr>`;
+  $('all').innerHTML=rows;
+  $('all').querySelectorAll('[data-sel]').forEach(t=>t.onclick=()=>{S.cur=+t.dataset.sel;render()});
+}
+function matPanel(){
+  const M=S.mat;
+  document.querySelectorAll('[data-m]').forEach(i=>{if(document.activeElement!==i)i.value=String(M[i.dataset.m]).replace('.',',')});
+  let fr='',wr='',T={lam:0,tile:0,lp:0,tp:0,sk:0,w:0,c:0,paint:0};
+  S.rooms.forEach((r,i)=>{
+    const c=calc(r),k=1+M.waste/100;
+    const pack=r.floor==='lam'?M.lam:r.floor==='tile'?M.tile:0;
+    const packs=c.g.closed&&pack>0?Math.ceil(c.floor*k/pack):0;
+    const sk=r.floor==='none'||!c.g.closed?0:Math.ceil(c.skirt*1.05/(M.skirt/100));
+    const paint=c.g.closed?(c.walls+c.floor)*M.coats/M.cov:0;
+    if(r.floor==='lam'){T.lam+=c.floor;T.lp+=packs}if(r.floor==='tile'){T.tile+=c.floor;T.tp+=packs}
+    T.sk+=sk;T.w+=c.g.closed?c.walls:0;T.c+=c.floor;T.paint+=paint;
+    fr+=`<tr><td>${esc(r.name)}</td><td><select data-fl="${i}"><option value="lam" ${r.floor==='lam'?'selected':''}>Laminat</option><option value="tile" ${r.floor==='tile'?'selected':''}>Pločice</option><option value="none" ${r.floor==='none'?'selected':''}>Ništa</option></select></td><td>${c.g.closed?f(c.floor):'—'}</td><td>${packs||'—'}</td><td>${sk?sk+' kom':'—'}</td></tr>`;
+    wr+=`<tr><td>${esc(r.name)}</td><td>${c.g.closed?f(c.walls):'—'}</td><td>${c.g.closed?f(c.floor):'—'}</td><td>${c.g.closed?f(paint,1):'—'}</td></tr>`;
+  });
+  fr+=`<tr><td colspan="5"><b>Laminat:</b> ${f(T.lam)} m² → <b>${T.lp} paketa</b> · <b>Pločice:</b> ${f(T.tile)} m² → <b>${T.tp} paketa</b> · <b>Letvice:</b> ${T.sk} kom (${f(M.skirt/100,1)} m)</td></tr>`;
+  wr+=`<tr><td><b>Ukupno</b></td><td><b>${f(T.w)}</b></td><td><b>${f(T.c)}</b></td><td><b>${f(T.paint,1)} L</b></td></tr>`;
+  $('matFloor').innerHTML=fr;$('matWall').innerHTML=wr;
+  document.querySelectorAll('[data-fl]').forEach(s=>s.onchange=()=>{S.rooms[+s.dataset.fl].floor=s.value;render()});
+}
+
+function render(){
+  $('scale').value=S.scale;
+  document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===S.tab));
+  ['room','flat','mat','conv'].forEach(t=>$('t-'+t).classList.toggle('hide',t!==S.tab));
+  document.querySelectorAll('#unit button').forEach(b=>b.classList.toggle('on',b.dataset.u===S.unit));
+  document.querySelectorAll('#emBar [data-em]').forEach(b=>b.classList.toggle('on',b.dataset.em===S.em));
+  $('len').placeholder=S.unit==='m'?'npr. 4,20':'npr. 420';
+  const r=room();
+  if(document.activeElement!==$('hIn'))$('hIn').value=r.h;
+  if(document.activeElement!==$('tIn'))$('tIn').value=r.t;
+  $('flatLabels').checked=!!S.flatLabels;
+  const g=drawRoom();stats();table(g);diagPanel(g);openPanel(g);elPanel();rooms();
+  if(S.tab==='flat')drawFlat();
+  if(S.tab==='mat')matPanel();
+  save();
+}
+
+/* ================= DOGAĐAJI ================= */
+$('pad').innerHTML=DIRS.map(d=>d?`<button data-a="${d.a}">${d.s}</button>`:`<button class="mid" id="padClose">Zatvori</button>`).join('');
+$('pad').querySelectorAll('button[data-a]').forEach(b=>b.onclick=()=>{
+  const v=num($('len').value);if(!(v>0)){$('len').focus();return}
+  room().segs.push({a:+b.dataset.a,l:+toCm(v).toFixed(1)});$('len').value='';render();
+});
+$('padClose').onclick=()=>{const g=G(room());if(room().segs.length>=2&&!g.closed)autoClose()};
+$('len').addEventListener('keydown',e=>{if(e.key==='Enter')e.preventDefault()});
+$('unit').querySelectorAll('button').forEach(b=>b.onclick=()=>{S.unit=b.dataset.u;render()});
+$('undo').onclick=()=>{const r=room();r.segs.pop();r.open=r.open.filter(o=>o.s<r.segs.length);render()};
+$('clear').onclick=()=>ask('Očistiti oblik? Upiši DA','',v=>{if(v.toUpperCase()==='DA'){Object.assign(room(),{segs:[],diag:{},useDiag:false,open:[],el:[]});render()}});
+$('scale').onchange=()=>{S.scale=+$('scale').value;render();conv('p')};
+$('hIn').onchange=()=>{const v=num($('hIn').value);if(v>0)room().h=v;render()};
+$('tIn').onchange=()=>{const v=num($('tIn').value);room().t=v>=0?v:0;render()};
+$('addRoom').onclick=()=>ask('Naziv prostorije','Prostorija '+(S.rooms.length+1),v=>{
+  let mx=0;S.rooms.forEach(r=>{const g=G(r);mx=Math.max(mx,g.maxx+r.ox)});
+  const nr=newRoom(v||'Prostorija');nr.ox=Math.round(mx+100);nr.h=room().h;nr.t=room().t;
+  S.rooms.push(nr);S.cur=S.rooms.length-1;render()});
+$('renRoom').onclick=()=>ask('Novi naziv',room().name,v=>{if(v){room().name=v;render()}});
+function rotate(){const r=room();r.segs.forEach(s=>s.a=(s.a+90)%360);r.el=r.el.map(e=>({...e,x:e.y,y:-e.x}));render()}
+$('rotRoom').onclick=rotate;$('fRot').onclick=rotate;
+$('delRoom').onclick=()=>ask('Obrisati "'+room().name+'"? Upiši DA','',v=>{if(v.toUpperCase()==='DA'){S.rooms.splice(S.cur,1);if(!S.rooms.length)S.rooms=[newRoom('Prostorija 1')];S.cur=0;render()}});
+$('copy').onclick=async()=>{
+  const r=room(),c=calc(r),g=c.g;
+  let t=`${r.name} (mjerilo 1:${S.scale})\n`;
+  r.segs.forEach((s,i)=>t+=`${LS(i)} ${DIRNAME[s.a]||f(s.a,1)+'°'}  ${fmtLen(s.l)}  (plan ${fmtPlan(s.l)})${g.closed&&g.ang[i]!=null?'  kut '+LV(i)+' '+f(g.ang[i],1)+'°':''}\n`);
+  t+=`Opseg: ${f(g.per/100)} m\n`;
+  if(g.closed)t+=`Kvadratura: ${f(c.floor)} m²${c.bruto?` (bruto ${f(c.bruto)} m²)`:''}\nZidovi: ${f(c.walls)} m² · Volumen: ${f(c.vol)} m³\n`;
+  r.open.forEach(o=>t+=`${o.k==='d'?'Vrata':'Prozor'} zid ${LS(o.s)}: ${o.p} cm od ${LV(o.s)}, ${o.w}×${o.h} cm\n`);
+  try{await navigator.clipboard.writeText(t);$('copied').textContent='Kopirano ✔'}catch(e){$('copied').textContent='Kopiranje nije dopušteno ovdje'}
+  setTimeout(()=>$('copied').textContent='',2000);
+};
+// otvori
+$('oK').onchange=()=>{const w=$('oK').value==='w';$('oSWrap').classList.toggle('hide',!w);$('oW').value=w?120:90;$('oH').value=w?140:205};
+$('oAdd').onclick=()=>{
+  const r=room(),g=G(r),s=+$('oSeg').value,e=g.E[s],p=num($('oP').value),w=num($('oW').value),h=num($('oH').value),sill=num($('oS').value);
+  const msg=$('oMsg');
+  if(!e){msg.innerHTML='<div class="msg w">Prvo unesi stranice.</div>';return}
+  if(!(p>=0)||!(w>0)||!(h>0)){msg.innerHTML='<div class="msg w">Upiši udaljenost, širinu i visinu.</div>';return}
+  const L=r.segs[s]?r.segs[s].l:e.L;
+  if(p+w>L+0.5){msg.innerHTML=`<div class="msg w">Otvor ne stane: zid ${LS(s)} je dug ${fmtLen(L)}.</div>`;return}
+  r.open.push({s,k:$('oK').value,p,w,h,sill:$('oK').value==='w'?(sill>=0?sill:90):0});msg.innerHTML='';$('oP').value='';render();
+};
+// elektro
+document.querySelectorAll('#emBar [data-em]').forEach(b=>b.onclick=()=>{S.em=S.em===b.dataset.em?null:b.dataset.em;render()});
+function svgPt(e,M){return[M.a*e.clientX+M.c*e.clientY+M.e,M.b*e.clientX+M.d*e.clientY+M.f]}
+$('svgwrap').addEventListener('click',e=>{
+  if(!S.em)return;const svg=$('svgwrap').querySelector('svg');if(!svg)return;
+  let [x,y]=svgPt(e,svg.getScreenCTM().inverse());const r=room();
+  if(S.em==='x'){let bi=-1,bd=1e9;r.el.forEach((it,i)=>{const d=Math.hypot(it.x-x,it.y-y);if(d<bd){bd=d;bi=i}});if(bi>=0&&bd<fsCur*1.6)r.el.splice(bi,1);render();return}
+  if(S.em!=='l'){const g=G(r);let best=null;g.E.forEach(ed=>{const t=Math.max(0,Math.min(ed.L,(x-ed.A[0])*ed.u[0]+(y-ed.A[1])*ed.u[1]));const q=[ed.A[0]+ed.u[0]*t,ed.A[1]+ed.u[1]*t],d=Math.hypot(q[0]-x,q[1]-y);if(!best||d<best.d)best={d,q,ed}});
+    if(best&&best.d<Math.max(60,fsCur*2.5)){x=best.q[0]-best.ed.no[0]*fsCur*.6;y=best.q[1]-best.ed.no[1]*fsCur*.6}}
+  r.el.push({k:S.em,x:Math.round(x),y:Math.round(y)});render();
+});
+// stan – povlačenje
+let drag=null;const fw=$('flatwrap');
+function snap(i,nx,ny){
+  const r=S.rooms[i],g=G(r),thr=15;let bx=null,by=null;
+  S.rooms.forEach((o,j)=>{if(j===i)return;const go=G(o),t=Math.max(r.t,o.t),T=t>0?[0,t,-t]:[0];
+    g.V.forEach(v=>go.V.forEach(w=>T.forEach(k=>{
+      const cx=(w[0]+o.ox)-(v[0]+nx)+k;if(Math.abs(cx)<thr&&(bx===null||Math.abs(cx)<Math.abs(bx)))bx=cx;
+      const cy=(w[1]+o.oy)-(v[1]+ny)+k;if(Math.abs(cy)<thr&&(by===null||Math.abs(cy)<Math.abs(by)))by=cy;})))});
+  return[nx+(bx||0),ny+(by||0)];
+}
+fw.addEventListener('pointerdown',e=>{
+  const t=e.target.closest('[data-r]');if(!t)return;
+  const i=+t.dataset.r;S.cur=i;const svg=fw.querySelector('svg');
+  drag={i,M:svg.getScreenCTM().inverse(),vb:svg.getAttribute('viewBox'),ox:S.rooms[i].ox,oy:S.rooms[i].oy};
+  drag.p0=svgPt(e,drag.M);fw.setPointerCapture(e.pointerId);e.preventDefault();drawFlat(drag.vb);
+});
+fw.addEventListener('pointermove',e=>{
+  if(!drag)return;const p=svgPt(e,drag.M),r=S.rooms[drag.i];
+  const [nx,ny]=snap(drag.i,drag.ox+p[0]-drag.p0[0],drag.oy+p[1]-drag.p0[1]);
+  r.ox=Math.round(nx);r.oy=Math.round(ny);drawFlat(drag.vb);
+});
+const endDrag=()=>{if(drag){drag=null;render()}};
+fw.addEventListener('pointerup',endDrag);fw.addEventListener('pointercancel',endDrag);
+document.querySelectorAll('[data-n]').forEach(b=>b.onclick=()=>{const [dx,dy]=b.dataset.n.split(',').map(Number),st=+$('step').value;room().ox+=dx*st;room().oy+=dy*st;render()});
+$('flatLabels').onchange=e=>{S.flatLabels=e.target.checked;render()};
+// materijal
+document.querySelectorAll('[data-m]').forEach(i=>i.onchange=()=>{const v=num(i.value);if(v>=0)S.mat[i.dataset.m]=v;render()});
+// tabovi
+document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>{S.tab=b.dataset.t;S.em=null;render();window.scrollTo(0,0)});
+// modal
+let mCb=null;
+function ask(t,v,cb){$('mTitle').textContent=t;$('mIn').value=v;mCb=cb;$('modal').style.display='flex';$('mIn').focus()}
+$('mNo').onclick=()=>{$('modal').style.display='none'};
+$('mOk').onclick=()=>{$('modal').style.display='none';mCb&&mCb($('mIn').value.trim())};
+$('mIn').addEventListener('keydown',e=>{if(e.key==='Enter')$('mOk').click()});
+
+/* ================= PRETVARAČ ================= */
+function conv(src){
+  const k=S.scale;
+  $('cRule').textContent=`1:${k} → 1 cm na planu = ${f(k/100,2)} m u stvarnosti · 1 m u stvarnosti = ${f(100/k,1)} cm na planu`;
+  if(src==='p'){const v=num($('cPlan').value);$('cReal').value=v>=0?f(v*k/100,3):''}
+  if(src==='r'){const v=num($('cReal').value);$('cPlan').value=v>=0?f(v*100/k,2):''}
+  if(src==='ap'){const v=num($('aPlan').value);$('aReal').value=v>=0?f(v*k*k/1e4,3):''}
+  if(src==='ar'){const v=num($('aReal').value);$('aPlan').value=v>=0?f(v*1e4/(k*k),2):''}
+  const a=num($('rA').value),b=num($('rB').value);
+  $('rOut').innerHTML=(a>0&&b>0)?`<div class="stat big"><span>Kvadratura</span><b>${f(a*b)} m²</b></div><div class="stat"><span>Opseg</span><b>${f(2*(a+b))} m</b></div><div class="stat"><span>Na planu 1:${k}</span><b>${f(a*100/k,1)} × ${f(b*100/k,1)} cm</b></div>`:'';
+}
+$('cPlan').oninput=()=>conv('p');$('cReal').oninput=()=>conv('r');
+$('aPlan').oninput=()=>conv('ap');$('aReal').oninput=()=>conv('ar');
+$('rA').oninput=$('rB').oninput=()=>conv('x');
+
+/* ================= IZVOZ ================= */
+let DL=null,standalone=false;
+function printPlan(what){
+  const sc=S.scale,fs=0.3*sc;
+  const idx=what==='flat'?S.rooms.map((_,i)=>i):[S.cur];
+  let parts='',minx=Infinity,maxx=-Infinity,miny=Infinity,maxy=-Infinity;
+  idx.forEach(i=>{
+    const r=S.rooms[i],g=G(r),dx=what==='flat'?r.ox:0,dy=what==='flat'?r.oy:0;
+    if(!r.segs.length)return;
+    parts+=`<g transform="translate(${dx},${dy})">`+body(r,g,fs,{labels:what==='room'||S.flatLabels,plan:false,letters:what==='room',elec:true,area:true,name:what==='flat',bg:'#fff',fill:'none'})+'</g>';
+    let a=g.minx,b=g.maxx,c=g.miny,d=g.maxy;r.el.forEach(e=>{a=Math.min(a,e.x);b=Math.max(b,e.x);c=Math.min(c,e.y);d=Math.max(d,e.y)});
+    minx=Math.min(minx,a+dx);maxx=Math.max(maxx,b+dx);miny=Math.min(miny,c+dy);maxy=Math.max(maxy,d+dy);
+  });
+  if(!isFinite(minx))return null;
+  const m=fs*3.5,hh=fs*4.5;
+  const x0=minx-m,y0=miny-m-hh,W=Math.max(maxx-minx+2*m,fs*30),H=maxy-miny+2*m+hh;
+  const title=what==='flat'?'Tlocrt':room().name;
+  let hdr=`<text x="${x0+m*.4}" y="${y0+fs*1.6}" font-size="${fs*1.3}" font-weight="700" fill="#1b1f24">${esc(title)} — M 1:${sc}</text>`;
+  const bx=x0+m*.4,by=y0+fs*3.2;
+  hdr+=`<g stroke="#1b1f24" stroke-width="${fs/8}"><line x1="${bx}" y1="${by}" x2="${bx+100}" y2="${by}"/>${[0,50,100].map(t=>`<line x1="${bx+t}" y1="${by-fs*.3}" x2="${bx+t}" y2="${by+fs*.3}"/>`).join('')}</g><text x="${bx+100+fs*.4}" y="${by+fs*.3}" font-size="${fs*.8}" fill="#1b1f24">1 m</text>`;
+  const wmm=W*10/sc,hmm=H*10/sc;
+  const svg=(wa,ha)=>`<svg xmlns="http://www.w3.org/2000/svg" width="${wa}" height="${ha}" viewBox="${x0} ${y0} ${W} ${H}" font-family="Arial, Helvetica, sans-serif"><rect x="${x0}" y="${y0}" width="${W}" height="${H}" fill="#fff"/>${hdr}${parts}</svg>`;
+  return{svg,wmm,hmm,title};
+}
+async function raster(ps,dpi){
+  let k=dpi/25.4;const mx=Math.max(ps.wmm,ps.hmm)*k;if(mx>7000)k*=7000/mx;
+  const w=Math.round(ps.wmm*k),h=Math.round(ps.hmm*k);
+  const url=URL.createObjectURL(new Blob([ps.svg(w,h)],{type:'image/svg+xml'}));
+  const img=new Image();await new Promise((res,rej)=>{img.onload=res;img.onerror=rej;img.src=url});
+  const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');
+  x.fillStyle='#fff';x.fillRect(0,0,w,h);x.drawImage(img,0,0,w,h);URL.revokeObjectURL(url);return c;
+}
+function loadPdf(){return window.jspdf?Promise.resolve():new Promise((res,rej)=>{const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';s.onload=res;s.onerror=rej;document.head.appendChild(s)})}
+function pickPage(w,h){
+  const nw=w+20,nh=h+20;
+  for(const [a,b,n] of [[210,297,'A4'],[297,420,'A3']]){if(nw<=a&&nh<=b)return[a,b,'p',n];if(nw<=b&&nh<=a)return[b,a,'l',n]}
+  return[Math.ceil(nw),Math.ceil(nh),nw>nh?'l':'p','posebni format'];
+}
+async function saveFile(name,data){
+  if(DL){try{await DL.save({filename:name,data});return'ok'}catch(e){return e&&e.code==='declined'?'declined':'err'}}
+  const blob=data instanceof Blob?data:new Blob([data]);const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),5000);return'ok';
+}
+async function doExport(kind,what,msgEl){
+  const ps=printPlan(what);
+  if(!ps){msgEl.innerHTML='<div class="msg w">Nema ničeg za izvoz – prvo unesi stranice.</div>';return}
+  const fn=(ps.title||'plan').replace(/[^\wčćžšđČĆŽŠĐ -]/g,'').trim().replace(/\s+/g,'_')+`_M1-${S.scale}`;
+  msgEl.innerHTML='<div class="msg w">Pripremam…</div>';
+  try{
+    let res,extra='';
+    if(kind==='svg')res=await saveFile(fn+'.svg',ps.svg(ps.wmm.toFixed(2)+'mm',ps.hmm.toFixed(2)+'mm'));
+    else if(kind==='png'){const c=await raster(ps,200);const b=await new Promise(r=>c.toBlob(r,'image/png'));res=await saveFile(fn+'.png',b);extra=' (200 dpi)'}
+    else{
+      await loadPdf();const c=await raster(ps,200);const [pw,ph,or,pn]=pickPage(ps.wmm,ps.hmm);
+      const doc=new window.jspdf.jsPDF({unit:'mm',format:[pw,ph],orientation:or});
+      doc.addImage(c.toDataURL('image/jpeg',0.92),'JPEG',(pw-ps.wmm)/2,(ph-ps.hmm)/2,ps.wmm,ps.hmm);
+      res=await saveFile(fn+'.pdf',doc.output('arraybuffer'));extra=` – ${pn}`;
+    }
+    msgEl.innerHTML=res==='ok'?`<div class="msg ok">Spremljeno${extra}. Za točno mjerilo printaj na <b>100 % / stvarna veličina</b> (ne „prilagodi stranici“).</div>`:res==='declined'?'<div class="msg w">Preuzimanje otkazano.</div>':'<div class="msg e">Preuzimanje nije uspjelo.</div>';
+  }catch(e){msgEl.innerHTML='<div class="msg e">Izvoz nije uspio'+(kind==='pdf'?' (PDF biblioteka se nije učitala – probaj PNG ili SVG).':'.')+'</div>'}
+}
+document.querySelectorAll('[data-x]').forEach(b=>b.onclick=()=>doExport(b.dataset.x,b.dataset.w,b.closest('.card').querySelector('.expMsg')));
+function updExport(){document.querySelectorAll('.exp').forEach(c=>c.classList.toggle('hide',!(DL||standalone)))}
+updExport();
+(async()=>{
+  if(!(window.claude&&window.claude.use))await new Promise(r=>setTimeout(r,1000));
+  if(window.claude&&window.claude.use){try{DL=await window.claude.use('downloads')}catch(e){DL=null}}
+  else standalone=true;
+  updExport();
+})();
+
+render();conv('x');
+</script>
+</body>
+</html>

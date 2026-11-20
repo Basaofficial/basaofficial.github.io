@@ -1,56 +1,67 @@
-/* bashlab v2 – router, i18n, GitHub podaci, QR, ⌘K, PWA, pametne čestice */
+/* bashlab v3 – App Store izgled, staklo, animacije, router, i18n, GitHub podaci, QR, ⌘K, PWA */
 (() => {
 'use strict';
 const P = window.PROJECTS;
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const fine = matchMedia('(pointer:fine)').matches;
 const SITE = 'https://basaofficial.github.io/';
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
 /* ---------------- jezici ---------------- */
 const UI = {
   bs: { search:'traži', projects:'Projekti', about:'O meni', contact:'Kontakt', all:'sve', web:'web', apk:'apk', game:'igre',
-    lead:'Pravim aplikacije koje stvarno koristim — za telefon, za igru i za posao.', nproj:'projekata', napk:'APK-a', updated:'ažurirano',
-    sub:'Web aplikacije rade direktno u pregledniku. APK fajlovi se instaliraju na Android.', featured:'Istaknuto',
-    open:'Otvori', play:'Igraj', details:'Detalji', code:'Kod', soon:'uskoro', live:'live', back:'Projekti', apkSoon:'APK uskoro', tellMe:'Javi mi',
-    features:'Šta zna', install:'Instaliraj', qrT:'Skeniraj telefonom', qrApk:'Sa PC-a na telefon: skeniraj i APK se odmah skida.', qrWeb:'Sa PC-a na telefon: skeniraj i otvori.',
-    news:'Šta je novo', newsNone:'Changelog trenutno nije dostupan.', size:'veličina', version:'verzija', platform:'radi na',
+    lead:'Pravim aplikacije koje stvarno koristim — za telefon, za igru i za posao.', nproj:'aplikacija', napk:'APK-a', updated:'ažurirano',
+    featured:'Istaknuto', newL:'Novo',
+    apps:'Aplikacije', appsSub:'Alati za posao, zdravlje i komunikaciju.', games:'Igre', gamesSub:'Za ekipu, za raid i za zabavu.', soonH:'Uskoro', soonSub:'U izradi u labu.',
+    open:'Otvori', play:'Igraj', get:'Preuzmi', details:'Detalji', code:'Kod', soon:'uskoro', live:'live', back:'Sve aplikacije', apkSoon:'APK uskoro', tellMe:'Javi mi',
+    desc:'Opis', more:'više', features:'Šta zna', install:'Instaliraj', qrT:'Skeniraj telefonom', qrApk:'Sa PC-a na telefon: skeniraj i APK se odmah skida.', qrWeb:'Sa PC-a na telefon: skeniraj i otvori.',
+    news:'Šta je novo', newsNone:'Changelog trenutno nije dostupan.', size:'Veličina', version:'Verzija', platform:'Radi na',
+    infoH:'Informacije', dev:'Developer', cat:'Kategorija', compat:'Kompatibilnost', price:'Cijena', free:'Besplatno', source:'Izvorni kod', shots:'Pregled',
+    cats:{ games:'Igre', health:'Zdravlje i fitness', social:'Komunikacija', prod:'Produktivnost', tools:'Alati' },
     contactH:'Hajmo <span>raditi</span> zajedno', contactP:'Imaš ideju za aplikaciju, igru ili alat? Piši mi na Instagram ili mail.',
     mailCopied:'✓ Mail kopiran: ', palhint:'↑↓ biraj · Enter otvori · Esc zatvori', palPh:'upiši projekat ili komandu…',
     cLang:'Jezik', cTop:'Na početak', cInst:'Instaliraj bashlab kao aplikaciju', cMail:'Kopiraj mail', cCoffee:'Buy me a coffee',
     installApp:'⤓ Instaliraj bashlab', installed:'✓ bashlab je instaliran', offline:'Offline si — prikazujem sačuvanu verziju.',
     activeP:'aktivnih projekata', firstLine:'prva linija koda', coffee:'kafa', inLab:'u labu', unknown:'nije poznato',
-    typed:['whoami → anel aka basa','ls ./projekti → armory  igre  fit  bashtalk  bash-electro  bashmouse','./build --apk --web','echo "dobrodošli u bashlab"'] },
+    typed:['whoami → anel aka basa','ls ./projekti → armory  igre  metar  electro  bashtalk  fit','./build --apk --web','echo "dobrodošli u bashlab"'] },
   de: { search:'suchen', projects:'Projekte', about:'Über mich', contact:'Kontakt', all:'alle', web:'web', apk:'apk', game:'spiele',
-    lead:'Ich baue Apps, die ich selbst benutze — fürs Handy, fürs Gaming und für die Arbeit.', nproj:'Projekte', napk:'APKs', updated:'aktualisiert',
-    sub:'Web-Apps laufen direkt im Browser. APK-Dateien werden auf Android installiert.', featured:'Empfohlen',
-    open:'Öffnen', play:'Spielen', details:'Details', code:'Code', soon:'bald', live:'live', back:'Projekte', apkSoon:'APK bald', tellMe:'Bescheid geben',
-    features:'Funktionen', install:'Installieren', qrT:'Mit dem Handy scannen', qrApk:'Vom PC aufs Handy: scannen und die APK lädt sofort.', qrWeb:'Vom PC aufs Handy: scannen und öffnen.',
-    news:'Neuigkeiten', newsNone:'Changelog gerade nicht verfügbar.', size:'Größe', version:'Version', platform:'läuft auf',
+    lead:'Ich baue Apps, die ich selbst benutze — fürs Handy, fürs Gaming und für die Arbeit.', nproj:'Apps', napk:'APKs', updated:'aktualisiert',
+    featured:'Empfohlen', newL:'Neu',
+    apps:'Apps', appsSub:'Tools für Arbeit, Gesundheit und Kommunikation.', games:'Spiele', gamesSub:'Für Freunde, für den Raid und zum Spaß.', soonH:'Demnächst', soonSub:'Gerade im Lab in Arbeit.',
+    open:'Öffnen', play:'Spielen', get:'Laden', details:'Details', code:'Code', soon:'bald', live:'live', back:'Alle Apps', apkSoon:'APK bald', tellMe:'Bescheid geben',
+    desc:'Beschreibung', more:'mehr', features:'Funktionen', install:'Installieren', qrT:'Mit dem Handy scannen', qrApk:'Vom PC aufs Handy: scannen und die APK lädt sofort.', qrWeb:'Vom PC aufs Handy: scannen und öffnen.',
+    news:'Neuigkeiten', newsNone:'Changelog gerade nicht verfügbar.', size:'Größe', version:'Version', platform:'Läuft auf',
+    infoH:'Informationen', dev:'Entwickler', cat:'Kategorie', compat:'Kompatibilität', price:'Preis', free:'Gratis', source:'Quellcode', shots:'Vorschau',
+    cats:{ games:'Spiele', health:'Gesundheit & Fitness', social:'Kommunikation', prod:'Produktivität', tools:'Dienstprogramme' },
     contactH:'Lass uns <span>zusammen</span> arbeiten', contactP:'Du hast eine Idee für eine App, ein Spiel oder ein Tool? Schreib mir auf Instagram oder per Mail.',
     mailCopied:'✓ Mail kopiert: ', palhint:'↑↓ wählen · Enter öffnen · Esc schließen', palPh:'Projekt oder Befehl eingeben…',
     cLang:'Sprache', cTop:'Nach oben', cInst:'bashlab als App installieren', cMail:'Mail kopieren', cCoffee:'Buy me a coffee',
     installApp:'⤓ bashlab installieren', installed:'✓ bashlab ist installiert', offline:'Du bist offline — zeige gespeicherte Version.',
     activeP:'aktive Projekte', firstLine:'erste Codezeile', coffee:'Kaffee', inLab:'im Lab', unknown:'unbekannt',
-    typed:['whoami → anel aka basa','ls ./projekte → armory  igre  fit  bashtalk  bash-electro  bashmouse','./build --apk --web','echo "willkommen im bashlab"'] },
+    typed:['whoami → anel aka basa','ls ./projekte → armory  igre  metar  electro  bashtalk  fit','./build --apk --web','echo "willkommen im bashlab"'] },
   en: { search:'search', projects:'Projects', about:'About', contact:'Contact', all:'all', web:'web', apk:'apk', game:'games',
-    lead:'I build apps I actually use — for my phone, for gaming and for work.', nproj:'projects', napk:'APKs', updated:'updated',
-    sub:'Web apps run right in the browser. APK files install on Android.', featured:'Featured',
-    open:'Open', play:'Play', details:'Details', code:'Code', soon:'soon', live:'live', back:'Projects', apkSoon:'APK soon', tellMe:'Tell me',
-    features:'What it does', install:'Install', qrT:'Scan with your phone', qrApk:'From PC to phone: scan and the APK downloads right away.', qrWeb:'From PC to phone: scan and open.',
-    news:"What's new", newsNone:'Changelog not available right now.', size:'size', version:'version', platform:'runs on',
+    lead:'I build apps I actually use — for my phone, for gaming and for work.', nproj:'apps', napk:'APKs', updated:'updated',
+    featured:'Featured', newL:'New',
+    apps:'Apps', appsSub:'Tools for work, health and staying in touch.', games:'Games', gamesSub:'For friends, for the raid and for fun.', soonH:'Coming soon', soonSub:'Being built in the lab.',
+    open:'Open', play:'Play', get:'Get', details:'Details', code:'Code', soon:'soon', live:'live', back:'All apps', apkSoon:'APK soon', tellMe:'Tell me',
+    desc:'Description', more:'more', features:'What it does', install:'Install', qrT:'Scan with your phone', qrApk:'From PC to phone: scan and the APK downloads right away.', qrWeb:'From PC to phone: scan and open.',
+    news:"What's new", newsNone:'Changelog not available right now.', size:'Size', version:'Version', platform:'Runs on',
+    infoH:'Information', dev:'Developer', cat:'Category', compat:'Compatibility', price:'Price', free:'Free', source:'Source code', shots:'Preview',
+    cats:{ games:'Games', health:'Health & Fitness', social:'Communication', prod:'Productivity', tools:'Utilities' },
     contactH:"Let's <span>work</span> together", contactP:'Got an idea for an app, a game or a tool? Message me on Instagram or by mail.',
     mailCopied:'✓ Mail copied: ', palhint:'↑↓ choose · Enter open · Esc close', palPh:'type a project or command…',
     cLang:'Language', cTop:'Back to top', cInst:'Install bashlab as an app', cMail:'Copy mail', cCoffee:'Buy me a coffee',
     installApp:'⤓ Install bashlab', installed:'✓ bashlab is installed', offline:"You're offline — showing the saved version.",
     activeP:'active projects', firstLine:'first line of code', coffee:'coffee', inLab:'in the lab', unknown:'unknown',
-    typed:['whoami → anel aka basa','ls ./projects → armory  igre  fit  bashtalk  bash-electro  bashmouse','./build --apk --web','echo "welcome to bashlab"'] }
+    typed:['whoami → anel aka basa','ls ./projects → armory  igre  metar  electro  bashtalk  fit','./build --apk --web','echo "welcome to bashlab"'] }
 };
 const qLang = new URLSearchParams(location.search).get('lang');
 let L = (qLang && UI[qLang] && qLang) || localStorage.getItem('bl_lang') || ((navigator.language || '').toLowerCase().startsWith('de') ? 'de' : 'bs');
 if (!UI[L]) L = 'bs';
 const t = k => (UI[L] && UI[L][k]) ?? UI.bs[k] ?? k;
 const pt = p => p.t[L] || p.t.bs;
+const catName = p => t('cats')[p.cat] || '';
 function setLang(l){
   L = l; try { localStorage.setItem('bl_lang', l); } catch(e){}
   document.documentElement.lang = l;
@@ -67,11 +78,14 @@ const IC = {
   apple:'<path d="M12 7c-2-3-7-2-7 3 0 6 4 11 7 11s7-5 7-11c0-5-5-6-7-3z"/><path d="M12 7c0-2 1-4 3-4"/>',
   radio:'<rect x="7" y="2" width="10" height="20" rx="3"/><path d="M12 6v3M10 13h4M10 16h4"/><path d="M3 9a6 6 0 0 0 0 6M21 9a6 6 0 0 1 0 6"/>',
   bolt:'<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>',
-  hand:'<path d="M18 11V6a2 2 0 0 0-4 0M14 10V4a2 2 0 0 0-4 0v2M10 10.5V6a2 2 0 0 0-4 0v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.9-6-2.4l-3.6-3.6a2 2 0 0 1 2.8-2.8L7 15"/>'
+  hand:'<path d="M18 11V6a2 2 0 0 0-4 0M14 10V4a2 2 0 0 0-4 0v2M10 10.5V6a2 2 0 0 0-4 0v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.9-6-2.4l-3.6-3.6a2 2 0 0 1 2.8-2.8L7 15"/>',
+  ruler:'<path d="M3 16.5L16.5 3 21 7.5 7.5 21z"/><path d="M7 12.5l2 2M9.8 9.7l1.4 1.4M12.5 7l2 2M15.3 4.2l1.4 1.4"/>'
 };
 const svg = (k, sw = 1.8) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round">${IC[k] || ''}</svg>`;
+const appIc = (p, cls = '') => `<div class="appic ${cls}" style="--c1:${p.c[0]};--c2:${p.c[1]}">${svg(p.icon, 1.9)}</div>`;
 const I_DL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>';
 const I_PLAY = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+const I_ARR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>';
 const I_IG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".6" fill="currentColor"/></svg>';
 const I_GH = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-3.2 19.5c.5.1.7-.2.7-.5v-1.7c-2.8.6-3.4-1.2-3.4-1.2-.4-1.2-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.5 2.3 1.1 2.9.8.1-.6.3-1.1.6-1.3-2.2-.3-4.6-1.1-4.6-5 0-1.1.4-2 1-2.7-.1-.3-.4-1.3.1-2.7 0 0 .8-.3 2.8 1a9.6 9.6 0 0 1 5 0c1.9-1.3 2.8-1 2.8-1 .5 1.4.2 2.4.1 2.7.6.7 1 1.6 1 2.7 0 3.9-2.3 4.7-4.6 5 .4.3.7.9.7 1.9V21c0 .3.2.6.7.5A10 10 0 0 0 12 2z"/></svg>';
 const I_MAIL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3 7l9 6 9-6"/></svg>';
@@ -136,27 +150,16 @@ function count(path, title, event){
 }
 
 /* ---------------- render: početna ---------------- */
-let filter = 'all';
-function cardHtml(p){
-  const x = pt(p), soon = p.status === 'soon';
-  const thumb = p.shots[0]
-    ? `<div class="thumb"><img src="assets/shots/${p.shots[0]}.webp" alt="${esc(p.name)}" loading="lazy" decoding="async" style="view-transition-name:shot-${p.id}" width="600" height="1298"></div>`
-    : `<div class="thumb ph" style="view-transition-name:shot-${p.id}">${svg(p.icon, 1.4)}</div>`;
-  const chips = p.tags.map(g => `<span class="chip ${g === 'game' ? '' : g}">${esc(t(g))}</span>`).join('') + (soon ? `<span class="chip soon">beta</span>` : '');
-  return `<article class="card rv${filter !== 'all' && !p.tags.includes(filter) ? ' hidden' : ''}" data-id="${p.id}" tabindex="0" role="link" aria-label="${esc(p.name)}">
-    ${thumb}
-    <div class="status${soon ? ' s' : ''}"><i></i>${soon ? t('soon') : t('live')}</div>
-    <div class="ct"><div class="ic">${svg(p.icon)}</div>
-      <div><h3 style="view-transition-name:title-${p.id}"><span class="h">#</span>${esc(p.name)}</h3><div class="chips">${chips}</div></div></div>
-    <p>${esc(x.short)}</p>
-    <div class="upd" data-upd="${p.id}">${p.gh ? '&nbsp;' : ''}</div>
-    <div class="acts">${actions(p, true)}</div>
-  </article>`;
+function webLabel(p){ return p.id === 'igre' ? t('play') : t('open'); }
+function mainAct(p){
+  if (p.status === 'soon' && !p.web && !p.apk) return `<span class="btn sm dis">${t('soon')}</span>`;
+  if (p.web) return `<a class="btn sm pri" href="${esc(p.web)}" ${/^https?:/.test(p.web) ? 'target="_blank" rel="noopener"' : ''}>${webLabel(p)}</a>`;
+  return `<a class="btn sm pri" href="${esc(p.apk)}" ${isFile(p.apk) ? 'download type="application/vnd.android.package-archive"' : 'target="_blank" rel="noopener"'} data-apk="${p.id}">${t('get')}</a>`;
 }
 function actions(p, small){
   const a = [];
-  if (p.apk) a.push(`<a class="btn pri" href="${esc(p.apk)}" ${isFile(p.apk) ? `download type="application/vnd.android.package-archive"` : 'target="_blank" rel="noopener"'} data-apk="${p.id}">${I_DL}APK</a>`);
-  if (p.web) a.push(`<a class="btn ${p.apk ? '' : 'pri'}" href="${esc(p.web)}" ${/^https?:/.test(p.web) ? 'target="_blank" rel="noopener"' : ''}>${p.apk ? '' : I_PLAY}${p.id === 'igre' ? t('play') : t('open')}${p.apk && p.id === 'armory' ? ' (demo)' : ''}</a>`);
+  if (p.apk) a.push(`<a class="btn pri" href="${esc(p.apk)}" ${isFile(p.apk) ? `download type="application/vnd.android.package-archive"` : 'target="_blank" rel="noopener"'} data-apk="${p.id}">${I_DL}${t('get')} APK</a>`);
+  if (p.web) a.push(`<a class="btn ${p.apk ? '' : 'pri'}" href="${esc(p.web)}" ${/^https?:/.test(p.web) ? 'target="_blank" rel="noopener"' : ''}>${p.apk ? I_ARR : I_PLAY}${webLabel(p)}${p.apk && p.id === 'armory' ? ' (demo)' : ''}</a>`);
   if (!p.apk && !p.web) a.push(`<span class="btn dis">${t('apkSoon')}</span>`, `<a class="btn" href="#/kontakt">${t('tellMe')}</a>`);
   if (small) a.push(`<a class="btn" href="#/p/${p.id}">${t('details')}</a>`);
   else {
@@ -165,9 +168,26 @@ function actions(p, small){
   }
   return a.join('');
 }
+function tileHtml(p, i){
+  const x = pt(p), soon = p.status === 'soon';
+  return `<article class="tile rv" data-id="${p.id}" tabindex="0" role="link" aria-label="${esc(p.name)}" style="--i:${i};--c1:${p.c[0]};--c2:${p.c[1]}">
+    <div class="tile-top">${appIc(p)}${soon ? `<span class="badge soon">beta</span>` : p.isNew ? `<span class="badge new">${t('newL')}</span>` : ''}</div>
+    <h3 style="view-transition-name:title-${p.id}">${esc(p.name)}</h3>
+    <div class="tsub">${esc(x.sub)}</div>
+    <p>${esc(x.short)}</p>
+    <div class="tile-bot"><span class="tcat">${esc(catName(p))}</span>${mainAct(p)}</div>
+  </article>`;
+}
+function groupHtml(key, list, sub){
+  if (!list.length) return '';
+  return `<div class="grp">
+    <div class="gh rv"><div><h3>${t(key)}</h3><p>${esc(sub)}</p></div><span class="cnt">${list.length}</span></div>
+    <div class="tiles">${list.map(tileHtml).join('')}</div></div>`;
+}
 function homeHtml(){
   const f = P.find(p => p.featured), fx = pt(f);
-  const napk = P.filter(p => p.apk).length;
+  const napk = P.filter(p => p.apk).length, live = P.filter(p => p.status === 'live');
+  const mq = P.map(p => `<a class="mq-i" href="#/p/${p.id}">${appIc(p, 'sm')}<span>${esc(p.name)}</span></a>`).join('');
   return `
   <div class="hero">
     <div class="tag">BASHLAB · ONLINE</div>
@@ -175,27 +195,32 @@ function homeHtml(){
       <h1 class="hand${firstPaint ? ' reveal-hand' : ''}">basaofficial <span class="dev">dev</span></h1>
       <svg viewBox="0 0 600 24" preserveAspectRatio="none" aria-hidden="true"><path d="M5 16 C 120 4, 260 22, 380 10 S 560 6, 595 14" style="${firstPaint ? '' : 'animation:none;stroke-dashoffset:0'}"/></svg>
     </div>
-    <p class="lead">${esc(t('lead'))}</p>
-    <div class="live"><span><b>${P.filter(p => p.status === 'live').length}</b> ${t('nproj')}</span><span class="sep">·</span><span><b>${napk}</b> ${t('napk')}</span><span class="sep">·</span><span>${t('updated')} <b id="lastUpd">…</b></span></div>
-    <div class="term" aria-live="polite"><span class="p">root@bashlab:~$</span> <span id="typed"></span><span class="c"></span></div>
-    <div class="cta">
+    <p class="lead hl">${esc(t('lead'))}</p>
+    <div class="live hl"><span><b>${live.length}</b> ${t('nproj')}</span><span class="sep">·</span><span><b>${napk}</b> ${t('napk')}</span><span class="sep">·</span><span>${t('updated')} <b id="lastUpd">…</b></span></div>
+    <div class="term hl" aria-live="polite"><span class="p">root@bashlab:~$</span> <span id="typed"></span><span class="c"></span></div>
+    <div class="cta hl">
       <a class="btn pri" href="#projekti" data-scroll="projekti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17l6-6-6-6M12 19h8"/></svg>./${t('projects').toLowerCase()}</a>
       <a class="btn" href="https://instagram.com/basa.gtm" target="_blank" rel="noopener">${I_IG}@basa.gtm</a>
     </div>
+    <div class="mq hl" aria-hidden="true"><div class="mq-t">${mq}${mq}</div></div>
   </div>
 
   <section id="projekti">
     <div class="sh rv"><span class="n">01.</span><h2>${t('projects')}</h2><span class="ln"></span></div>
-    <p class="sub rv">${esc(t('sub'))}</p>
-    <article class="feat rv" data-id="${f.id}" tabindex="0" role="link" aria-label="${esc(f.name)}">
-      <img src="assets/shots/${f.shots[0]}.webp" alt="${esc(f.name)}" style="view-transition-name:shot-${f.id}" width="600" height="1298" fetchpriority="high">
-      <div><span class="badge">${t('featured')} · <span data-ver="${f.id}">live</span></span>
+    <article class="feat rv" data-id="${f.id}" tabindex="0" role="link" aria-label="${esc(f.name)}" style="--c1:${f.c[0]};--c2:${f.c[1]}">
+      <div class="feat-txt">
+        <span class="eyebrow">${t('featured')} · <span data-ver="${f.id}">live</span></span>
         <h3 style="view-transition-name:title-${f.id}">${esc(f.name)}</h3>
+        <div class="fsub">${esc(fx.sub)}</div>
         <p>${esc(fx.long)}</p>
-        <div class="cta" style="justify-content:flex-start;margin-top:0">${actions(f, true)}</div></div>
+        <div class="feat-app">${appIc(f)}<div><b>${esc(f.name)}</b><small>${esc(catName(f))} · ${esc(f.platform)}</small></div></div>
+        <div class="cta">${actions(f, true)}</div>
+      </div>
+      <div class="feat-shots">${f.shots.slice(0, 2).map((s, i) => `<img src="assets/shots/${s}.webp" alt="${esc(f.name)}" width="600" height="1298" ${i === 0 ? `style="view-transition-name:shot-${f.id}" fetchpriority="high"` : 'loading="lazy"'}>`).join('')}</div>
     </article>
-    <div class="filters rv" role="tablist">${['all', 'web', 'apk', 'game'].map(k => `<button class="${filter === k ? 'on' : ''}" data-f="${k}">${t(k)}</button>`).join('')}</div>
-    <div class="grid" id="grid">${P.filter(p => !p.featured).map(cardHtml).join('')}</div>
+    ${groupHtml('games', live.filter(p => p.group === 'games'), t('gamesSub'))}
+    ${groupHtml('apps', live.filter(p => p.group === 'apps'), t('appsSub'))}
+    ${groupHtml('soonH', P.filter(p => p.status === 'soon'), t('soonSub'))}
   </section>
 
   <section id="o-meni">
@@ -215,7 +240,7 @@ ${L === 'de' ? 'Alles begann 2016 mit WoW auf dem Warmane-Server. Die Truppe bra
 <span class="k">stack</span> = [<span class="s">"HTML/CSS/JS"</span>, <span class="s">"Android"</span>, <span class="s">"Firebase"</span>, <span class="s">"3D/WebGL"</span>]</pre></div>
       <div class="panel rv"><div class="bar"><i></i><i></i><i></i><span>stats</span></div>
         <div class="stats">
-          <div class="stat"><b data-c="${P.filter(p => p.status === 'live').length}">0</b><span>${t('activeP')}</span></div>
+          <div class="stat"><b data-c="${live.length}">0</b><span>${t('activeP')}</span></div>
           <div class="stat"><b data-c="2016">0</b><span>${t('firstLine')}</span></div>
           <div class="stat"><b>∞</b><span>${t('coffee')}</span></div>
           <div class="stat"><b>24/7</b><span>${t('inLab')}</span></div>
@@ -229,37 +254,55 @@ function contactHtml(){
     <div class="hand">${t('contactH')}</div>
     <p>${esc(t('contactP'))}</p>
     <div class="cta" style="margin-top:0">
-      <a class="btn ig" href="https://instagram.com/basa.gtm" target="_blank" rel="noopener">${I_IG}Instagram · @basa.gtm</a>
+      <a class="btn pri" href="https://instagram.com/basa.gtm" target="_blank" rel="noopener">${I_IG}Instagram · @basa.gtm</a>
       <button class="btn" data-mail type="button">${I_MAIL}basagtm@gmail.com</button>
       <a class="btn" href="https://paypal.me/basagtm" target="_blank" rel="noopener">☕ Buy me a coffee</a>
       <a class="btn" href="https://github.com/Basaofficial" target="_blank" rel="noopener">${I_GH}GitHub</a>
     </div></div></section>`;
 }
 
-/* ---------------- render: stranica projekta ---------------- */
+/* ---------------- render: stranica projekta (App Store) ---------------- */
 function projectHtml(p){
-  const x = pt(p);
-  const target = p.apk || p.web;
+  const x = pt(p), target = p.apk || p.web;
   const gal = p.shots.length ? `<div class="gal" role="list">${p.shots.map((s, i) =>
       `<button type="button" role="listitem" data-lb="${i}" aria-label="${esc(p.name)} ${i + 1}"><img src="assets/shots/${s}.webp" alt="${esc(p.name)} ${i + 1}" ${i === 0 ? `style="view-transition-name:shot-${p.id}" fetchpriority="high"` : 'loading="lazy"'} width="600" height="1298" decoding="async"></button>`).join('')}</div>`
-    : `<div class="gal"><div class="card thumb ph" style="color:var(--g);flex:none;width:min(62vw,250px);aspect-ratio:600/1298;display:grid;place-items:center;margin:0;border-radius:20px;view-transition-name:shot-${p.id}">${svg(p.icon, 1.2)}</div></div>`;
+    : `<div class="gal"><div class="ghost" style="--c1:${p.c[0]};--c2:${p.c[1]};view-transition-name:shot-${p.id}">${svg(p.icon, 1.2)}</div></div>`;
+  const cell = (lbl, val, sub, attr = '') => `<div class="cell"><small>${lbl}</small><b ${attr}>${val}</b><span>${sub}</span></div>`;
+  const row = (lbl, val, attr = '') => `<div class="irow"><dt>${lbl}</dt><dd ${attr}>${val}</dd></div>`;
   return `<section class="pp">
     <a class="back" href="#/">← ${t('back')}</a>
-    <div class="ph1"><div class="ic">${svg(p.icon)}</div><h1 style="view-transition-name:title-${p.id}">${esc(p.name)}</h1></div>
-    <div class="meta" id="meta">
-      <span>${t('platform')} <b>${esc(p.platform)}</b></span>
-      ${p.gh ? `<span>${t('version')} <b data-ver="${p.id}">…</b></span><span>${t('updated')} <b data-upd2="${p.id}">…</b></span>` : `<span><b>${t('soon')}</b></span>`}
-      ${p.gh && p.gh.release ? `<span>${t('size')} <b data-size="${p.id}">…</b></span>` : ''}
+    <div class="apphead">${appIc(p, 'xl')}
+      <div class="ah"><h1 style="view-transition-name:title-${p.id}">${esc(p.name)}</h1>
+        <div class="asub">${esc(x.sub)}</div>
+        <div class="adev">basaofficial dev</div>
+        <div class="acts2">${actions(p, false)}</div></div></div>
+    <div class="istrip">
+      ${cell(t('cat'), `<span class="mini">${svg(p.icon, 2)}</span>`, esc(catName(p)))}
+      ${p.gh ? cell(t('version'), '…', p.status === 'soon' ? 'beta' : 'live', `data-ver="${p.id}"`) : cell(t('version'), '—', t('soon'))}
+      ${p.gh && p.gh.release ? cell(t('size'), '…', 'APK', `data-size="${p.id}"`) : ''}
+      ${cell(t('platform'), esc(p.platform.split(' · ')[0]), (esc(p.platform.split(' · ').slice(1).join(' · ')) || '&nbsp;'))}
+      ${cell(t('price'), t('free'), p.code ? 'open source' : 'bashlab')}
+      ${p.gh ? cell(t('updated'), '…', 'GitHub', `data-upd2="${p.id}"`) : ''}
     </div>
+    <h2 class="h2 rv">${t('shots')}</h2>
     ${gal}
     <div class="pgrid">
-      <div class="box"><p>${esc(x.long)}</p>
-        <h2 style="margin-top:18px">${t('features')}</h2>
-        <ul class="feats">${x.feats.map(f => `<li>${esc(f)}</li>`).join('')}</ul>
-        <div class="acts2">${actions(p, false)}</div></div>
-      <div style="display:grid;gap:18px;align-content:start">
-        ${target ? `<div class="box qr"><div class="code" id="qr" aria-label="QR"></div><p><b>${t('qrT')}</b>${p.apk ? t('qrApk') : t('qrWeb')}</p></div>` : ''}
-        ${p.gh ? `<div class="box"><h2>${t('news')}</h2><ul class="log" id="log">${'<li><span class="skel" style="width:46px"></span><span class="skel"></span></li>'.repeat(3)}</ul></div>` : ''}
+      <div class="col">
+        <div class="box rv"><h2>${t('desc')}</h2><p>${esc(x.long)}</p>${x.more ? `<p>${esc(x.more)}</p>` : ''}</div>
+        <div class="box rv"><h2>${t('features')}</h2><ul class="feats">${x.feats.map((f, i) => `<li style="--i:${i}">${esc(f)}</li>`).join('')}</ul></div>
+        ${p.gh ? `<div class="box rv"><h2>${t('news')}</h2><ul class="log" id="log">${'<li><span class="skel" style="width:46px"></span><span class="skel"></span></li>'.repeat(3)}</ul></div>` : ''}
+      </div>
+      <div class="col">
+        ${target ? `<div class="box qr rv"><div class="code" id="qr" aria-label="QR"></div><p><b>${t('qrT')}</b>${p.apk ? t('qrApk') : t('qrWeb')}</p></div>` : ''}
+        <div class="box rv"><h2>${t('infoH')}</h2><dl class="info">
+          ${row(t('dev'), 'basaofficial dev')}
+          ${row(t('cat'), esc(catName(p)))}
+          ${row(t('compat'), esc(p.platform))}
+          ${p.gh ? row(t('version'), '…', `data-ver="${p.id}"`) : ''}
+          ${p.gh && p.gh.release ? row(t('size'), '…', `data-size="${p.id}"`) : ''}
+          ${row(t('price'), t('free'))}
+          ${p.code ? row(t('source'), `<a href="${esc(p.code)}" target="_blank" rel="noopener">GitHub ↗</a>`) : ''}
+        </dl></div>
       </div>
     </div>
   </section>
@@ -308,10 +351,7 @@ function openProject(id){ lastHomeScroll = scrollY; location.hash = '#/p/' + id;
 async function fillHome(){
   P.forEach(async p => {
     const d = await info(p);
-    const n = document.querySelector(`[data-upd="${p.id}"]`);
-    if (n && d && d.updated) n.textContent = `${t('updated')} ${ago(d.updated)}${d.version ? ' · ' + d.version : ''}`;
-    const v = document.querySelector(`[data-ver="${p.id}"]`);
-    if (v && d && d.version) v.textContent = d.version;
+    $$(`[data-ver="${p.id}"]`).forEach(v => { if (d && d.version) v.textContent = d.version; });
   });
   const all = (await Promise.all(P.map(info))).filter(Boolean).map(d => d.updated).filter(Boolean).sort().reverse();
   const n = $('#lastUpd'); if (n) { if (all[0]) n.textContent = ago(all[0]); else { n.parentElement.previousElementSibling.remove(); n.parentElement.remove(); } }
@@ -323,11 +363,10 @@ async function fillProject(p){
   if (!p.gh) return;
   const d = await info(p);
   if (route().id !== p.id) return;
-  const set = (sel, v) => { const n = document.querySelector(sel); if (n) n.textContent = v; };
-  const chip = (sel, v) => { const n = document.querySelector(sel); if (!n) return; if (v) n.textContent = v; else n.parentElement.remove(); };
-  chip(`[data-ver="${p.id}"]`, d && d.version);
-  chip(`[data-upd2="${p.id}"]`, d && d.updated && ago(d.updated));
-  chip(`[data-size="${p.id}"]`, d && d.size && mb(d.size));
+  const put = (attr, v) => $$(`[${attr}="${p.id}"]`).forEach(n => { if (v) n.textContent = v; else (n.closest('.cell,.irow') || n).remove(); });
+  put('data-ver', d && d.version);
+  put('data-upd2', d && d.updated && ago(d.updated));
+  put('data-size', d && d.size && mb(d.size));
   const log = $('#log');
   if (log) log.innerHTML = d && d.log.length ? d.log.slice(0, 5).map(c => {
       const vm = c.m.match(/^(v?\d+\.\d+(?:\.\d+)?)[:\s–-]+(.*)$/);
@@ -347,36 +386,37 @@ function qr(url){
   }).catch(() => { const b = $('#qr'); if (b) b.closest('.box').remove(); });
 }
 
-/* ---------------- događaji ---------------- */
+/* ---------------- događaji + animacije ---------------- */
+let revIO;
 function bind(){
   $$('[data-id]').forEach(c => {
     c.addEventListener('click', e => { if (e.target.closest('a,button')) return; openProject(c.dataset.id); });
     c.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target === c) openProject(c.dataset.id); });
     c.addEventListener('pointermove', e => { const r = c.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
       c.style.setProperty('--mx', x + 'px'); c.style.setProperty('--my', y + 'px');
-      if (!reduce && e.pointerType === 'mouse' && c.classList.contains('card')) c.style.transform = `perspective(900px) rotateX(${(.5 - y / r.height) * 5}deg) rotateY(${(x / r.width - .5) * 7}deg) translateY(-3px)`; });
+      if (!reduce && e.pointerType === 'mouse' && c.classList.contains('tile')) c.style.transform = `perspective(800px) rotateX(${(.5 - y / r.height) * 8}deg) rotateY(${(x / r.width - .5) * 8}deg) translateY(-4px)`; });
     c.addEventListener('pointerleave', () => c.style.transform = '');
   });
   $$('a[href^="#/p/"]').forEach(a => a.addEventListener('click', e => { e.preventDefault(); openProject(a.getAttribute('href').split('/').pop()); }));
   $$('[data-scroll]').forEach(a => a.addEventListener('click', e => { e.preventDefault(); document.getElementById(a.dataset.scroll).scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' }); }));
   $$('a[href="#/kontakt"]').forEach(a => a.addEventListener('click', e => { e.preventDefault(); $('#kontakt').scrollIntoView({ behavior: 'smooth' }); }));
-  $$('.filters button').forEach(b => b.addEventListener('click', () => {
-    filter = b.dataset.f;
-    const apply = () => { $$('.filters button').forEach(x => x.classList.toggle('on', x === b));
-      $$('#grid .card').forEach(c => c.classList.toggle('hidden', filter !== 'all' && !P.find(p => p.id === c.dataset.id).tags.includes(filter))); };
-    document.startViewTransition && !reduce ? document.startViewTransition(apply) : apply();
-  }));
   $$('[data-apk]').forEach(a => a.addEventListener('click', () => count('apk/' + a.dataset.apk, 'APK ' + a.dataset.apk, true)));
   $$('[data-mail]').forEach(b => b.addEventListener('click', copyMail));
   $$('[data-lb]').forEach(b => b.addEventListener('click', () => lightbox(+b.dataset.lb)));
-  // stari preglednici: reveal preko IntersectionObservera
-  if (!CSS.supports('animation-timeline: view()')) {
-    const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: .12 });
-    $$('.rv').forEach(n => io.observe(n));
-  }
+  // magnetni dugmići (samo miš)
+  if (fine && !reduce) $$('.btn:not(.dis)').forEach(b => {
+    b.addEventListener('pointermove', e => { const r = b.getBoundingClientRect();
+      b.style.setProperty('--tx', ((e.clientX - r.left) / r.width - .5) * 8 + 'px'); b.style.setProperty('--ty', ((e.clientY - r.top) / r.height - .5) * 6 + 'px');
+      b.style.setProperty('--bx', (e.clientX - r.left) + 'px'); b.style.setProperty('--by', (e.clientY - r.top) + 'px'); });
+    b.addEventListener('pointerleave', () => { b.style.setProperty('--tx', '0px'); b.style.setProperty('--ty', '0px'); });
+  });
+  // reveal sa stepenastim kašnjenjem
+  revIO && revIO.disconnect();
+  revIO = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); revIO.unobserve(e.target); } }), { threshold: .1, rootMargin: '0px 0px -6% 0px' });
+  $$('.rv').forEach(n => revIO.observe(n));
   const cio = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.querySelectorAll('[data-c]').forEach(countUp); cio.unobserve(e.target); } }), { threshold: .3 });
   $$('.stats').forEach(n => cio.observe(n));
-  $$('.sh h2').forEach(h => h.addEventListener('mouseenter', () => scramble(h)));
+  $$('.sh h2, .gh h3').forEach(h => h.addEventListener('mouseenter', () => scramble(h)));
 }
 function countUp(b){ const tg = +b.dataset.c, st = tg > 100 ? tg - 30 : 0, t0 = performance.now();
   const step = now => { const k = Math.min(1, (now - t0) / 1200); b.textContent = Math.round(st + (tg - st) * (1 - Math.pow(1 - k, 3))); if (k < 1) requestAnimationFrame(step); };
@@ -388,6 +428,11 @@ function scramble(node){ if (reduce) return; const final = node.dataset.txt || (
   run(); }
 const toast = m => { const tt = $('#toast'); tt.textContent = m; tt.classList.add('on'); clearTimeout(tt._h); tt._h = setTimeout(() => tt.classList.remove('on'), 2400); };
 async function copyMail(){ const m = 'basagtm@gmail.com'; try { await navigator.clipboard.writeText(m); toast(t('mailCopied') + m); } catch(e){ location.href = 'mailto:' + m; } }
+
+/* traka napretka skrola + header kad se skrola */
+const prog = $('#prog');
+function onScroll(){ const h = document.documentElement.scrollHeight - innerHeight; if (prog) prog.style.transform = `scaleX(${h > 0 ? scrollY / h : 0})`; document.body.classList.toggle('scrolled', scrollY > 24); }
+addEventListener('scroll', onScroll, { passive: true });
 
 /* lightbox */
 function lightbox(i){
@@ -544,5 +589,6 @@ $$('.lang button').forEach(b => b.classList.toggle('on', b.dataset.l === L));
 $$('[data-i]').forEach(n => n.textContent = t(n.dataset.i));
 $('#palq').placeholder = t('palPh');
 render(false);
+onScroll();
 loop();
 })();
