@@ -77,12 +77,12 @@ window.PROJECTS = [
   }
 },
 {
-  id: "zvucnik", name: "Bash Zvučnik", tags: ["web"], status: "live", isNew: true,
+  id: "zvucnik", name: "Bash Zvučnik", tags: ["web", "apk"], status: "live", isNew: true,
   group: "apps", cat: "tools", icon: "speaker", c: ["#ff4d6d", "#4cc9ff"],
-  web: "zvucnik/",
-  gh: { repo: "Basaofficial/basaofficial.github.io", path: "zvucnik" },
+  apk: "https://github.com/Basaofficial/bashzvucnik/releases/latest", web: "zvucnik/", code: "https://github.com/Basaofficial/bashzvucnik",
+  gh: { repo: "Basaofficial/bashzvucnik", release: true },
   shots: ["zvucnik-1", "zvucnik-2", "zvucnik-3"],
-  platform: "Web",
+  platform: "Android 7+ · Web",
   t: {
     bs: { sub: "Mikrofon, karaoke i sirene",
           short: "Telefon kao mikrofon za zvučnik, uz matricu, equalizer i sirene.",
