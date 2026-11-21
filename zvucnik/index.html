@@ -33,6 +33,12 @@ h1 span{color:var(--acc)}
 .micbtn{width:58px;height:58px;border-radius:50%;border:2px solid var(--line);background:var(--glass);
   color:var(--txt);font-size:24px;display:grid;place-items:center;cursor:pointer;flex-shrink:0;
   backdrop-filter:blur(10px);transition:.2s}
+.micbtn.mute{border-color:var(--warn);color:var(--warn);opacity:.75;animation:none}
+.micbtn.talk{border-color:var(--acc)!important;color:var(--acc)!important;opacity:1;animation:pulseG 1s infinite}
+@keyframes pulseG{70%{box-shadow:0 0 0 14px rgba(57,255,159,0)}100%{box-shadow:0 0 0 0 rgba(57,255,159,0)}}
+.pttst{margin-top:10px;padding:12px;border-radius:14px;text-align:center;font-weight:700;font-size:15px;
+  border:1px dashed var(--line);color:var(--mut);transition:.15s}
+.pttst.talk{border-style:solid;border-color:var(--acc);color:var(--acc);background:rgba(57,255,159,.08)}
 .micbtn.on{border-color:var(--hot);box-shadow:0 0 0 0 rgba(255,77,109,.6);animation:pulse 1.4s infinite;color:var(--hot)}
 @keyframes pulse{70%{box-shadow:0 0 0 14px rgba(255,77,109,0)}100%{box-shadow:0 0 0 0 rgba(255,77,109,0)}}
 
@@ -135,6 +141,18 @@ footer a{color:var(--mut)}
 <main>
 <!-- MIKROFON -->
 <section class="tab act" id="t-mic">
+  <div class="card" id="pttCard">
+    <h2>Tipka za pričanje (PTT)</h2>
+    <div class="switch">Pričaj na bočnu tipku<button class="tg" id="pttTg"></button></div>
+    <div id="pttOpts">
+      <div class="note" style="margin-top:6px">Tipka:</div>
+      <div class="chips" id="pttKeys" style="margin-top:8px"></div>
+      <div class="note" style="margin-top:10px">Način:</div>
+      <div class="chips" id="pttModes" style="margin-top:8px"></div>
+      <div class="pttst" id="pttSt">—</div>
+      <div class="note" style="margin-top:8px">Mikrofon je utišan dok ne stisneš tipku. Radi dok je aplikacija otvorena na ekranu (ekran ostaje upaljen). Bluetooth selfie-daljinski obično šalje tipku <b>+</b>.</div>
+    </div>
+  </div>
   <div class="card">
     <h2>Glas</h2>
     <div id="micSliders"></div>
@@ -278,6 +296,7 @@ function init(){
 
     // MIC CHAIN: src -> pitch -> fx select -> eq -> micGain -> master (+ sends)
     N.micIn = gain(1);
+    N.ptt = gain(1); N.ptt.connect(N.micIn); // PTT vrata
     N.micPitch = new AudioWorkletNode(ctx,'pitch-shift',{outputChannelCount:[1],processorOptions:{win:1400}});
     N.micIn.connect(N.micPitch);
     N.fxOut = gain(1);
@@ -348,7 +367,7 @@ async function toggleMic(){
   if(micOn){
     N.micNode && N.micNode.disconnect();
     micStream.getTracks().forEach(t=>t.stop()); micStream=null; micOn=false;
-    $('micBtn').classList.remove('on');
+    $('micBtn').classList.remove('on'); talking=false; pttUI();
     try{wakeLock && wakeLock.release();}catch(e){}
     return;
   }
@@ -359,18 +378,57 @@ async function toggleMic(){
     return;
   }
   N.micNode = ctx.createMediaStreamSource(micStream);
-  N.micNode.connect(N.micIn);
-  micOn = true; $('micBtn').classList.add('on'); showLat();
+  N.micNode.connect(N.ptt);
+  micOn = true; $('micBtn').classList.add('on'); showLat(); pttGate();
   try{ wakeLock = await navigator.wakeLock.request('screen'); }catch(e){}
 }
 $('micBtn').onclick = toggleMic;
+
+/* ================= PTT (bočna tipka) ================= */
+let talking=false, micOpening=null;
+function pttGate(){
+  if(ctx && N.ptt) N.ptt.gain.setTargetAtTime(!S.ptt||talking?1:0, ctx.currentTime, .012);
+  pttUI();
+}
+function pttUI(){
+  const b=$('micBtn'), on=S.ptt&&micOn;
+  b.classList.toggle('talk', on&&talking); b.classList.toggle('mute', on&&!talking);
+  b.textContent = on&&talking ? '🗣' : '🎤';
+  const st=$('pttSt'); if(!st) return;
+  const k = S.pttKey==='plus'?'+':'−';
+  st.classList.toggle('talk', on&&talking);
+  st.textContent = on&&talking ? '🔴 PRIČAŠ…' :
+    (S.pttMode==='hold' ? `Drži tipku ${k} i pričaj` : `Klikni tipku ${k} za uključi/isključi`);
+}
+async function ensureMic(){
+  if(micOn) return;
+  if(!micOpening) micOpening = toggleMic().finally(()=>micOpening=null);
+  await micOpening;
+}
+let pttHeld=false;
+window.onPtt = async (down)=>{
+  if(!S.ptt) return;
+  if(down===pttHeld) return; pttHeld=down;
+  if(S.pttMode==='hold') talking=down;
+  else if(down) talking=!talking;
+  else return;
+  if(talking && !micOn) await ensureMic();
+  pttGate();
+};
+function pttSync(){
+  try{ window.BashAndroid && BashAndroid.setPtt(S.ptt ? S.pttKey : ''); }catch(e){}
+  if(!S.ptt) talking=false;
+  $('pttOpts').style.display = S.ptt?'':'none';
+  pttGate();
+}
 
 /* ================= UI HELPERS ================= */
 const S = { // state
   master:90, micVol:100, micPitch:0, gate:0,
   echo:0, echoTime:320, echoFb:35, reverb:0,
   musVol:80, musKey:0, sirVol:50, fx:'normal',
-  mEq:[0,0,0,0], musEq:[0,0,0,0,0], voc:false, loop:true
+  mEq:[0,0,0,0], musEq:[0,0,0,0,0], voc:false, loop:true,
+  ptt:false, pttKey:'minus', pttMode:'hold'
 };
 try{ Object.assign(S, JSON.parse(localStorage.getItem('bashZvucnik')||'{}')); S.voc=false; }catch(e){}
 function save(){ try{localStorage.setItem('bashZvucnik',JSON.stringify(S));}catch(e){} }
@@ -442,6 +500,24 @@ FX.forEach(([id,name,p])=>{
   };
   $('fxChips').appendChild(b);
 });
+
+/* PTT UI */
+$('pttTg').classList.toggle('on',S.ptt);
+$('pttTg').onclick=async()=>{ S.ptt=!S.ptt; $('pttTg').classList.toggle('on',S.ptt); talking=false; pttHeld=false;
+  if(S.ptt){ await init(); await ctx.resume(); } pttSync(); save(); };
+function chipGroup(el, key, items){
+  items.forEach(([id,name])=>{
+    const b=document.createElement('button'); b.className='btn'+(S[key]===id?' on':''); b.textContent=name;
+    b.onclick=()=>{ S[key]=id; el.querySelectorAll('.btn').forEach(x=>x.classList.toggle('on',x===b));
+      talking=false; pttHeld=false; pttSync(); save(); };
+    el.appendChild(b);
+  });
+}
+chipGroup($('pttKeys'),'pttKey',[['minus','🔉 Tipka −'],['plus','🔊 Tipka +']]);
+chipGroup($('pttModes'),'pttMode',[['hold','✊ Drži za pričanje'],['click','👆 Klik uklj/isklj']]);
+pttSync();
+// bočne tipke rade samo u APK aplikaciji
+if(!window.BashAndroid){ S.ptt=false; pttSync(); $('pttCard').innerHTML='<h2>Tipka za pričanje (PTT)</h2><div class="note">U Android aplikaciji možeš pričati na bočnu tipku − ili + (drži = pričaš, pusti = utišano). <a href="https://github.com/Basaofficial/bashzvucnik/releases/latest" style="color:var(--acc)">⬇ Skini APK</a></div>'; }
 
 /* ================= MUSIC ================= */
 let list=[], cur=-1;

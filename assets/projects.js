@@ -87,18 +87,18 @@ window.PROJECTS = [
     bs: { sub: "Mikrofon, karaoke i sirene",
           short: "Telefon kao mikrofon za zvučnik, uz matricu, equalizer i sirene.",
           long: "Pričaš ili pjevaš u telefon, a glas ide uživo na Bluetooth ili AUX zvučnik. Uz to pustiš MP3 matricu, podesiš equalizer i dodaš jeku, hall ili efekte glasa.",
-          more: "Prekidač za uklanjanje vokala od obične pjesme napravi matricu za karaoke, a tonalitet pjesme se mijenja bez promjene brzine. Ima 14 sirena, od policije i hitne do air horna, i snimanje svega što ide na zvučnik.",
-          feats: ["Mikrofon uživo na zvučnik", "Pitch glasa, Robot, Megafon, Čipmank", "EQ za mikrofon i muziku", "MP3 matrica, tonalitet i uklanjanje vokala", "Jeka i hall", "14 sirena: policija, hitna, vatrogasci…", "Snimanje glasa i muzike"] },
+          more: "Prekidač za uklanjanje vokala od obične pjesme napravi matricu za karaoke, a tonalitet pjesme se mijenja bez promjene brzine. Ima 14 sirena, od policije i hitne do air horna, i snimanje svega što ide na zvučnik. U APK verziji možeš pričati na bočnu tipku: drži − i pričaš, pusti i mikrofon je utišan.",
+          feats: ["Mikrofon uživo na zvučnik", "Pitch glasa, Robot, Megafon, Čipmank", "EQ za mikrofon i muziku", "MP3 matrica, tonalitet i uklanjanje vokala", "Jeka i hall", "14 sirena: policija, hitna, vatrogasci…", "Pričanje na bočnu tipku − (PTT)", "Snimanje glasa i muzike"] },
     de: { sub: "Mikrofon, Karaoke und Sirenen",
           short: "Handy als Mikrofon für die Box, mit Playback, Equalizer und Sirenen.",
           long: "Du sprichst oder singst ins Handy und die Stimme kommt live aus der Bluetooth- oder AUX-Box. Dazu ein MP3-Playback abspielen, den Equalizer einstellen und Echo, Hall oder Stimmeffekte hinzufügen.",
-          more: "Der Schalter zum Entfernen des Gesangs macht aus einem normalen Song ein Karaoke-Playback, und die Tonart lässt sich ohne Tempoänderung verschieben. Dazu 14 Sirenen von Polizei und Rettung bis Air Horn und eine Aufnahme von allem, was auf die Box geht.",
-          feats: ["Live-Mikrofon auf die Box", "Stimm-Pitch, Roboter, Megafon, Chipmunk", "EQ für Mikrofon und Musik", "MP3-Playback, Tonart, Gesang entfernen", "Echo und Hall", "14 Sirenen: Polizei, Rettung, Feuerwehr…", "Aufnahme von Stimme und Musik"] },
+          more: "Der Schalter zum Entfernen des Gesangs macht aus einem normalen Song ein Karaoke-Playback, und die Tonart lässt sich ohne Tempoänderung verschieben. Dazu 14 Sirenen von Polizei und Rettung bis Air Horn und eine Aufnahme von allem, was auf die Box geht. In der APK sprichst du per Seitentaste: − gedrückt halten zum Sprechen, loslassen und das Mikro ist stumm.",
+          feats: ["Live-Mikrofon auf die Box", "Stimm-Pitch, Roboter, Megafon, Chipmunk", "EQ für Mikrofon und Musik", "MP3-Playback, Tonart, Gesang entfernen", "Echo und Hall", "14 Sirenen: Polizei, Rettung, Feuerwehr…", "Sprechen per Lautstärketaste − (PTT)", "Aufnahme von Stimme und Musik"] },
     en: { sub: "Mic, karaoke and sirens",
           short: "Your phone as a mic for the speaker, with backing tracks, EQ and sirens.",
           long: "Talk or sing into your phone and your voice comes out live on a Bluetooth or AUX speaker. Play an MP3 backing track, tune the equalizer and add echo, reverb or voice effects.",
-          more: "The vocal remover turns a normal song into a karaoke track, and you can change the song's key without changing its speed. There are 14 sirens, from police and ambulance to an air horn, plus recording of everything that goes to the speaker.",
-          feats: ["Live mic to the speaker", "Voice pitch, Robot, Megaphone, Chipmunk", "EQ for mic and music", "MP3 backing track, key shift, vocal remover", "Echo and reverb", "14 sirens: police, ambulance, fire…", "Record voice and music"] }
+          more: "The vocal remover turns a normal song into a karaoke track, and you can change the song's key without changing its speed. There are 14 sirens, from police and ambulance to an air horn, plus recording of everything that goes to the speaker. In the APK you can push-to-talk with the side button: hold − to talk, let go and the mic is muted.",
+          feats: ["Live mic to the speaker", "Voice pitch, Robot, Megaphone, Chipmunk", "EQ for mic and music", "MP3 backing track, key shift, vocal remover", "Echo and reverb", "14 sirens: police, ambulance, fire…", "Push-to-talk on the side button −", "Record voice and music"] }
   }
 },
 {
