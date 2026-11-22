@@ -2,7 +2,31 @@
    group: "games" | "apps"   cat: games | health | social | prod | tools   c: boje ikone */
 window.PROJECTS = [
 {
-  id: "armory", name: "Bash Armory", tags: ["web", "apk", "game"], status: "live", featured: true,
+  id: "deutsch", name: "Bash Deutsch", tags: ["web"], status: "live", isNew: true, featured: true,
+  group: "apps", cat: "edu", icon: "book", c: ["#58cc02", "#1cb0f6"],
+  web: "deutsch/",
+  shots: ["deutsch-1", "deutsch-2", "deutsch-3"],
+  platform: "Web",
+  t: {
+    bs: { sub: "Njemački od A1 do B2",
+          short: "Uči njemački kroz kratke lekcije, kao u Duolingu.",
+          long: "32 jedinice od A1 do B2, oko 390 riječi i 200 rečenica. Svaka lekcija ima zadatke: prevod, slušanje, slaganje rečenica, pisanje, spajanje parova i der/die/das.",
+          more: "Uz svaku jedinicu ide kratka gramatika na našem jeziku i video izvori. Srca, XP, niz dana i dnevni cilj drže te da učiš svaki dan, a vježba ponavlja riječi u kojima griješiš.",
+          feats: ["A1, A2, B1 i B2", "9 vrsta zadataka", "Izgovor svake riječi i rečenice", "Gramatika za svaku jedinicu", "Vježba slabih riječi", "Niz dana, XP i dnevni cilj"] },
+    de: { sub: "Deutsch von A1 bis B2",
+          short: "Deutsch lernen in kurzen Lektionen, wie bei Duolingo.",
+          long: "32 Einheiten von A1 bis B2, rund 390 Wörter und 200 Sätze. Jede Lektion hat Aufgaben: Übersetzen, Hören, Sätze bauen, Schreiben, Paare verbinden und der/die/das.",
+          more: "Zu jeder Einheit gibt es kurze Grammatik auf Bosnisch und Videoquellen. Herzen, XP, Serie und Tagesziel halten dich am Ball, und die Übung wiederholt deine schwachen Wörter.",
+          feats: ["A1, A2, B1 und B2", "9 Aufgabentypen", "Aussprache jedes Wortes und Satzes", "Grammatik zu jeder Einheit", "Schwache Wörter üben", "Serie, XP und Tagesziel"] },
+    en: { sub: "German from A1 to B2",
+          short: "Learn German in short lessons, Duolingo style.",
+          long: "32 units from A1 to B2, about 390 words and 200 sentences. Every lesson has exercises: translating, listening, building sentences, typing, matching pairs and der/die/das.",
+          more: "Each unit comes with short grammar notes in Bosnian and video resources. Hearts, XP, streaks and a daily goal keep you going, and practice repeats the words you get wrong.",
+          feats: ["A1, A2, B1 and B2", "9 exercise types", "Pronunciation of every word and sentence", "Grammar for every unit", "Practice weak words", "Streak, XP and daily goal"] }
+  }
+},
+{
+  id: "armory", name: "Bash Armory", tags: ["web", "apk", "game"], status: "live",
   group: "games", cat: "games", icon: "shield", c: ["#f7b733", "#8e2de2"],
   apk: "armory/BashArmory.apk", web: "armory/", code: "https://github.com/Basaofficial/basharmory",
   gh: { repo: "Basaofficial/basharmory", release: true },
@@ -174,30 +198,6 @@ window.PROJECTS = [
           long: "Enter your height, weight and goal, and the app works out calories and macros and builds a weekly meal plan with real foods and gram amounts.",
           more: "The plan turns into a shopping list, and you track progress with a meal log, water intake and a weight chart. Runs in the browser on phone and PC.",
           feats: ["BMI and calorie calculator", "Weekly meal plan", "Shopping list", "Meal log, water and weight chart"] }
-  }
-},
-{
-  id: "deutsch", name: "Bash Deutsch", tags: ["web"], status: "live", isNew: true,
-  group: "apps", cat: "edu", icon: "book", c: ["#58cc02", "#1cb0f6"],
-  web: "deutsch/",
-  shots: ["deutsch-1", "deutsch-2", "deutsch-3"],
-  platform: "Web",
-  t: {
-    bs: { sub: "Njemački od A1 do B2",
-          short: "Uči njemački kroz kratke lekcije, kao u Duolingu.",
-          long: "32 jedinice od A1 do B2, oko 390 riječi i 200 rečenica. Svaka lekcija ima zadatke: prevod, slušanje, slaganje rečenica, pisanje, spajanje parova i der/die/das.",
-          more: "Uz svaku jedinicu ide kratka gramatika na našem jeziku i video izvori. Srca, XP, niz dana i dnevni cilj drže te da učiš svaki dan, a vježba ponavlja riječi u kojima griješiš.",
-          feats: ["A1, A2, B1 i B2", "9 vrsta zadataka", "Izgovor svake riječi i rečenice", "Gramatika za svaku jedinicu", "Vježba slabih riječi", "Niz dana, XP i dnevni cilj"] },
-    de: { sub: "Deutsch von A1 bis B2",
-          short: "Deutsch lernen in kurzen Lektionen, wie bei Duolingo.",
-          long: "32 Einheiten von A1 bis B2, rund 390 Wörter und 200 Sätze. Jede Lektion hat Aufgaben: Übersetzen, Hören, Sätze bauen, Schreiben, Paare verbinden und der/die/das.",
-          more: "Zu jeder Einheit gibt es kurze Grammatik auf Bosnisch und Videoquellen. Herzen, XP, Serie und Tagesziel halten dich am Ball, und die Übung wiederholt deine schwachen Wörter.",
-          feats: ["A1, A2, B1 und B2", "9 Aufgabentypen", "Aussprache jedes Wortes und Satzes", "Grammatik zu jeder Einheit", "Schwache Wörter üben", "Serie, XP und Tagesziel"] },
-    en: { sub: "German from A1 to B2",
-          short: "Learn German in short lessons, Duolingo style.",
-          long: "32 units from A1 to B2, about 390 words and 200 sentences. Every lesson has exercises: translating, listening, building sentences, typing, matching pairs and der/die/das.",
-          more: "Each unit comes with short grammar notes in Bosnian and video resources. Hearts, XP, streaks and a daily goal keep you going, and practice repeats the words you get wrong.",
-          feats: ["A1, A2, B1 and B2", "9 exercise types", "Pronunciation of every word and sentence", "Grammar for every unit", "Practice weak words", "Streak, XP and daily goal"] }
   }
 },
 {

@@ -227,7 +227,7 @@ function homeHtml(){
     <div class="sh rv"><span class="n">01.</span><h2>${t('projects')}</h2><span class="ln"></span></div>
     <article class="feat rv" data-id="${f.id}" tabindex="0" role="link" aria-label="${esc(f.name)}" style="--c1:${f.c[0]};--c2:${f.c[1]}">
       <div class="feat-txt">
-        <span class="eyebrow">${t('featured')} · <span data-ver="${f.id}">live</span></span>
+        <span class="eyebrow">${f.isNew ? '✨ ' + t('newL') : t('featured')} · <span data-ver="${f.id}">live</span></span>
         <h3 style="view-transition-name:title-${f.id}">${esc(f.name)}</h3>
         <div class="fsub">${esc(fx.sub)}</div>
         <p>${esc(fx.long)}</p>
