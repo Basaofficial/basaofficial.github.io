@@ -1,5 +1,5 @@
 /* bashlab service worker – sajt radi i offline. Samo za glavnu stranicu (ne dira igre/fit/armory). */
-const V = 'bashlab-v15';
+const V = 'bashlab-v16';
 const CORE = ['./', 'index.html', 'assets/site.css?v=5', 'assets/site.js?v=8', 'assets/projects.js?v=10', 'manifest.webmanifest',
   'assets/icons/icon-192.png', 'assets/shots/armory-1.webp'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(V).then(c => c.addAll(CORE)).then(() => self.skipWaiting())); });
@@ -9,7 +9,7 @@ self.addEventListener('fetch', e => {
   if (r.method !== 'GET') return;
   const own = u.origin === location.origin;
   // podaplikacije, APK i statistika idu uvijek na mrežu
-  if (own && /^\/(igre|fit|bashtalk|armory|ne-ljuti-se|bash-electro|metar|zvucnik)\//.test(u.pathname)) return;
+  if (own && /^\/(igre|fit|bashtalk|armory|ne-ljuti-se|bash-electro|metar|zvucnik|deutsch)\//.test(u.pathname)) return;
   if (/\.apk$/i.test(u.pathname) || u.hostname.endsWith('goatcounter.com') || u.hostname === 'gc.zgo.at' || u.hostname === 'api.github.com') return;
   // stranica: prvo mreža (svježe), pa keš ako si offline
   if (r.mode === 'navigate') {

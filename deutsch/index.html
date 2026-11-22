@@ -232,6 +232,8 @@ select{width:100%;font:inherit;padding:12px;border:2px solid var(--line);border-
 .bdg{font-size:11px;font-weight:800;color:#e5a800}
 .bchip{border:2px solid var(--line);background:var(--card);color:var(--text);border-radius:10px;padding:6px 10px;font-weight:800;font-size:13px;cursor:pointer}
 .bchip.on{border-color:var(--blue);background:rgba(28,176,246,.15);color:var(--blue)}
+.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--green);color:#fff;font-weight:900;padding:10px 16px;border-radius:12px;z-index:80;box-shadow:0 4px 14px rgba(0,0,0,.3);max-width:90%;text-align:center;animation:up .2s}
+.toast.bad{background:var(--orange)}
 canvas#cf{position:fixed;inset:0;pointer-events:none;z-index:60}
 .shake{animation:shake .35s}
 @keyframes shake{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
@@ -2497,7 +2499,7 @@ function resultCard(pct,sub){const pass=pct>=60;return `<div class="xres ${pass?
 /* ============ RANG LISTA + ADMIN + MODERATORI (javni MQTT, potpisano ECDSA ključevima) ============ */
 const ADMIN_PUB='BMsKXc4ygpnAfmVR_v_WuFxY_dJv8sO0vYc5KRfvsNEf2i1gjAQqHdriekbIpvt13yxwEW3vndoBac5u0bi_7nc';
 const NS='bashdeutsch/v1/',LB_T=NS+'lb/',CTL=NS+'ctl/',PING=NS+'ping/',LB_B=['wss://broker.emqx.io:8084/mqtt','wss://broker.hivemq.com:8884/mqtt'];
-const LB={clients:[],data:{},pings:{},ban:new Set(),block:{},badges:{},nicks:{},roles:{},ts:{},by:{},raw:{},news:null,status:'off',view:'week'};
+const LB={out:{},lastOk:0,clients:[],data:{},pings:{},ban:new Set(),block:{},badges:{},nicks:{},roles:{},ts:{},by:{},raw:{},news:null,status:'off',view:'week'};
 const NICK_RE=/^[\p{L}\p{N}_. -]{3,16}$/u;
 const PERMS=[['ban','🚫 Skrivanje i uklanjanje s kursa'],['nick','✏️ Mijenjanje nadimaka'],['news','📢 Obavještenja'],['badge','🏅 Bedževi']];
 const BADGES=['🏅 Top učenik','🔥 Vatreni niz','⭐ Pomagač','🧪 Beta tester','🎓 Položio B1','💪 Uporni'];
@@ -2541,11 +2543,11 @@ async function lbConnect(){
   if(LB.clients.length)return;LB.status='wait';
   if(!await lbLib()){LB.status='err';lbDraw();return;}
   LB_B.forEach(u=>{try{const c=mqtt.connect(u,{clientId:'bd_'+Math.random().toString(36).slice(2,10),clean:true,connectTimeout:8000,reconnectPeriod:6000,keepalive:30});
-    c.on('connect',()=>{LB.status='ok';c.subscribe([LB_T+'+',CTL+'+']);if(isStaff())c.subscribe(PING+'+');sendAll(c);lbDraw();});
+    c.on('connect',()=>{LB.status='ok';LB.lastOk=Date.now();c.subscribe([LB_T+'+',CTL+'+']);if(isStaff())c.subscribe(PING+'+');sendAll(c);Object.entries(LB.out).forEach(([k,o])=>{if(!o.ok)pub(c,CTL+k,o.e);});lbDraw();if(S.blocked)render();});
     c.on('message',(t,m)=>lbMsg(t,m));c.on('error',()=>{});LB.clients.push(c);}catch(e){}});
   setTimeout(()=>{if(LB.status==='wait'){LB.status='err';lbDraw();}},10000);
 }
-function pub(c,topic,obj){try{if(c.connected)c.publish(topic,obj===''?'':JSON.stringify(obj),{qos:1,retain:true});}catch(e){}}
+function pub(c,topic,obj){try{c.publish(topic,obj===''?'':JSON.stringify(obj),{qos:1,retain:true});}catch(e){}}
 function pubAll(topic,obj){LB.clients.forEach(c=>pub(c,topic,obj));}
 async function sendAll(c){
   if(!S.first){S.first=Date.now();save();}
@@ -2563,15 +2565,21 @@ const CTLS={
   nicks:{perm:'nick',str:e=>'nicks|'+e.ts+'|'+JSON.stringify(e.map),ok:e=>e.map&&typeof e.map==='object',apply:e=>{LB.nicks=e.map;const n=e.map[S.uid];if(n&&NICK_RE.test(n)&&S.nick&&S.nick!==n){S.nick=n;save();}}},
 };
 async function ctlHandle(k,e){
+  if(e&&LB.out[k]&&LB.out[k].e.ts===e.ts&&!LB.out[k].ok){LB.out[k].ok=true;toast('✓ Spremljeno na server');}
   const C=CTLS[k];if(!C||!e||!C.ok(e)||!(e.ts>(LB.ts[k]||0)))return;
   LB.raw[k]=e;
   const who=C.perm==='__admin'?(await admVerify(C.str(e),e.sig)?'Admin':null):await ctlVerify(C.str(e),e,C.perm);
   if(!who||!(e.ts>(LB.ts[k]||0)))return;
   LB.ts[k]=e.ts;LB.by[k]=who;C.apply(e);lbDrawSoon();
 }
+function toast(msg,bad){const t=document.createElement('div');t.className='toast'+(bad?' bad':'');t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),3200);}
+function watchOut(k,ts){setTimeout(()=>{const o=LB.out[k];if(o&&o.e.ts===ts&&!o.ok){toast('⚠️ Server još nije potvrdio. Ponovo šaljem…',true);LB.clients.forEach(c=>pub(c,CTL+k,o.e));setTimeout(()=>{const o2=LB.out[k];if(o2&&o2.e.ts===ts&&!o2.ok)toast('⚠️ Nije spremljeno. Provjeri internet i pokušaj ponovo.',true);},8000);}},8000);}
+function lbReconnect(){LB.clients.forEach(c=>{try{c.end(true);}catch(e){}});LB.clients=[];LB.status='off';lbConnect();}
+function waitConn(){return new Promise(res=>{if(LB.clients.some(c=>c.connected))return res(true);lbConnect();toast('Povezujem se sa serverom…');let n=0;const iv=setInterval(()=>{if(LB.clients.some(c=>c.connected)){clearInterval(iv);setTimeout(()=>res(true),1200);}else if(++n>40){clearInterval(iv);res(false);}},250);});}
 async function ctlSend(k,payload){
+  if(!await waitConn()){toast('⚠️ Nema veze sa serverom. Pokušaj ponovo.',true);return;}
   const ts=Date.now(),e={...payload,ts};Object.assign(e,await actSign(CTLS[k].str(e)));
-  LB.ts[k]=ts;LB.raw[k]=e;LB.by[k]=ADM.is?'Admin':LB.roles[MOD.pub].n;CTLS[k].apply(e);pubAll(CTL+k,e);lbDrawSoon();
+  LB.ts[k]=ts;LB.raw[k]=e;LB.by[k]=ADM.is?'Admin':LB.roles[MOD.pub].n;CTLS[k].apply(e);LB.out[k]={e,ok:false};pubAll(CTL+k,e);watchOut(k,ts);lbDrawSoon();
 }
 async function lbMsg(t,m){
   const s=m&&m.toString?m.toString():'';
@@ -2601,7 +2609,8 @@ function vBlocked(app){const b=S.blocked;
   app.innerHTML=`<div style="text-align:center;padding:60px 24px">${mascot(120,'sad')}<h2 class="t" style="margin-top:16px">Pristup kursu je ukinut</h2>
   <p class="muted" style="font-weight:700;line-height:1.5">Uklonjen si s kursa Bash Deutsch${b.u?` do <b>${fmtD(b.u)}</b>`:''}.</p>
   ${b.r?`<div class="note" style="text-align:left"><b>Razlog:</b> ${esc(b.r)}</div>`:''}
-  <p class="small muted" style="font-weight:600;margin-top:16px">Ako misliš da je greška, javi se adminu na Instagram <b>@basa.gtm</b>.</p></div>`;}
+  <p class="small muted" style="font-weight:600;margin-top:16px">Ako misliš da je greška, javi se adminu na Instagram <b>@basa.gtm</b>.</p><button class="btn ghost" id="bchk" style="margin-top:18px">🔄 Provjeri ponovo</button><div class="small muted" id="bst" style="margin-top:8px">${LB.status==='ok'?'Povezano sa serverom':'Povezujem se…'}</div></div>`;
+  const bc=document.getElementById('bchk');if(bc)bc.onclick=()=>{document.getElementById('bst').textContent='Provjeravam…';lbReconnect();setTimeout(()=>{const x=document.getElementById('bst');if(x)x.textContent=LB.status==='ok'?'Provjereno: i dalje si uklonjen.':'Nema veze sa serverom. Provjeri internet.';},6000);};}
 /* --- obavještenje --- */
 function newsDraw(){const el=$('#news');if(!el)return;const n=LB.news;if(!n||!n.msg||n.ts<=(S.newsSeen||0)){el.innerHTML='';return;}
   el.innerHTML=`<div class="newsb"><span style="font-size:22px">📢</span><div style="flex:1"><div class="small" style="font-weight:900;opacity:.8">Obavještenje · ${esc(LB.by.news==='Admin'?'👑 admin':'🛡️ '+(LB.by.news||''))}</div><div>${fmtT(n.msg)}</div></div><button class="xbtn" id="newsx" aria-label="Zatvori">✕</button></div>`;
@@ -2642,13 +2651,13 @@ function lbDraw(){
   el.innerHTML=h;
 }
 /* --- akcije osoblja --- */
-async function actBan(id){if(!can('ban'))return;const s=new Set(LB.ban);s.has(id)?s.delete(id):s.add(id);await ctlSend('ban',{ids:[...s]});}
-async function actBlock(id,days,reason){if(!can('ban')||id===S.uid||(LB.data[id]&&LB.data[id].adm))return;const list={...LB.block};
+async function actBan(id){if(!can('ban'))return;if(!await waitConn())return toast('⚠️ Nema veze sa serverom.',true);const s=new Set(LB.ban);s.has(id)?s.delete(id):s.add(id);await ctlSend('ban',{ids:[...s]});}
+async function actBlock(id,days,reason){if(!can('ban')||id===S.uid||(LB.data[id]&&LB.data[id].adm))return;if(!await waitConn())return toast('⚠️ Nema veze sa serverom.',true);const list={...LB.block};
   if(days===null)delete list[id];else list[id]={u:days?Date.now()+days*864e5:0,r:String(reason||'').slice(0,200)};
   Object.keys(list).forEach(k=>{if(!isBlockedRec(list[k]))delete list[k];});await ctlSend('block',{list});}
 async function actNews(msg){if(!can('news'))return;await ctlSend('news',{msg:msg.trim().slice(0,300)});}
-async function actBadge(id,b){if(!can('badge'))return;const map=JSON.parse(JSON.stringify(LB.badges||{}));const a=new Set(map[id]||[]);a.has(b)?a.delete(b):a.add(b);if(a.size)map[id]=[...a].slice(0,3);else delete map[id];await ctlSend('badges',{map});}
-async function actNick(id,n){if(!can('nick'))return;const map={...LB.nicks};if(n)map[id]=n;else delete map[id];await ctlSend('nicks',{map});}
+async function actBadge(id,b){if(!can('badge'))return;if(!await waitConn())return toast('⚠️ Nema veze sa serverom.',true);const map=JSON.parse(JSON.stringify(LB.badges||{}));const a=new Set(map[id]||[]);a.has(b)?a.delete(b):a.add(b);if(a.size)map[id]=[...a].slice(0,3);else delete map[id];await ctlSend('badges',{map});}
+async function actNick(id,n){if(!can('nick'))return;if(!await waitConn())return toast('⚠️ Nema veze sa serverom.',true);const map={...LB.nicks};if(n)map[id]=n;else delete map[id];await ctlSend('nicks',{map});}
 async function actRoles(mods){if(!ADM.is)return;const ts=Date.now(),e={mods,ts};e.sig=b64e(await crypto.subtle.sign(SG,ADM.priv,enc(CTLS.roles.str(e))));LB.ts.roles=ts;LB.roles=mods;LB.by.roles='Admin';pubAll(CTL+'roles',e);}
 function userSheet(id){
   if(!isStaff())return;const r=LB.data[id],p=LB.pings[id],bl=LB.block[id],name=r?dispNick(r):('Uređaj '+id.slice(0,6)),q=s=>document.querySelector(s);
@@ -2695,7 +2704,9 @@ function vAdmin(m){
     ${PERMS.map(([k,n])=>`<label class="xck"><input type="checkbox" data-mp="${k}" ${k!=='news'?'checked':''}> ${n}</label>`).join('')}<div class="small" id="mh"></div><button class="btn" id="madd">Dodaj moderatora</button></div></div>`:''}
   ${can('ban')?`<div class="sec"><h3>⛔ Uklonjeni s kursa</h3><div id="abl"></div></div><div class="sec"><h3>🚫 Skriveni s rang liste</h3><div id="abn"></div></div>`:''}
   <div class="sec"><h3>👥 Korisnici</h3><p class="small muted" style="font-weight:600">Tapni ⚙️ za akcije. Korisnici bez nadimka su prikazani kodom uređaja.</p><div id="ausr"></div></div>
+  <div class="sec"><h3>🔄 Server</h3><p class="small muted" style="font-weight:600">Ako neka promjena nije stigla do korisnika, ponovo pošalji sve postavke na server.</p><button class="btn ghost" id="async">Ponovo pošalji sve na server</button></div>
   <div class="sec"><h3>🔐 Ključ</h3><button class="btn ghost" id="abk">Kopiraj rezervnu kopiju (tajno)</button></div>`;
+  $('#async').onclick=()=>{Object.entries(LB.raw).forEach(([k,e])=>{if(e&&e.ts===LB.ts[k]){LB.out[k]={e,ok:false};pubAll(CTL+k,e);watchOut(k,e.ts);}});lbReconnect();toast('Šaljem…');};
   const j=lsGet(ADM.is?ADM_LS:MOD_LS);$('#abk').onclick=e=>copyTxt(JSON.stringify(j),e.target);
   if($('#ans')){$('#ans').onclick=async()=>{const v=$('#anm').value;if(!v.trim())return;await actNews(v);$('#anh').innerHTML='<span class="okc">✓ Poslano svima</span>';};$('#anc').onclick=async()=>{await actNews('');$('#anm').value='';$('#anh').innerHTML='<span class="okc">✓ Uklonjeno</span>';};}
   if($('#madd'))$('#madd').onclick=async()=>{const n=$('#mnm').value.trim(),k=$('#mkey').value.trim().replace(/\s/g,'');const p=[...document.querySelectorAll('[data-mp]')].filter(x=>x.checked).map(x=>x.dataset.mp);
