@@ -2823,9 +2823,9 @@ async function decForAdmin(e){
   const key=await crypto.subtle.deriveKey({name:'ECDH',public:epk},ADH,{name:'AES-GCM',length:256},false,['decrypt']);
   return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:b64d(e.iv)},key,b64d(e.ct))));
 }
-async function regSend(c){if(!S.reg||!ADMIN_PUB)return;try{const e=await encForAdmin({...S.reg,uid:S.uid});(c?[c]:LB.clients).forEach(x=>pub(x,REG+S.uid,e));}catch(x){}}
+async function regSend(c){if(!S.reg||!ADMIN_PUB)return;if('age' in S.reg){delete S.reg.age;save();}try{const e=await encForAdmin({...S.reg,uid:S.uid});(c?[c]:LB.clients).forEach(x=>pub(x,REG+S.uid,e));}catch(x){}}
 async function regMsg(t,s){if(!ADM.is)return;const id=t.slice(REG.length);if(!s){delete LB.reg[id];admDrawSoon();return;}
-  try{const d=await decForAdmin(JSON.parse(s));LB.reg[id]={fn:String(d.fn||'').slice(0,40),ln:String(d.ln||'').slice(0,40),age:+d.age||0,mail:String(d.mail||'').slice(0,80),from:String(d.from||'').slice(0,60),ts:+d.ts||0};admDrawSoon();}catch(x){}}
+  try{const d=await decForAdmin(JSON.parse(s));LB.reg[id]={fn:String(d.fn||'').slice(0,40),ln:String(d.ln||'').slice(0,40),mail:String(d.mail||'').slice(0,80),from:String(d.from||'').slice(0,60),ts:+d.ts||0};admDrawSoon();}catch(x){}}
 const needReg=()=>!S.reg&&!isStaff()&&!admHasKey()&&!modHasKey()&&tab!=='admin'&&tab!=='mod';
 function vRegister(app){
   const r=S.regDraft||{};
@@ -2833,7 +2833,6 @@ function vRegister(app){
   <div style="text-align:center">${mascot(96)}<h2 class="t" style="margin:10px 0 4px">Dobro došao u Bash Deutsch! 🇩🇪</h2><p class="muted" style="font-weight:600;margin:0 0 18px">Prije početka kursa upiši svoje podatke.</p></div>
   <div class="card" style="display:grid;gap:10px">
    <div class="grid2"><input class="search" id="rfn" maxlength="40" placeholder="Ime" value="${esc(r.fn||'')}" autocomplete="given-name"><input class="search" id="rln" maxlength="40" placeholder="Prezime" value="${esc(r.ln||'')}" autocomplete="family-name"></div>
-   <input class="search" id="rage" type="number" inputmode="numeric" min="10" max="99" placeholder="Godine" value="${esc(r.age||'')}">
    <input class="search" id="rmail" type="email" maxlength="80" placeholder="Email" value="${esc(r.mail||'')}" autocomplete="email">
    <input class="search" id="rfrom" maxlength="60" placeholder="Odakle si (grad, država)" value="${esc(r.from||'')}">
    <label class="xck" style="font-size:13px;font-weight:600"><input type="checkbox" id="rok"> <span>Pristajem da se ovi podaci <b>šifrovano</b> pošalju adminu kursa i koriste samo za vođenje kursa. Ne prikazuju se drugim korisnicima. Mogu ih obrisati u Profilu. <a href="#" id="rpriv">Više o privatnosti</a></span></label>
@@ -2842,10 +2841,9 @@ function vRegister(app){
   const q=id=>document.getElementById(id),val=id=>q(id).value.trim();
   q('rpriv').onclick=e=>{e.preventDefault();privSheet();};
   q('rgo').onclick=()=>{
-    const d={fn:val('rfn'),ln:val('rln'),age:+val('rage'),mail:val('rmail'),from:val('rfrom')};S.regDraft=d;
+    const d={fn:val('rfn'),ln:val('rln'),mail:val('rmail'),from:val('rfrom')};S.regDraft=d;
     const err=m=>{q('rerr').innerHTML=`<span class="badc">${m}</span>`;};
     if(d.fn.length<2||d.ln.length<2)return err('Upiši ime i prezime.');
-    if(!(d.age>=10&&d.age<=99))return err('Upiši godine (broj od 10 do 99).');
     if(!MAIL_RE.test(d.mail))return err('Email nije ispravan.');
     if(d.from.length<2)return err('Upiši odakle si.');
     if(!q('rok').checked)return err('Potrebna je saglasnost za obradu podataka.');
@@ -2853,21 +2851,21 @@ function vRegister(app){
   };
 }
 function privSheet(){sheet(`<h3>🔒 Privatnost</h3><div class="tip" style="font-weight:600;line-height:1.55">
-  <p><b>Šta se prikuplja:</b> ime, prezime, godine, email i mjesto, te napredak u kursu.</p>
+  <p><b>Šta se prikuplja:</b> ime, prezime, email i mjesto, te napredak u kursu.</p>
   <p><b>Ko vidi:</b> samo admin kursa (Basa). Podaci se na tvom telefonu šifruju adminovim ključem prije slanja, pa ih ne mogu pročitati ni serveri ni moderatori.</p>
   <p><b>Zašto:</b> za vođenje kursa i kontakt s polaznicima. Podaci se ne prodaju niti dijele.</p>
   <p><b>Brisanje:</b> u Profilu → „Moji podaci" → „Obriši moje podatke".</p>
   <p><b>Kontakt:</b> Instagram @basa.gtm</p></div><button class="btn" onclick="closeSheet()">U redu</button>`);}
 function myDataSection(){if(!S.reg)return '';const r=S.reg;
-  return `<div class="sec"><h3>🪪 Moji podaci</h3><div class="card small" style="font-weight:700;line-height:1.7">${esc(r.fn)} ${esc(r.ln)} · ${r.age} god.<br>${esc(r.mail)}<br>${esc(r.from)}</div>
+  return `<div class="sec"><h3>🪪 Moji podaci</h3><div class="card small" style="font-weight:700;line-height:1.7">${esc(r.fn)} ${esc(r.ln)}<br>${esc(r.mail)}<br>${esc(r.from)}</div>
   <button class="btn ghost" id="redit">Izmijeni podatke</button><button class="btn ghost" id="rdel" style="color:var(--red)">Obriši moje podatke</button><button class="btn ghost" onclick="privSheet()">🔒 Privatnost</button></div>`;}
 function bindMyData(){const e=$('#redit'),d=$('#rdel');
   if(e)e.onclick=()=>{S.regDraft=S.reg;S.reg=null;save();render();};
   if(d)d.onclick=()=>{sheet(`<h3>Obrisati tvoje podatke?</h3><p class="muted" style="font-weight:600">Podaci se brišu sa servera. Za nastavak kursa morat ćeš ih ponovo upisati.</p><button class="btn red" id="rdy">Obriši</button><button class="btn ghost" id="rdn">Odustani</button>`);
     $('#rdn').onclick=closeSheet;$('#rdy').onclick=()=>{pubAll(REG+S.uid,'');S.reg=null;save();closeSheet();render();};};}
-function regRow(id){const g=LB.reg[id];return g?`<div class="small" style="font-weight:700;color:var(--blue)">🪪 ${esc(g.fn)} ${esc(g.ln)} · ${g.age} god. · ${esc(g.from)}<br>✉️ ${esc(g.mail)}</div>`:'';}
-function regCSV(){const rows=[['Ime','Prezime','Godine','Email','Odakle','Nadimak','XP','Nivo','Registrovan']];
-  Object.entries(LB.reg).forEach(([id,g])=>{const r=LB.data[id];rows.push([g.fn,g.ln,g.age,g.mail,g.from,r?r.n:'',r?r.xp:'',r?r.lv:(LB.pings[id]?.lv||''),g.ts?fmtD(g.ts):'']);});
+function regRow(id){const g=LB.reg[id];return g?`<div class="small" style="font-weight:700;color:var(--blue)">🪪 ${esc(g.fn)} ${esc(g.ln)} · ${esc(g.from)}<br>✉️ ${esc(g.mail)}</div>`:'';}
+function regCSV(){const rows=[['Ime','Prezime','Email','Odakle','Nadimak','XP','Nivo','Registrovan']];
+  Object.entries(LB.reg).forEach(([id,g])=>{const r=LB.data[id];rows.push([g.fn,g.ln,g.mail,g.from,r?r.n:'',r?r.xp:'',r?r.lv:(LB.pings[id]?.lv||''),g.ts?fmtD(g.ts):'']);});
   return rows.map(r=>r.map(x=>'"'+String(x).replace(/"/g,'""')+'"').join(';')).join('\n');}
 
 /* ============ EVENTS ============ */
