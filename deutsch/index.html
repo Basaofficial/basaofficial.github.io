@@ -36,7 +36,8 @@ nav.bottom button.on .ic{filter:none;opacity:1}
 .muted{color:var(--muted)}.small{font-size:13px}
 .goal{display:flex;align-items:center;gap:12px}
 .gtxt{flex:1}
-.gbar{height:14px;background:var(--line);border-radius:8px;overflow:hidden;margin:6px 0}
+.gbar{height:14px;background:var(--line);border-radius:8px;overflow:hidden;margin:6px 0;position:relative}
+.vt summary{cursor:pointer;font-weight:900;color:var(--blue);margin-top:12px}
 .gbar i{display:block;height:100%;background:var(--yellow);border-radius:8px}
 .lvl{display:flex;align-items:center;gap:10px;margin:34px 0 -6px;font-weight:900;font-size:18px}
 .lvl span{background:var(--text);color:var(--bg);border-radius:10px;padding:3px 10px;font-size:15px}
@@ -961,6 +962,739 @@ const curLevel=()=>{const c=curIdx();return c<0?UNITS[UNITS.length-1].lvl:UNITS[
 const LDESC=['Nove riječi i prvi izrazi.','Još novih riječi i prve rečenice.','Sve zajedno: rečenice, slušanje i pisanje.'];
 const PRAISE=['Odlično!','Super!','Tačno!','Bravo!','Sjajno!','Wunderbar!','Prima!','Genau!','Sehr gut!'];
 
+
+/* ============ VOKABULAR PO NIVOIMA ============ */
+const VOCAB={A1:[
+{c:'Osobe i porodica',ic:'👪',w:`der Mensch|čovjek
+die Person|osoba
+der Mann|muškarac
+die Frau|žena
+das Kind|dijete
+das Baby|beba
+der Junge|dječak
+das Mädchen|djevojčica
+die Eltern|roditelji
+die Mutter|majka
+der Vater|otac
+die Mama|mama
+der Papa|tata
+der Sohn|sin
+die Tochter|kćerka
+der Bruder|brat
+die Schwester|sestra
+die Geschwister|braća i sestre
+die Großeltern|djed i baka
+die Oma|baka
+der Opa|djed
+der Onkel|amidža / ujak / tetak
+die Tante|tetka / strina / ujna
+der Cousin|rođak
+die Cousine|rođaka
+der Ehemann|muž
+die Ehefrau|supruga
+der Partner|partner
+die Familie|porodica
+der Freund|prijatelj / dečko
+die Freundin|prijateljica / djevojka
+der Nachbar|komšija
+die Nachbarin|komšinica
+der Herr|gospodin
+die Dame|gospođa
+der Name|ime
+der Vorname|ime (lično)
+der Familienname|prezime
+das Alter|starost / godine
+der Geburtstag|rođendan
+ledig|neoženjen / neudata
+verheiratet|oženjen / udata
+geschieden|razveden
+das Land|zemlja
+die Sprache|jezik
+die Adresse|adresa`},
+{c:'Brojevi i vrijeme',ic:'🕒',w:`null|nula
+elf|jedanaest
+zwölf|dvanaest
+dreizehn|trinaest
+zwanzig|dvadeset
+dreißig|trideset
+vierzig|četrdeset
+fünfzig|pedeset
+hundert|sto
+tausend|hiljadu
+die Million|milion
+die Zahl|broj
+die Nummer|broj (telefona, kuće)
+die Uhr|sat
+die Stunde|sat (60 minuta)
+die Minute|minuta
+die Sekunde|sekunda
+die Zeit|vrijeme
+der Tag|dan
+die Woche|sedmica
+das Wochenende|vikend
+der Monat|mjesec
+das Jahr|godina
+das Datum|datum
+der Morgen|jutro
+der Vormittag|prijepodne
+der Mittag|podne
+der Nachmittag|poslijepodne
+der Abend|veče
+die Nacht|noć
+heute|danas
+morgen|sutra
+gestern|jučer
+jetzt|sada
+später|kasnije
+früh|rano
+spät|kasno
+bald|uskoro
+immer|uvijek
+oft|često
+manchmal|ponekad
+nie|nikad
+wieder|ponovo
+schon|već
+noch|još
+dann|onda
+zuerst|prvo
+danach|nakon toga
+halb|pola
+das Viertel|četvrt
+der Januar|januar
+der Februar|februar
+der März|mart
+der April|april
+der Mai|maj
+der Juni|juni
+der Juli|juli
+der August|august
+der September|septembar
+der Oktober|oktobar
+der November|novembar
+der Dezember|decembar
+der Frühling|proljeće
+der Sommer|ljeto
+der Herbst|jesen
+der Winter|zima
+der Termin|termin`},
+{c:'Hrana i piće',ic:'🍽️',w:`das Essen|hrana / jelo
+das Frühstück|doručak
+das Mittagessen|ručak
+das Abendessen|večera
+das Getränk|piće
+der Saft|sok
+die Cola|kola
+der Wein|vino
+das Mineralwasser|mineralna voda
+das Brötchen|pecivo
+die Butter|puter
+die Marmelade|džem
+der Honig|med
+die Wurst|kobasica / salama
+der Schinken|šunka
+das Hähnchen|piletina
+der Fisch|riba
+das Rindfleisch|govedina
+der Reis|riža
+die Nudeln|tjestenina
+die Kartoffel|krompir
+das Gemüse|povrće
+das Obst|voće
+die Tomate|paradajz
+die Gurke|krastavac
+der Salat|salata
+die Zwiebel|luk
+die Karotte|mrkva
+die Banane|banana
+die Orange|narandža
+die Zitrone|limun
+die Erdbeere|jagoda
+der Kuchen|kolač
+die Schokolade|čokolada
+das Eis|sladoled / led
+der Zucker|šećer
+das Salz|so
+der Pfeffer|biber
+das Öl|ulje
+der Joghurt|jogurt
+die Sahne|pavlaka
+die Pizza|pica
+die Suppe|supa
+die Flasche|flaša
+das Glas|čaša
+die Tasse|šolja
+der Teller|tanjir
+das Messer|nož
+die Gabel|viljuška
+der Löffel|kašika
+das Restaurant|restoran
+das Café|kafić
+die Speisekarte|jelovnik
+die Rechnung|račun
+der Hunger|glad
+der Durst|žeđ
+lecker|ukusno
+süß|slatko
+sauer|kiselo
+scharf|ljuto
+kochen|kuhati
+backen|peći
+bestellen|naručiti
+schmecken|imati okus`},
+{c:'Kuća i stan',ic:'🏠',w:`die Wohnung|stan
+das Haus|kuća
+das Zimmer|soba
+das Wohnzimmer|dnevna soba
+das Schlafzimmer|spavaća soba
+das Kinderzimmer|dječija soba
+die Küche|kuhinja
+das Bad|kupatilo
+die Toilette|toalet
+der Flur|hodnik
+der Balkon|balkon
+der Garten|bašta
+der Keller|podrum
+die Treppe|stepenice
+der Aufzug|lift
+der Stock|sprat
+das Erdgeschoss|prizemlje
+die Tür|vrata
+das Fenster|prozor
+die Wand|zid
+der Boden|pod
+die Lampe|lampa
+das Licht|svjetlo
+die Heizung|grijanje
+der Schrank|ormar
+das Regal|polica
+das Sofa|kauč
+der Sessel|fotelja
+der Teppich|tepih
+der Kühlschrank|frižider
+der Herd|šporet
+die Waschmaschine|veš mašina
+die Dusche|tuš
+das Bett|krevet
+der Tisch|sto
+der Stuhl|stolica
+der Schlüssel|ključ
+die Miete|kirija
+der Vermieter|stanodavac
+die Anzeige|oglas
+mieten|iznajmiti
+wohnen|stanovati
+groß|veliko
+klein|malo
+hell|svijetlo
+dunkel|tamno
+ruhig|mirno
+laut|bučno`},
+{c:'Grad i saobraćaj',ic:'🚆',w:`die Stadt|grad
+das Dorf|selo
+die Straße|ulica
+der Platz|trg / mjesto
+die Ecke|ugao
+die Brücke|most
+der Park|park
+die Kirche|crkva
+die Moschee|džamija
+das Museum|muzej
+das Kino|kino
+das Theater|pozorište
+die Bank|banka / klupa
+die Post|pošta
+das Krankenhaus|bolnica
+die Apotheke|apoteka
+die Polizei|policija
+der Markt|pijaca
+das Geschäft|radnja
+der Supermarkt|supermarket
+die Bäckerei|pekara
+das Hotel|hotel
+der Bahnhof|željeznička stanica
+der Flughafen|aerodrom
+die Haltestelle|stajalište
+der Bus|autobus
+die U-Bahn|metro
+die S-Bahn|gradski voz
+die Straßenbahn|tramvaj
+der Zug|voz
+das Flugzeug|avion
+das Taxi|taksi
+das Auto|auto
+das Fahrrad|bicikl
+das Motorrad|motor
+das Schiff|brod
+die Fahrkarte|vozna karta
+das Ticket|karta
+der Fahrplan|red vožnje
+das Gleis|peron / kolosijek
+die Abfahrt|polazak
+die Ankunft|dolazak
+der Ausgang|izlaz
+der Eingang|ulaz
+die Reise|putovanje
+der Urlaub|odmor
+der Koffer|kofer
+der Pass|pasoš
+links|lijevo
+rechts|desno
+geradeaus|pravo
+hier|ovdje
+dort|tamo
+weit|daleko
+nah|blizu
+fahren|voziti / ići (vozilom)
+fliegen|letjeti
+abfahren|polaziti
+ankommen|stići
+umsteigen|presjedati
+einsteigen|ući (u vozilo)
+aussteigen|izaći (iz vozila)
+reisen|putovati`},
+{c:'Posao i škola',ic:'💼',w:`die Arbeit|posao / rad
+der Beruf|zanimanje
+die Firma|firma
+das Büro|kancelarija
+der Chef|šef
+die Chefin|šefica
+der Kollege|kolega
+die Kollegin|koleginica
+der Arbeitsplatz|radno mjesto
+der Computer|kompjuter
+der Drucker|štampač
+das Papier|papir
+der Kugelschreiber|hemijska olovka
+der Bleistift|olovka
+das Handy|mobitel
+die E-Mail|e-mail
+der Brief|pismo
+die Schule|škola
+der Kurs|kurs
+die Prüfung|ispit
+die Hausaufgabe|domaća zadaća
+der Lehrer|učitelj
+die Lehrerin|učiteljica
+der Schüler|učenik
+der Student|student
+die Universität|univerzitet
+das Buch|knjiga
+das Heft|sveska
+das Wort|riječ
+der Satz|rečenica
+die Frage|pitanje
+die Antwort|odgovor
+die Seite|strana
+der Arzt|doktor
+die Ärztin|doktorica
+der Verkäufer|prodavač
+der Kellner|konobar
+der Koch|kuhar
+der Fahrer|vozač
+der Mechaniker|mehaničar
+der Elektriker|električar
+der Ingenieur|inženjer
+die Krankenschwester|medicinska sestra
+der Hausmann|domaćin (vodi kućanstvo)
+die Hausfrau|domaćica
+arbeiten|raditi
+lernen|učiti
+lesen|čitati
+schreiben|pisati
+rechnen|računati
+verdienen|zarađivati
+frei|slobodan`},
+{c:'Kupovina, odjeća i boje',ic:'🛍️',w:`das Geld|novac
+der Euro|euro
+der Cent|cent
+der Preis|cijena
+das Angebot|ponuda / akcija
+die Kasse|kasa
+die Karte|kartica / karta
+die Tasche|torba
+die Tüte|kesa
+das Kilo|kilogram
+das Gramm|gram
+der Liter|litar
+das Stück|komad
+die Packung|pakovanje
+die Kleidung|odjeća
+die Hose|hlače
+das Hemd|košulja
+die Bluse|bluza
+das T-Shirt|majica
+der Pullover|džemper
+die Jacke|jakna
+der Mantel|kaput
+das Kleid|haljina
+der Rock|suknja
+der Schuh|cipela
+die Socke|čarapa
+der Hut|šešir
+die Mütze|kapa
+die Größe|veličina
+die Farbe|boja
+schwarz|crno
+weiß|bijelo
+rot|crveno
+blau|plavo
+grün|zeleno
+gelb|žuto
+grau|sivo
+braun|smeđe
+orange|narandžasto
+bunt|šareno
+teuer|skupo
+billig|jeftino
+kaufen|kupiti
+verkaufen|prodati
+bezahlen|platiti
+kosten|koštati
+brauchen|trebati
+suchen|tražiti
+finden|naći
+anziehen|obući
+ausziehen|skinuti (odjeću)
+passen|odgovarati (veličinom)
+gefallen|sviđati se`},
+{c:'Tijelo i zdravlje',ic:'🩺',w:`der Körper|tijelo
+der Kopf|glava
+das Gesicht|lice
+das Auge|oko
+das Ohr|uho
+die Nase|nos
+der Mund|usta
+der Zahn|zub
+der Hals|grlo / vrat
+der Arm|ruka (cijela)
+die Hand|šaka / ruka
+der Finger|prst
+der Bauch|stomak
+der Rücken|leđa
+das Bein|noga
+der Fuß|stopalo
+das Herz|srce
+die Gesundheit|zdravlje
+die Krankheit|bolest
+der Schmerz|bol
+das Fieber|temperatura
+die Erkältung|prehlada
+der Husten|kašalj
+das Medikament|lijek
+die Tablette|tableta
+die Praxis|ordinacija
+die Versicherung|osiguranje
+gesund|zdrav
+krank|bolestan
+müde|umoran
+wehtun|boljeti`},
+{c:'Slobodno vrijeme i vrijeme',ic:'⚽',w:`die Freizeit|slobodno vrijeme
+das Hobby|hobi
+der Sport|sport
+der Fußball|fudbal
+das Spiel|igra / utakmica
+die Musik|muzika
+das Lied|pjesma
+der Film|film
+das Foto|fotografija
+die Party|zabava
+das Fest|proslava
+die Einladung|pozivnica
+das Geschenk|poklon
+der Ausflug|izlet
+das Meer|more
+der See|jezero
+der Berg|planina
+der Wald|šuma
+der Fluss|rijeka
+das Tier|životinja
+der Hund|pas
+die Katze|mačka
+die Blume|cvijet
+der Baum|drvo
+das Wetter|vrijeme (prognoza)
+die Sonne|sunce
+der Regen|kiša
+der Schnee|snijeg
+der Wind|vjetar
+die Wolke|oblak
+das Grad|stepen
+warm|toplo
+kalt|hladno
+heiß|vruće
+schön|lijepo
+spielen|igrati
+schwimmen|plivati
+tanzen|plesati
+singen|pjevati
+wandern|planinariti
+fotografieren|fotografisati
+regnen|padati (kiša)
+schneien|padati (snijeg)`},
+{c:'Komunikacija i ured',ic:'✉️',w:`das Telefon|telefon
+der Anruf|poziv
+die Nachricht|poruka
+die SMS|SMS
+das Internet|internet
+die Information|informacija
+das Formular|formular
+die Unterschrift|potpis
+der Ausweis|lična karta
+das Amt|ured
+die Behörde|nadležni organ
+die Anmeldung|prijava
+der Antrag|zahtjev
+das Problem|problem
+die Hilfe|pomoć
+die Postleitzahl|poštanski broj
+der Wohnort|mjesto stanovanja
+der Geburtsort|mjesto rođenja
+die Staatsangehörigkeit|državljanstvo
+der Familienstand|bračno stanje
+anrufen|nazvati
+telefonieren|telefonirati
+schicken|poslati
+bekommen|dobiti
+ausfüllen|popuniti
+unterschreiben|potpisati
+buchstabieren|sricati
+antworten|odgovoriti
+fragen|pitati
+erklären|objasniti
+wiederholen|ponoviti
+verstehen|razumjeti`},
+{c:'Važni glagoli',ic:'🏃',w:`sein|biti
+haben|imati
+werden|postati
+können|moći
+müssen|morati
+wollen|htjeti
+möchten|željeti
+dürfen|smjeti
+sollen|trebati (po obavezi)
+machen|raditi / praviti
+tun|činiti
+gehen|ići (pješice)
+kommen|doći
+bleiben|ostati
+stehen|stajati
+sitzen|sjediti
+liegen|ležati
+legen|staviti (položiti)
+stellen|staviti (uspravno)
+nehmen|uzeti
+geben|dati
+bringen|donijeti
+holen|donijeti / pokupiti
+abholen|pokupiti
+mitbringen|ponijeti sa sobom
+sagen|reći
+sprechen|govoriti
+erzählen|pričati
+hören|slušati / čuti
+sehen|vidjeti
+schauen|gledati
+zeigen|pokazati
+denken|misliti
+glauben|vjerovati / misliti
+wissen|znati
+kennen|poznavati
+heißen|zvati se
+leben|živjeti
+essen|jesti
+trinken|piti
+schlafen|spavati
+aufstehen|ustati
+duschen|tuširati se
+waschen|prati
+putzen|čistiti
+aufräumen|pospremiti
+öffnen|otvoriti
+schließen|zatvoriti
+aufmachen|otvoriti
+zumachen|zatvoriti
+anfangen|početi
+beginnen|početi
+enden|završiti se
+helfen|pomoći
+warten|čekati
+treffen|sresti
+besuchen|posjetiti
+einladen|pozvati
+feiern|slaviti
+lachen|smijati se
+lieben|voljeti
+mögen|voljeti (sviđati se)
+gern haben|rado imati
+laufen|trčati / hodati
+spazieren gehen|šetati
+mitkommen|poći s nekim
+zurückkommen|vratiti se
+vergessen|zaboraviti
+verlieren|izgubiti
+benutzen|koristiti
+bitten|zamoliti
+danken|zahvaliti
+entschuldigen|izviniti
+grüßen|pozdraviti
+kennenlernen|upoznati
+ändern|promijeniti
+leihen|posuditi
+mitnehmen|ponijeti
+sich setzen|sjesti
+sich freuen|radovati se
+gehören|pripadati
+fehlen|nedostajati
+stimmen|biti tačno
+funktionieren|funkcionisati
+reparieren|popraviti
+übernachten|prenoćiti
+packen|pakovati
+ausmachen|ugasiti
+anmachen|upaliti`},
+{c:'Pridjevi i prilozi',ic:'✨',w:`gut|dobro
+schlecht|loše
+neu|novo
+alt|staro
+jung|mlado
+lang|dugo
+kurz|kratko
+hoch|visoko
+schnell|brzo
+langsam|sporo
+leicht|lako
+schwer|teško
+einfach|jednostavno
+richtig|tačno
+falsch|pogrešno
+wichtig|važno
+interessant|zanimljivo
+langweilig|dosadno
+toll|super
+super|super
+nett|ljubazan / fin
+freundlich|ljubazan
+glücklich|sretan
+traurig|tužan
+allein|sam
+zusammen|zajedno
+voll|puno
+leer|prazno
+offen|otvoreno
+geschlossen|zatvoreno
+kaputt|pokvareno
+fertig|gotovo
+sauber|čisto
+schmutzig|prljavo
+viel|mnogo
+wenig|malo
+mehr|više
+genug|dovoljno
+alle|svi
+alles|sve
+nichts|ništa
+etwas|nešto
+ganz|sasvim / cijeli
+sehr|jako
+zu|previše
+auch|također
+nur|samo
+vielleicht|možda
+natürlich|naravno
+leider|nažalost
+gern|rado
+wirklich|stvarno
+ungefähr|otprilike
+endlich|konačno
+sofort|odmah
+pünktlich|tačno na vrijeme
+möglich|moguće
+privat|privatno
+besetzt|zauzeto
+billiger|jeftinije
+lieber|radije
+am liebsten|najradije
+besser|bolje
+am besten|najbolje`},
+{c:'Male riječi',ic:'🔤',w:`wer|ko
+was|šta
+wo|gdje
+wohin|kuda
+woher|odakle
+wann|kada
+wie|kako
+wie viel|koliko
+warum|zašto
+welcher|koji
+mein|moj
+dein|tvoj
+sein|njegov
+ihr|njen / njihov
+unser|naš
+euer|vaš
+Ihr|Vaš
+und|i
+oder|ili
+aber|ali
+denn|jer
+weil|zato što
+wenn|kad / ako
+dass|da
+in|u
+an|na (uz)
+auf|na (gore)
+unter|ispod
+über|iznad / preko
+vor|ispred / prije
+hinter|iza
+neben|pored
+zwischen|između
+mit|sa
+ohne|bez
+für|za
+bei|kod
+von|od
+zu|ka / kod
+nach|poslije / u (grad)
+aus|iz
+seit|od (vremenski)
+bis|do
+um|u (sati) / oko
+gegen|protiv / oko (vremenski)
+durch|kroz
+ja|da
+nein|ne
+nicht|ne (negacija)
+kein|nijedan / nema
+doch|ipak / jeste
+bitte|molim
+danke|hvala
+Entschuldigung|izvinite
+Hallo|zdravo
+Tschüss|ćao
+Herzlichen Glückwunsch|čestitam`}
+]};
+
+const VOCW=[];Object.entries(VOCAB).forEach(([lv,cats])=>cats.forEach((C,ci)=>C.w.trim().split('\n').forEach(l=>{const [de,bs]=l.split('|');VOCW.push({de:de.trim(),bs:bs.trim(),u:-1,lv,cat:ci,id:lv+'|'+de.trim()+'|'+bs.trim()});})));
+const BOX=[0,1,3,7,16,35].map(d=>d*864e5);
+let VSEL={lv:'A1',cat:null};
+function srs(w,ok){if(!w||!w.id)return;S.vocab=S.vocab||{};const r=S.vocab[w.id]||{b:0,d:0};if(ok){r.b=Math.min(5,r.b+1);r.d=Date.now()+BOX[r.b];}else{r.b=1;r.d=Date.now()+10*60000;}S.vocab[w.id]=r;}
+function vocStats(lv,cat){const ws=VOCW.filter(w=>w.lv===lv&&(cat==null||w.cat===cat)),now=Date.now();let learned=0,due=0,seen=0;ws.forEach(w=>{const r=(S.vocab||{})[w.id];if(!r)return;seen++;if(r.b>=3)learned++;if(r.d<=now)due++;});return {total:ws.length,learned,due,seen};}
+function buildVocab(lv,cat){
+  const now=Date.now(),V=S.vocab||{},ws=VOCW.filter(w=>w.lv===lv&&(cat==null||w.cat===cat));
+  const due=shuf(ws.filter(w=>V[w.id]&&V[w.id].d<=now)).slice(0,8);
+  const fresh=ws.filter(w=>!V[w.id]).slice(0,Math.max(3,6-Math.floor(due.length/2)));
+  const q=[],T=['mc_de_bs','mc_bs_de','listen_mc','type','mc_de_bs'];
+  const fix=t=>(!TTS&&t==='listen_mc')?'mc_bs_de':t;
+  fresh.forEach(w=>{q.push({type:'intro',w,voc:1});q.push({type:'mc_de_bs',w,voc:1});});
+  due.forEach(w=>q.push({type:fix(ART.test(w.de)&&Math.random()<.3?'article':pick(T)),w,voc:1}));
+  const pool=due.concat(fresh);
+  if(pool.length>=5)q.push({type:'match',ws:shuf(pool).slice(0,5)});
+  shuf(fresh).forEach(w=>q.push({type:fix(pick(['mc_bs_de','type','listen_mc'])),w,voc:1}));
+  return q;
+}
+
 /* ============ UTILS ============ */
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -981,6 +1715,7 @@ function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
 let S=load();
 function regen(){if(S.hearts>=5){S.hearts=5;S.heartTs=Date.now();return;}const n=Math.floor((Date.now()-S.heartTs)/HEART_MS);if(n>0){S.hearts=Math.min(5,S.hearts+n);S.heartTs=S.hearts>=5?Date.now():S.heartTs+n*HEART_MS;save();}}
 function streakNow(){if(!S.last)return 0;return (S.last===dk()||S.last===dk(dayOff(-1)))?S.streak:0;}
+const freeM=m=>m==='practice'||m==='vocab';
 const isOpen=i=>i===0||!!S.done[i-1]||!!S.done[i];
 function curIdx(){for(let i=0;i<UNITS.length*4;i++)if(!S.done[i]&&isOpen(i))return i;return -1;}
 
@@ -1013,13 +1748,13 @@ function buildQueue(words,sents,plan,skipIntro){
     if(!TTS){if(t==='listen_mc')t='mc_bs_de';if(t==='listen_build')t='build_de';}
     if(t==='intro'){if(!skipIntro)out.push({type:'intro',w:wq[ii++%wq.length]});continue;}
     if(t==='article'){const c=shuf(words).find(w=>ART.test(w.de));if(c){out.push({type:'article',w:c});continue;}t='mc_de_bs';}
-    if(t==='match'){const seen=new Set(),ws=[];for(const w of shuf(words.length>=5?words:words.concat(UNITS[words[0].u].words))){const k=norm(w.de)+'|'+norm(w.bs);if(!seen.has(k)&&!ws.some(x=>norm(x.bs)===norm(w.bs)||norm(x.de)===norm(w.de))){seen.add(k);ws.push(w);}if(ws.length>=5)break;}out.push({type:'match',ws});continue;}
+    if(t==='match'){const seen=new Set(),ws=[];for(const w of shuf(words.length>=5?words:words.concat(words[0].u>=0?UNITS[words[0].u].words:VOCW.filter(x=>x.lv===words[0].lv&&x.cat===words[0].cat)))){const k=norm(w.de)+'|'+norm(w.bs);if(!seen.has(k)&&!ws.some(x=>norm(x.bs)===norm(w.bs)||norm(x.de)===norm(w.de))){seen.add(k);ws.push(w);}if(ws.length>=5)break;}out.push({type:'match',ws});continue;}
     if(t==='build_de'||t==='build_bs'||t==='listen_build'){if(sq.length){out.push({type:t,s:sq[si++%sq.length]});continue;}t='type';}
     out.push({type:t,w:wq[wi++%wq.length]});
   }
   return out;
 }
-function distract(w,field,n){const seen=new Set([norm(w[field])]),out=[];for(const x of shuf(UNITS[w.u].words).concat(shuf(ALLW))){const k=norm(x[field]);if(seen.has(k))continue;seen.add(k);out.push(x);if(out.length>=n)break;}return out;}
+function distract(w,field,n){const pool=w.u>=0?UNITS[w.u].words:VOCW.filter(x=>x.lv===w.lv&&x.cat===w.cat);const sd=new Set([norm(w.de)]),sb=new Set([norm(w.bs)]),out=[];for(const x of shuf(pool).concat(shuf(ALLW.concat(VOCW)))){const kd=norm(x.de),kb=norm(x.bs);if(sd.has(kd)||sb.has(kb))continue;sd.add(kd);sb.add(kb);out.push(x);if(out.length>=n)break;}return out;}
 function extraToks(answer,lang,n){const own=new Set(tok(answer).map(t=>t.toLowerCase()));const c=[];for(const s of shuf(ALLS)){for(const t of tok(s[lang])){const k=t.toLowerCase();if(!own.has(k)&&!c.some(x=>x.toLowerCase()===k))c.push(t);}if(c.length>30)break;}return shuf(c).slice(0,n);}
 
 /* ============ RENDER EXERCISE ============ */
@@ -1067,6 +1802,7 @@ function renderEx(ex,body){
       if(a===t)return {ok:true,correct:w.de};
       if(a===na&&t!==na)return {ok:true,correct:w.de,note:'Uči riječ i sa članom: '+w.de};
       if((t.length>4&&lev(a,t)<=1)||(na.length>4&&lev(a,na)<=1))return {ok:true,correct:w.de,note:'Mala greška u pisanju: '+w.de};
+      const alt=ALLW.concat(VOCW).find(x=>norm(x.bs)===norm(w.bs)&&(norm(x.de)===a||norm(x.de.replace(ART,''))===a));if(alt)return {ok:true,correct:w.de,note:'Tačno! Može i: '+w.de};
       return {ok:false,correct:w.de};}};break;}
   case 'build_de':tiles(body,`<h2>Prevedi rečenicu</h2><div class="prompt"><div class="bubble">„${esc(s.bs)}"</div></div>`,s.de,'de');break;
   case 'build_bs':tiles(body,`<h2>Prevedi rečenicu</h2><div class="prompt">${spkBtn(s.de)}<div class="bubble">${esc(s.de)}</div></div>`,s.bs,'bs');speak(s.de);break;
@@ -1091,9 +1827,10 @@ function rec(w,ok){if(!w)return;const r=S.words[w.de]||(S.words[w.de]={ok:0,bad:
 let L=null;
 function startLesson(u,l,mode){
   closeSheet();regen();
-  if(mode!=='practice'&&S.hearts<=0)return noHearts();
+  if(!freeM(mode)&&S.hearts<=0)return noHearts();
   let q;const U=UNITS[u];
   if(mode==='practice')q=buildPractice();
+  else if(mode==='vocab'){q=buildVocab(VSEL.lv,VSEL.cat);if(!q.length){sheet(`<div style="text-align:center">${mascot(80)}<h3>Sve je ponovljeno! 🎉</h3><p class="muted">Nema riječi za ponavljanje ni novih riječi u ovoj temi. Dođi sutra ili izaberi drugu temu.</p><button class="btn" onclick="closeSheet()">U redu</button></div>`);return;}}
   else if(mode==='jump'||l===3)q=buildQueue(U.words,U.sents,PLANS[3],true);
   else{const W=U.words,h=Math.ceil(W.length/2);
     if(l===0)q=buildQueue(W.slice(0,h),U.sents.slice(0,3),PLANS[0],!!S.done[u*4]);
@@ -1101,7 +1838,7 @@ function startLesson(u,l,mode){
     else q=buildQueue(W,U.sents,PLANS[2],true);}
   L={q,base:q.length,solved:0,okc:0,att:0,mist:0,combo:0,t0:Date.now(),mode,u,l,state:'ask'};
   const d=document.createElement('div');d.className='lesson';d.id='lesson';
-  d.innerHTML=`<div class="lhead"><button class="xbtn" id="lx">✕</button><div class="prog"><i id="pg" style="width:0"></i></div><div class="stat heart" id="lh">${mode==='practice'?'❤️ ∞':'❤️ '+S.hearts}</div></div><div class="lbody" id="lb"></div><div class="lfoot" id="lf"><div class="fin"><div id="fbx"></div><button class="btn" id="cb" disabled>Provjeri</button></div></div>`;
+  d.innerHTML=`<div class="lhead"><button class="xbtn" id="lx">✕</button><div class="prog"><i id="pg" style="width:0"></i></div><div class="stat heart" id="lh">${freeM(mode)?'❤️ ∞':'❤️ '+S.hearts}</div></div><div class="lbody" id="lb"></div><div class="lfoot" id="lf"><div class="fin"><div id="fbx"></div><button class="btn" id="cb" disabled>Provjeri</button></div></div>`;
   document.body.appendChild(d);
   $('#lx').onclick=quitAsk;$('#cb').onclick=onCheck;
   next();
@@ -1127,11 +1864,11 @@ function onCheck(){
     if(!X.ready)return;const r=X.check();const ex=L.cur;
     if(ex.type==='intro'){L.solved++;return next();}
     L.state='fb';$('#lb').classList.add('lock');
-    if(!X.match){L.att++;rec(ex.w,r.ok);}
+    if(!X.match){L.att++;rec(ex.w,r.ok);if(ex.voc)srs(ex.w,r.ok);}
     if(r.ok){L.solved++;L.okc++;L.combo++;beep('ok');
       if(ex.type==='build_de'||ex.type==='type'||ex.type==='mc_bs_de')speak(ex.s?ex.s.de:ex.w.de);}
     else{L.mist++;L.combo=0;beep('bad');L.q.push({...ex});
-      if(L.mode!=='practice'){regen();S.hearts=Math.max(0,S.hearts-1);save();$('#lh').textContent='❤️ '+S.hearts;$('#lh').classList.add('shake');}}
+      if(!freeM(L.mode)){regen();S.hearts=Math.max(0,S.hearts-1);save();$('#lh').textContent='❤️ '+S.hearts;$('#lh').classList.add('shake');}}
     const lf=$('#lf');lf.className='lfoot '+(r.ok?'ok':'bad');
     let h=`<div class="fbt">${r.ok?'✅ '+pick(PRAISE):'❌ Netačno'}</div>`;
     if(!r.ok)h+=`<div class="fbd">Tačan odgovor:<br><b>${esc(r.correct)}</b></div>`;
@@ -1141,7 +1878,7 @@ function onCheck(){
     $('#fbx').innerHTML=h;
     const cb=$('#cb');cb.textContent='Nastavi';cb.className='btn'+(r.ok?'':' red');cb.disabled=false;updProg();save();
   }else{
-    if(L.mode!=='practice'&&S.hearts<=0)return failScreen();
+    if(!freeM(L.mode)&&S.hearts<=0)return failScreen();
     next();
   }
 }
@@ -1152,16 +1889,17 @@ function quitAsk(){
 function endLesson(){try{speechSynthesis.cancel();}catch(e){}const d=$('#lesson');if(d)d.remove();L=null;render();}
 function finish(){
   const secs=Math.round((Date.now()-L.t0)/1000),acc=L.att?Math.round(100*L.okc/L.att):100,perfect=L.mist===0;
-  let xp=L.mode==='practice'?5:(L.mode==='jump'||L.l===3)?20:10;if(perfect&&L.mode!=='practice')xp+=5;
+  let xp=L.mode==='vocab'?10:L.mode==='practice'?5:(L.mode==='jump'||L.l===3)?20:10;if(perfect&&!freeM(L.mode))xp+=5;
   const today=dk(),before=S.daily[today]||0;
   S.xp+=xp;S.daily[today]=before+xp;S.lessons++;if(perfect)S.perfect++;
   let streakUp=false;if(S.last!==today){S.streak=(S.last===dk(dayOff(-1)))?S.streak+1:1;S.last=today;streakUp=true;}
   if(L.mode==='practice'){regen();S.hearts=Math.min(5,S.hearts+1);}
+  else if(L.mode==='vocab'){}
   else if(L.mode==='jump'){for(let i=0;i<=L.u*4+3;i++)S.done[i]=true;}
   else S.done[L.u*4+L.l]=true;
   save();beep('win');confetti();
   const goalHit=before<S.goal&&S.daily[today]>=S.goal;
-  const title=L.mode==='jump'?'Jedinica preskočena!':L.mode==='practice'?'Vježba završena!':perfect?'Savršena lekcija!':'Lekcija završena!';
+  const title=L.mode==='jump'?'Jedinica preskočena!':L.mode==='practice'?'Vježba završena!':L.mode==='vocab'?'Riječi naučene!':perfect?'Savršena lekcija!':'Lekcija završena!';
   $('#lb').innerHTML=`<div class="result">${mascot(130)}<h1>${title}</h1>
   ${streakUp?`<div style="color:var(--orange);font-weight:900;font-size:18px">🔥 Niz: ${S.streak} ${S.streak===1?'dan':'dana'}!</div>`:''}
   ${goalHit?`<div style="color:#e5a800;font-weight:900;margin-top:6px">🎯 Dnevni cilj ispunjen!</div>`:''}
@@ -1231,9 +1969,17 @@ function tipSheet(u){
   <a class="card res" href="https://www.youtube.com/results?search_query=${encodeURIComponent('njemački jezik za početnike '+U.t)}" target="_blank" rel="noopener"><span class="e">🇧🇦</span><span><div class="tt">YouTube: njemački za početnike · ${esc(U.t)}</div><div class="ds">Objašnjenja na našem jeziku</div></span></a></div>
   <div class="sec"><h3>📝 Rečenice iz jedinice</h3>${U.sents.map(s=>`<div class="wrow">${spkBtn(s.de)}<div class="tx"><div class="d">${esc(s.de)}</div><div class="b">${esc(s.bs)}</div></div></div>`).join('')}</div>`);
 }
+function vocCard(lv){
+  const st=vocStats(lv),C=VOCAB[lv];
+  return `<div class="card vc"><div class="xlh"><span class="lvb" style="background:var(--green)">${lv}</span><div style="flex:1"><div style="font-weight:900;font-size:17px">📚 Vokabular ${lv}</div><div class="small muted">${st.learned} naučeno · ${st.seen} započeto · ${st.total} riječi</div></div></div>
+  <div class="gbar"><i style="width:${st.seen/st.total*100}%;background:var(--blue);opacity:.45;position:absolute;height:14px"></i><i style="width:${st.learned/st.total*100}%;background:var(--green);position:relative"></i></div>
+  <p class="small muted" style="font-weight:600;margin:6px 0 0">Riječi se ponavljaju u razmacima (sutra, za 3 dana, za sedmicu…), pa ostaju u glavi. „Naučeno" znači da si riječ tačno ponovio 3 puta.</p>
+  <button class="btn" data-voc="${lv}">${st.due?`Ponovi ${st.due} + nove riječi`:'Uči nove riječi'}</button>
+  <details class="vt"><summary>Po temama (${C.length})</summary>${C.map((c,ci)=>{const t=vocStats(lv,ci);return `<button class="xmod" data-voc="${lv}|${ci}"><span class="xi">${c.ic}</span><span class="xt"><b>${esc(c.c)}</b><br><span class="small muted">${t.learned}/${t.total} naučeno${t.due?` · ${t.due} za ponavljanje`:''}</span></span><span class="xs ${t.learned===t.total?'ok':''}">${t.learned===t.total?'✓':'›'}</span></button>`;}).join('')}</details></div>`;
+}
 function vPractice(m){
   const all=Object.entries(S.words),weak=all.filter(([k,r])=>r.bad>0).sort((a,b)=>(b[1].bad-b[1].ok)-(a[1].bad-a[1].ok)).slice(0,8);
-  m.innerHTML=`<h2 class="t">Vježba</h2><div class="card" style="text-align:center">${mascot(90)}<div style="font-weight:900;font-size:18px;margin-top:6px">Ponovi slabe riječi</div><p class="muted">Vježba bira riječi u kojima najviše griješiš. Ne troši srca i daje <b>+1 ❤️</b> i 5 XP.</p><button class="btn blue" id="pr">Počni vježbu</button></div>
+  m.innerHTML=`<h2 class="t">Vježba</h2>${vocCard('A1')}<div class="card" style="text-align:center;margin-top:14px">${mascot(90)}<div style="font-weight:900;font-size:18px;margin-top:6px">Ponovi slabe riječi</div><p class="muted">Vježba bira riječi u kojima najviše griješiš. Ne troši srca i daje <b>+1 ❤️</b> i 5 XP.</p><button class="btn blue" id="pr">Počni vježbu</button></div>
   <div class="sec"><h3>🎯 Riječi za ponavljanje</h3>${weak.length?weak.map(([de,r])=>{const w=ALLW.find(x=>x.de===de);return w?`<div class="wrow">${spkBtn(w.de)}<div class="tx"><div class="d">${esc(w.de)}</div><div class="b">${esc(w.bs)}</div></div><span class="small" style="color:var(--red)">✗ ${r.bad}</span></div>`:'';}).join(''):'<p class="muted">Još nema grešaka. Samo naprijed! 💪</p>'}</div>`;
   $('#pr').onclick=()=>startLesson(0,0,'practice');
 }
@@ -1243,6 +1989,9 @@ function vWords(m){
     UNITS.forEach((U,u)=>{const open=isOpen(u*4)||S.done[u*4];const ws=U.words.concat(U.sents).filter(w=>!q||norm(w.de).includes(q)||norm(w.bs).includes(q));if(!ws.length)return;
       h+=`<div class="wgrp">${U.ic} ${esc(U.t.toUpperCase())} ${open?'':'🔒'}</div>`;
       ws.forEach(w=>{const r=S.words[w.de];const st=r?Math.max(0,Math.min(4,r.ok-r.bad)):0;h+=`<div class="wrow">${spkBtn(w.de)}<div class="tx"><div class="d">${esc(w.de)}</div><div class="b">${esc(w.bs)}</div></div>${r?`<span class="str">${'●'.repeat(st)}${'○'.repeat(4-st)}</span>`:''}</div>`;});});
+    Object.entries(VOCAB).forEach(([lv,cats])=>cats.forEach((C,ci)=>{const ws=VOCW.filter(w=>w.lv===lv&&w.cat===ci&&(!q||norm(w.de).includes(q)||norm(w.bs).includes(q)));if(!ws.length)return;
+      h+=`<div class="wgrp">${C.ic} ${lv} · ${esc(C.c.toUpperCase())}</div>`;
+      ws.forEach(w=>{const r=(S.vocab||{})[w.id];const st=r?Math.min(4,Math.max(0,r.b-1)):0;h+=`<div class="wrow">${spkBtn(w.de)}<div class="tx"><div class="d">${esc(w.de)}</div><div class="b">${esc(w.bs)}</div></div>${r?`<span class="str">${'●'.repeat(st)}${'○'.repeat(4-st)}</span>`:''}</div>`;});}));
     $('#wl').innerHTML=h||'<p class="muted">Ništa nije pronađeno.</p>';};
   $('#sq').oninput=draw;draw();
 }
@@ -1263,7 +2012,7 @@ function vVideo(m){
   <div class="note" style="margin-top:16px">💡 <b>Plan za svaki dan:</b> 1 lekcija ovdje (5 min) + 1 epizoda Nicos Weg (10 min) + slušaj Easy German usput u autu.</div>`;
 }
 function vProfile(m){
-  const known=Object.values(S.words).filter(r=>r.ok>r.bad).length,doneN=Object.keys(S.done).length;
+  const known=Object.values(S.words).filter(r=>r.ok>r.bad).length+Object.values(S.vocab||{}).filter(r=>r.b>=3).length,doneN=Object.keys(S.done).length;
   const days=[...Array(7)].map((_,i)=>dayOff(i-6)),vals=days.map(d=>S.daily[dk(d)]||0),mx=Math.max(S.goal,...vals);
   const DN=['Ned','Pon','Uto','Sri','Čet','Pet','Sub'];
   m.innerHTML=`<div style="text-align:center">${mascot(100)}<h2 class="t" style="margin-bottom:2px">Moj profil</h2><div class="muted small">Učim njemački 🇩🇪 · Nivo ${curLevel()}</div></div>
@@ -1727,9 +2476,10 @@ function resultCard(pct,sub){const pass=pct>=60;return `<div class="xres ${pass?
 
 /* ============ EVENTS ============ */
 document.addEventListener('click',e=>{
-  const t=e.target.closest('[data-exam],[data-say],[data-tab],[data-node],[data-start],[data-jump],[data-tip],[data-goal],[data-snd],[data-rate],[data-info]');if(!t)return;
+  const t=e.target.closest('[data-voc],[data-exam],[data-say],[data-tab],[data-node],[data-start],[data-jump],[data-tip],[data-goal],[data-snd],[data-rate],[data-info]');if(!t)return;
   const d=t.dataset;
   if(d.say!==undefined){speak(d.say,d.slow==='1');return;}
+  if(d.voc){const [lv,c]=d.voc.split('|');VSEL={lv,cat:c==null?null:+c};startLesson(0,0,'vocab');return;}
   if(d.exam){const [lv,k]=d.exam.split('|');examSheet(lv,k);return;}
   if(d.tab){closeSheet();tab=d.tab;render();scrollTo(0,0);}
   else if(d.node)nodeSheet(+d.node);
