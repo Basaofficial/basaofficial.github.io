@@ -22,7 +22,7 @@ header.top{position:sticky;top:0;z-index:5;background:var(--bg);display:flex;jus
 main{padding:16px 16px 110px}
 nav.bottom{position:fixed;bottom:0;left:0;right:0;background:var(--bg);border-top:2px solid var(--line);z-index:5}
 nav.bottom .in{display:flex;max-width:560px;margin:0 auto}
-nav.bottom button{flex:1;background:none;border:0;padding:9px 0 12px;font-size:11px;font-weight:800;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer}
+nav.bottom button{flex:1;background:none;border:0;padding:9px 0 12px;font-size:10.5px;font-weight:800;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer}
 nav.bottom button .ic{font-size:23px;filter:grayscale(1);opacity:.6}
 nav.bottom button.on{color:var(--blue)}
 nav.bottom button.on .ic{filter:none;opacity:1}
@@ -152,6 +152,70 @@ select{width:100%;font:inherit;padding:12px;border:2px solid var(--line);border-
 .sec{margin-top:26px}
 .sec h3{font-size:18px;font-weight:900;margin:0 0 10px}
 .note{background:var(--soft);border-radius:14px;padding:12px 14px;font-size:14px;line-height:1.45;font-weight:600}
+/* exam */
+.xlv{margin-top:14px;padding:12px}
+.xlh{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.lvb{background:var(--blue);color:#fff;border-radius:12px;padding:8px 10px;font-weight:900;font-size:18px}
+.pass{background:var(--green);color:#fff;border-radius:10px;padding:3px 9px;font-size:12px;font-weight:900;white-space:nowrap}
+.xmod{display:flex;align-items:center;gap:12px;width:100%;background:none;border:0;border-top:2px solid var(--line);padding:12px 2px;color:var(--text);text-align:left;cursor:pointer;font-size:15px}
+.xmod .xi{font-size:24px}.xmod .xt{flex:1;line-height:1.35}
+.xs{font-weight:900;color:var(--muted);font-size:16px}.xs.ok{color:var(--green)}.xs.bad{color:var(--red)}
+.timer{font-weight:900;font-variant-numeric:tabular-nums;background:var(--soft);border-radius:10px;padding:4px 10px}
+.timer.low{color:#fff;background:var(--red)}
+.xm-part{border-top:2px solid var(--line);padding-top:16px;margin-top:18px}
+.xm-pt{font-weight:900;font-size:20px}
+.xm-ins{font-weight:700;margin:4px 0 2px;line-height:1.4}
+.xm-de{font-size:13px;color:var(--muted);font-style:italic;margin-bottom:10px;font-weight:600}
+.xm-text{background:var(--soft);border-radius:14px;padding:14px;margin:10px 0;line-height:1.55;font-weight:600;font-size:15px}
+.xm-text.sm{font-size:14px;padding:11px;margin:6px 0}
+.xm-ads{display:grid;gap:8px;margin:10px 0}
+.xm-ads div{background:var(--soft);border-radius:12px;padding:10px 12px;font-size:14px;line-height:1.45;font-weight:600}
+.xm-ads b{color:var(--blue);margin-right:4px}
+.xm-sign{border:3px solid var(--text);border-radius:8px;padding:10px;text-align:center;font-weight:900;margin:6px 0;font-size:15px;line-height:1.35}
+.xm-item{margin:16px 0}
+.xm-q{display:flex;gap:10px;align-items:flex-start;margin-bottom:8px}
+.xn{background:var(--text);color:var(--bg);border-radius:8px;min-width:26px;height:26px;display:grid;place-items:center;font-size:13px;font-weight:900;margin-top:1px}
+.xm-qt{font-weight:800;line-height:1.4}
+.xm-opts{display:grid;gap:8px}
+.xm-opts.two{grid-template-columns:1fr 1fr}
+.xm-opts.chips{display:flex;flex-wrap:wrap;gap:6px}
+.xo{border:2px solid var(--line);border-bottom-width:4px;border-radius:12px;padding:11px 12px;background:var(--card);color:var(--text);font-size:15px;font-weight:700;text-align:left;cursor:pointer;display:flex;gap:10px;align-items:center}
+.xm-opts.two .xo,.xm-opts.chips .xo{justify-content:center;text-align:center}
+.xm-opts.chips .xo{min-width:46px;padding:9px 12px}
+.xo .xl{width:24px;height:24px;border:2px solid var(--line);border-radius:7px;display:grid;place-items:center;font-size:12px;color:var(--muted);flex:none}
+.xo.sel{border-color:var(--blue);background:rgba(28,176,246,.12);color:var(--blue)}
+.xo.right{border-color:var(--green);background:rgba(88,204,2,.15);color:var(--okfg)}
+.xo.wrong{border-color:var(--red);background:rgba(255,75,75,.12);color:var(--badfg)}
+.xm-fb{font-size:13px;margin-top:6px}
+.okc{color:var(--okfg);font-weight:900}.badc{color:var(--badfg);font-weight:900}
+.xplay{border:0;background:var(--blue);box-shadow:0 3px 0 var(--blue-d);color:#fff;border-radius:12px;padding:9px 14px;font-weight:900;font-size:14px;cursor:pointer;margin:4px 8px 6px 0}
+.xplay:disabled{background:var(--line);box-shadow:none;color:var(--muted)}
+.xplay .pl{background:rgba(255,255,255,.25);border-radius:6px;padding:1px 6px;margin-left:4px}
+.xtr{border:2px solid var(--line);background:none;color:var(--text);border-radius:10px;padding:6px 10px;font-weight:800;cursor:pointer}
+.xtrans{margin:6px 0;font-size:14px}.xtrans summary{cursor:pointer;font-weight:800;color:var(--blue)}.xtrans div{background:var(--soft);border-radius:12px;padding:12px;margin-top:6px;line-height:1.55;font-weight:600}
+.xres{display:flex;gap:14px;align-items:center;border-radius:18px;padding:14px 16px;margin-bottom:8px}
+.xres.ok{background:var(--okbg)}.xres.bad{background:var(--badbg)}
+.xr-p{font-size:34px;font-weight:900}.xres.ok .xr-p,.xres.ok .xr-s{color:var(--okfg)}.xres.bad .xr-p,.xres.bad .xr-s{color:var(--badfg)}
+.xr-s{font-weight:900}
+.xpts{margin:6px 0 10px;padding-left:20px;line-height:1.5;font-weight:700}
+.xta{width:100%;font:inherit;font-size:16px;font-weight:600;line-height:1.5;padding:12px;border:2px solid var(--line);border-radius:14px;background:var(--soft);color:var(--text);outline:none;resize:vertical}
+.xta:focus{border-color:var(--blue)}
+.xta-bar{display:flex;align-items:center;gap:10px;margin-top:6px}.xta-bar .chars{flex:1;margin:0}.xta-bar .chars button{padding:5px 0;font-size:15px}
+.wcount{font-size:13px;font-weight:900;color:var(--muted);white-space:nowrap}.wcount.ok{color:var(--okfg)}
+.xform{border:2px solid var(--line);border-radius:14px;padding:12px;display:grid;gap:10px}
+.xf-h{font-weight:900;color:var(--blue)}
+.xform label{display:grid;gap:4px;font-size:13px;font-weight:800;color:var(--muted)}
+.xform input{font:inherit;font-size:16px;font-weight:700;padding:10px;border:2px solid var(--line);border-radius:10px;background:var(--soft);color:var(--text);outline:none}
+.xform input.okb{border-color:var(--green)}.xform input.badb{border-color:var(--red)}
+.xrv{margin-top:12px;border:2px dashed var(--line);border-radius:14px;padding:12px}
+.xck{display:flex;gap:10px;align-items:flex-start;padding:6px 0;font-weight:700;font-size:15px}.xck input{width:20px;height:20px;margin-top:1px;flex:none}
+.xcards{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.xcards span{border:2px solid var(--text);border-radius:10px;padding:8px 12px;font-weight:900;background:var(--soft)}
+.xph{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}.xph span{background:rgba(28,176,246,.12);color:var(--blue);border-radius:8px;padding:4px 9px;font-size:13px;font-weight:800}
+.xrec{display:flex;flex-direction:column;gap:8px;margin-bottom:6px}.xrec audio{width:100%}
+.btn.sm{padding:10px;font-size:14px;margin-top:6px}
+.pulse{animation:pls 1s infinite}@keyframes pls{50%{opacity:.6}}
+.xsr{display:flex;align-items:center;gap:8px;margin:6px 0}.xsr>span{flex:1;font-size:14px;font-weight:800}.xsr .seg{flex:1.6}.xsr .seg button{padding:7px 2px;font-size:12px}
 canvas#cf{position:fixed;inset:0;pointer-events:none;z-index:60}
 .shake{animation:shake .35s}
 @keyframes shake{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
@@ -911,7 +975,7 @@ const dayOff=n=>{const d=new Date();d.setDate(d.getDate()+n);return d;};
 
 /* ============ STATE ============ */
 const KEY='bashdeutsch-v1', HEART_MS=20*60*1000;
-const def=()=>({xp:0,hearts:5,heartTs:Date.now(),streak:0,last:null,done:{},daily:{},goal:20,words:{},sound:true,rate:0.9,voice:'',lessons:0,perfect:0});
+const def=()=>({exam:{},xp:0,hearts:5,heartTs:Date.now(),streak:0,last:null,done:{},daily:{},goal:20,words:{},sound:true,rate:0.9,voice:'',lessons:0,perfect:0});
 function load(){try{const j=JSON.parse(localStorage.getItem(KEY));if(j)return Object.assign(def(),j);}catch(e){}return def();}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
 let S=load();
@@ -1127,13 +1191,13 @@ let t=0;(function f(){x.clearRect(0,0,c.width,c.height);P.forEach(p=>{p.x+=p.vx;
 
 /* ============ VIEWS ============ */
 let tab='learn';
-const TABS=[['learn','🏠','Učenje'],['practice','💪','Vježba'],['words','📖','Riječi'],['video','🎬','Video'],['profile','👤','Profil']];
+const TABS=[['learn','🏠','Učenje'],['practice','💪','Vježba'],['exam','📝','Ispit'],['words','📖','Riječi'],['video','🎬','Video'],['profile','👤','Profil']];
 function render(){
   regen();
   const app=$('#app');
   app.innerHTML=`<header class="top"><span class="flag">🇩🇪</span><button class="stat fire" data-info="streak">🔥 ${streakNow()}</button><button class="stat xp" data-info="xp">⚡ ${S.xp}</button><button class="stat heart" data-info="hearts">❤️ ${S.hearts}</button></header><main id="main"></main><nav class="bottom"><div class="in">${TABS.map(([k,i,n])=>`<button data-tab="${k}" class="${tab===k?'on':''}"><span class="ic">${i}</span>${n}</button>`).join('')}</div></nav>`;
   const m=$('#main');
-  ({learn:vLearn,practice:vPractice,words:vWords,video:vVideo,profile:vProfile})[tab](m);
+  ({learn:vLearn,exam:vExam,practice:vPractice,words:vWords,video:vVideo,profile:vProfile})[tab](m);
 }
 function vLearn(m){
   const today=S.daily[dk()]||0,g=S.goal,cur=curIdx();
@@ -1222,11 +1286,451 @@ function vProfile(m){
   $('#rst').onclick=()=>{sheet(`<div style="text-align:center">${mascot(80,'sad')}<h3>Obrisati sav napredak?</h3><p class="muted">XP, niz i završene lekcije biće izbrisani.</p><button class="btn red" id="ry">Da, obriši</button><button class="btn ghost" id="rn">Odustani</button></div>`);$('#ry').onclick=()=>{S=def();save();closeSheet();render();};$('#rn').onclick=closeSheet;};
 }
 
+/* ============ PROBNI ISPITI (format Goethe-Zertifikat) ============ */
+const RF=['Richtig','Falsch'], YN=['Ja','Nein'];
+const EXAMS={
+/* =================================== A1 =================================== */
+A1:{name:'Start Deutsch 1',info:'Lesen 25 · Hören 20 · Schreiben 20 · Sprechen 15 min',
+lesen:{min:25,desc:'3 dijela · 15 zadataka',intro:'Čitaš kratke poruke, oglase i natpise. Za svaki zadatak izaberi tačan odgovor.',parts:[
+ {t:'Teil 1',i:'Pročitaj dva teksta. Da li je rečenica tačna (Richtig) ili netačna (Falsch)?',d:'Lesen Sie die zwei Texte. Sind die Aussagen richtig oder falsch?',rf:RF,
+  text:'Liebe Sabine,\nich bin jetzt in Hamburg. Die Stadt ist sehr schön, aber das Wetter ist nicht so gut: Es regnet jeden Tag. Mein Hotel ist direkt am Hafen. Morgen besuche ich meinen Bruder Thomas. Er wohnt seit zwei Jahren hier. Am Sonntag fahre ich mit dem Zug zurück.\nViele Grüße\nKarin',
+  items:[{q:'Karin ist in Hamburg.',a:true},{q:'Das Wetter in Hamburg ist schön.',a:false},{q:'Karins Bruder wohnt in Hamburg.',a:true},
+   {text:'Hallo Herr Petrović,\ndie Besprechung am Montag ist nicht um 9 Uhr, sondern um 11 Uhr. Bitte bringen Sie die Pläne für das Projekt mit.\nVielen Dank!\nMonika Lang',q:'Die Besprechung ist am Montag um 9 Uhr.',a:false},
+   {q:'Herr Petrović soll Pläne mitbringen.',a:true}]},
+ {t:'Teil 2',i:'Pročitaj situaciju i dva oglasa. Gdje ćeš naći informaciju: a ili b?',d:'Lesen Sie die Situationen. Wo finden Sie Informationen? Wählen Sie a oder b.',keep:true,
+  items:[{q:'Sie möchten am Sonntag schwimmen gehen.',o:['Hallenbad Mitte – Mo–Fr 7–21 Uhr, Sa 8–18 Uhr','Freizeitbad Sonnenland – täglich 9–22 Uhr, auch sonntags'],a:1},
+   {q:'Sie suchen eine Wohnung mit zwei Zimmern.',o:['3-Zimmer-Wohnung, 85 m², Balkon, 950 € warm','2-Zimmer-Wohnung, 55 m², Einbauküche, 620 € warm'],a:1},
+   {q:'Sie möchten einen Deutschkurs am Abend machen.',o:['Volkshochschule: Deutsch A1, Mo + Mi 18:30–20:00 Uhr','Sprachschule Lingua: Deutsch A1, Di + Do 9:00–12:00 Uhr'],a:0},
+   {q:'Ihr Fahrrad ist kaputt.',o:['Radhaus Müller – Verkauf und Reparatur von Fahrrädern','Autowerkstatt Kraus – Reparatur aller Automarken'],a:0},
+   {q:'Sie möchten billig nach Berlin fahren.',o:['Flug nach Berlin ab 89 €','Fernbus nach Berlin ab 19,99 €'],a:1}]},
+ {t:'Teil 3',i:'Pročitaj natpise. Da li je rečenica tačna ili netačna?',d:'Lesen Sie die Schilder. Sind die Aussagen richtig oder falsch?',rf:RF,
+  items:[{sign:'Praxis Dr. Klein\nHeute geschlossen!\nVertretung: Dr. Haas, Bahnhofstraße 5',q:'Sie können heute zu Dr. Klein gehen.',a:false},
+   {sign:'Bäckerei Brot & mehr\nSonntag 7–11 Uhr geöffnet',q:'Sie können am Sonntagmorgen Brot kaufen.',a:true},
+   {sign:'Aufzug defekt – bitte die Treppe benutzen',q:'Sie müssen zu Fuß nach oben gehen.',a:true},
+   {sign:'Rauchen verboten',q:'Hier dürfen Sie rauchen.',a:false},
+   {sign:'Bürgeramt\nTermine nur online: www.stadt.de',q:'Sie können ohne Termin ins Bürgeramt gehen.',a:false}]}]},
+hoeren:{min:20,desc:'3 dijela · 15 zadataka',intro:'Slušaš kratke razgovore, obavještenja i telefonske poruke. Pazi koliko puta smiješ preslušati tekst.',parts:[
+ {t:'Teil 1',i:'Slušaš kratke razgovore. Svaki tekst čuješ dva puta. Izaberi a, b ili c.',d:'Sie hören sechs kurze Texte. Sie hören jeden Text zweimal.',plays:2,
+  items:[{au:[['Kundin','Entschuldigung, was kostet der Pullover hier?'],['Verkäufer','Der blaue? Der kostet 25 Euro. Aber heute ist alles 5 Euro billiger.'],['Kundin','Also 20 Euro?'],['Verkäufer','Genau.']],q:'Wie viel kostet der Pullover heute?',o:['25 Euro','20 Euro','30 Euro'],a:1},
+   {au:[['Mann','Hallo Maria, wann beginnt unser Kurs morgen?'],['Maria','Normalerweise um neun, aber morgen beginnt er erst um halb elf.'],['Mann','Um halb elf? Super, dann kann ich länger schlafen.']],q:'Wann beginnt der Kurs morgen?',o:['Um 9:00 Uhr','Um 10:30 Uhr','Um 11:30 Uhr'],a:1},
+   {au:[['Mann','Entschuldigung, wo ist hier die Post?'],['Frau','Die Post? Gehen Sie geradeaus und dann links. Sie ist neben dem Supermarkt.'],['Mann','Vielen Dank!']],q:'Was sucht der Mann?',o:['Die Post','Den Supermarkt','Den Bahnhof'],a:0},
+   {au:[['Kellner','Was möchten Sie trinken? Einen Kaffee?'],['Frau','Nein danke, keinen Kaffee. Ich nehme einen Tee mit Milch.']],q:'Was möchte die Frau trinken?',o:['Kaffee','Tee','Wasser'],a:1},
+   {au:[['Gast','Guten Abend, mein Name ist Weber. Ich habe ein Zimmer reserviert.'],['Rezeption','Ja, Herr Weber. Sie haben Zimmer zweihundertvierzehn, im zweiten Stock.']],q:'Welche Zimmernummer hat Herr Weber?',o:['204','214','240'],a:1},
+   {au:[['Frau','Paul, fährst du mit dem Auto zur Arbeit?'],['Paul','Nein, das Auto ist kaputt. Diese Woche fahre ich mit dem Fahrrad.'],['Frau','Und wenn es regnet?'],['Paul','Dann nehme ich den Bus. Aber heute scheint die Sonne.']],q:'Wie fährt Paul heute zur Arbeit?',o:['Mit dem Auto','Mit dem Fahrrad','Mit dem Bus'],a:1}]},
+ {t:'Teil 2',i:'Slušaš obavještenja. Svaki tekst čuješ samo jednom. Tačno ili netačno?',d:'Sie hören vier Ansagen. Sie hören jeden Text einmal.',plays:1,rf:RF,
+  items:[{au:'Achtung am Gleis drei: Der Zug nach München hat heute zwanzig Minuten Verspätung.',q:'Der Zug nach München kommt pünktlich.',a:false},
+   {au:'Liebe Kunden, unser Supermarkt schließt in zehn Minuten. Bitte kommen Sie zur Kasse.',q:'Der Supermarkt ist bald geschlossen.',a:true},
+   {au:'Der Flug LH 345 nach Wien ist jetzt bereit zum Einsteigen. Bitte gehen Sie zum Ausgang B 12.',q:'Die Passagiere nach Wien sollen zum Ausgang B 12 gehen.',a:true},
+   {au:'Heute im Angebot: Ein Kilo Tomaten nur ein Euro neunzig. Das Angebot gilt nur heute.',q:'Die Tomaten sind die ganze Woche billig.',a:false}]},
+ {t:'Teil 3',i:'Slušaš poruke na telefonskoj sekretarici. Svaki tekst čuješ dva puta. Izaberi a, b ili c.',d:'Sie hören fünf Ansagen am Telefon. Sie hören jeden Text zweimal.',plays:2,
+  items:[{au:'Hallo Jan, hier ist Lisa. Ich kann heute leider nicht ins Kino kommen. Ich bin krank. Können wir am Samstag gehen? Ruf mich bitte an.',q:'Wann möchte Lisa ins Kino gehen?',o:['Heute','Am Samstag','Am Sonntag'],a:1},
+   {au:'Guten Tag, Frau Novak. Hier ist die Praxis Doktor Berger. Ihr Termin am Dienstag geht leider nicht. Können Sie am Donnerstag um fünfzehn Uhr kommen?',q:'Wann ist der neue Termin?',o:['Dienstag, 15 Uhr','Donnerstag, 15 Uhr','Donnerstag, 5 Uhr'],a:1},
+   {au:'Hallo Mama, ich bin es, Tim. Ich komme heute später nach Hause, so um acht. Ich muss noch mit Max für die Prüfung lernen.',q:'Warum kommt Tim später?',o:['Er arbeitet.','Er lernt mit Max.','Er geht einkaufen.'],a:1},
+   {au:'Hallo, hier ist das Autohaus Schmidt. Ihr Auto ist fertig. Sie können es heute bis achtzehn Uhr abholen. Die Reparatur kostet hundertzwanzig Euro.',q:'Bis wann kann man das Auto abholen?',o:['Bis 16 Uhr','Bis 18 Uhr','Bis 20 Uhr'],a:1},
+   {au:'Hallo Sara, hier ist Ana. Wir machen am Freitag eine Party. Kannst du einen Salat mitbringen? Getränke haben wir genug.',q:'Was soll Sara mitbringen?',o:['Getränke','Einen Salat','Einen Kuchen'],a:1}]}]},
+schreiben:{min:20,desc:'2 dijela · formular + poruka',intro:'Dio 1: popuni formular. Dio 2: napiši kratku poruku (oko 30 riječi).',tasks:[
+ {type:'form',t:'Teil 1 · Formular',i:'Tvoj prijatelj se upisuje u sportski klub. Pročitaj tekst i popuni 5 polja u formularu.',
+  text:'Ihr Freund Marko Jurić möchte im Sportverein Fit+ Mitglied werden. Er ist 28 Jahre alt und wohnt in der Gartenstraße 12 in 80331 München. Er möchte am Wochenende trainieren und mit Karte bezahlen. Seine Telefonnummer ist 0176 445566.',
+  fields:[['Familienname','Jurić'],['Vorname',['marko']],['Alter',['28','28 jahre']],['PLZ, Wohnort',['80331 münchen','münchen','80331']],['Training (wochentags / am Wochenende)',['am wochenende','wochenende']],['Zahlung (bar / mit Karte)',['mit karte','karte']]]},
+ {type:'text',t:'Teil 2 · Poruka',i:'Napiši e-mail prijateljici Leni. Napiši 1–2 rečenice za svaku tačku. Ne zaboravi pozdrav na početku i na kraju.',words:30,
+  d:'Sie haben am Samstag Geburtstag und machen eine Party. Schreiben Sie Ihrer Freundin Lena eine E-Mail.',
+  pts:['Warum schreiben Sie?','Wann und wo ist die Party?','Was soll Lena mitbringen?'],
+  model:'Liebe Lena,\nam Samstag habe ich Geburtstag und ich mache eine Party. Sie beginnt um 19 Uhr bei mir zu Hause in der Gartenstraße 12. Kannst du bitte einen Kuchen mitbringen? Ich freue mich auf dich!\nViele Grüße\nAmir'}]},
+sprechen:{min:15,desc:'3 dijela · u grupi',intro:'Na ispitu govoriš u grupi s drugim kandidatima. Ovdje vježbaš sam: pročitaj zadatak, snimi se i uporedi s primjerom.',tasks:[
+ {t:'Teil 1 · Sich vorstellen',i:'Predstavi se pomoću ovih riječi. Zatim sriči svoje ime (buchstabieren) i reci broj telefona.',cards:['Name?','Alter?','Land?','Wohnort?','Sprachen?','Beruf?','Hobby?'],
+  model:'Mein Name ist Amir Hodžić. Ich bin 32 Jahre alt. Ich komme aus Bosnien und wohne jetzt in Stuttgart. Ich spreche Bosnisch, ein bisschen Englisch und ein bisschen Deutsch. Ich bin Elektriker von Beruf. Mein Hobby ist Fußball.\nMein Name: H – O – D – Ž – I – Ć.\nMeine Telefonnummer ist 0176 12 34 56.',
+  phrases:['Mein Name ist …','Ich bin … Jahre alt.','Ich komme aus …','Ich wohne in …','Ich spreche …','Ich bin … von Beruf.','Mein Hobby ist …']},
+ {t:'Teil 2 · Fragen stellen und antworten',i:'Tema „Essen und Trinken". Za svaku karticu postavi pitanje i odgovori na njega.',cards:['Frühstück','Lieblingsessen','Restaurant','Obst'],
+  model:'Was isst du zum Frühstück? – Ich esse Brot mit Käse und trinke Kaffee.\nWas ist dein Lieblingsessen? – Mein Lieblingsessen ist Pita.\nGehst du oft ins Restaurant? – Nein, nur am Wochenende.\nWelches Obst magst du? – Ich mag Äpfel und Bananen.',
+  phrases:['Was isst du …?','Was trinkst du …?','Magst du …?','Ja, gern. / Nein, nicht so gern.']},
+ {t:'Teil 3 · Bitten formulieren',i:'Za svaku sliku zamoli nekoga za nešto i odgovori na molbu.',cards:['🪟 Fenster','🖊️ Kugelschreiber','💧 Wasser','📱 Handy'],
+  model:'Können Sie bitte das Fenster aufmachen? – Ja, gern.\nGibst du mir bitte deinen Kugelschreiber? – Hier, bitte.\nIch hätte gern ein Glas Wasser, bitte. – Natürlich.\nKann ich bitte kurz dein Handy benutzen? – Ja, kein Problem.',
+  phrases:['Können Sie bitte …?','Gibst du mir bitte …?','Ich hätte gern …','Ja, gern. / Hier, bitte. / Tut mir leid, …']}]}},
+
+/* =================================== A2 =================================== */
+A2:{name:'Goethe-Zertifikat A2',info:'Lesen 30 · Hören 30 · Schreiben 30 · Sprechen 15 min',
+lesen:{min:30,desc:'4 dijela · 20 zadataka',intro:'Čitaš novinski članak, informativnu tablu, e-mail i oglase.',parts:[
+ {t:'Teil 1',i:'Pročitaj članak i izaberi a, b ili c.',d:'Lesen Sie den Text und die Aufgaben. Wählen Sie die richtige Lösung.',
+  text:'Ein Café für Jung und Alt\nIn Leipzig gibt es seit März ein besonderes Café. Hier arbeiten Studentinnen und Studenten zusammen mit Rentnern. Die Idee hatte Petra Lindner, 64 Jahre alt. „Viele ältere Menschen sind allein. Und viele Studenten haben wenig Geld", sagt sie. Im Café „Zusammen" backen die Senioren Kuchen nach alten Rezepten, und die Studenten machen den Service. Das Café ist von Mittwoch bis Sonntag geöffnet. Am Montag und Dienstag gibt es dort Computerkurse: Die Studenten zeigen den Senioren, wie man ein Smartphone benutzt. Die Kurse sind kostenlos. Für den Kaffee bezahlt jeder so viel, wie er möchte.',
+  items:[{q:'Das Café gibt es …',o:['seit März.','seit 64 Jahren.','seit einem Jahr.'],a:0},
+   {q:'Petra Lindner …',o:['ist Studentin.','hatte die Idee für das Café.','arbeitet im Service.'],a:1},
+   {q:'Die Senioren im Café …',o:['machen den Service.','backen Kuchen.','lernen kochen.'],a:1},
+   {q:'Am Montag …',o:['gibt es Computerkurse.','gibt es Kuchen gratis.','arbeiten nur Studenten im Café.'],a:0},
+   {q:'Den Kaffee …',o:['bezahlt man nicht.','bezahlt man nur mit Karte.','bezahlt jeder so viel, wie er möchte.'],a:2}]},
+ {t:'Teil 2',i:'Pročitaj informativnu tablu robne kuće. Na koji sprat ideš? Izaberi a, b ili c.',d:'Lesen Sie die Informationstafel. In welches Stockwerk gehen Sie?',keep:true,
+  text:'Kaufhaus Merkur – Informationen\nEG: Kosmetik · Schmuck · Taschen · Information\n1. Stock: Damenmode · Schuhe\n2. Stock: Herrenmode · Sportmode · Kinderkleidung\n3. Stock: Haushaltswaren · Elektrogeräte · Handys\n4. Stock: Restaurant · Spielwaren · Bücher',
+  items:[{q:'Sie möchten eine Jacke für Ihren Mann kaufen.',o:['1. Stock','2. Stock','anderes Stockwerk'],a:1},
+   {q:'Sie brauchen ein Ladekabel für Ihr Handy.',o:['Erdgeschoss','3. Stock','anderes Stockwerk'],a:1},
+   {q:'Sie möchten zu Mittag essen.',o:['Erdgeschoss','2. Stock','anderes Stockwerk'],a:2},
+   {q:'Sie suchen ein Spiel als Geschenk für Ihren Sohn.',o:['2. Stock','4. Stock','anderes Stockwerk'],a:1},
+   {q:'Sie möchten ein Parfüm kaufen.',o:['Erdgeschoss','1. Stock','anderes Stockwerk'],a:0}]},
+ {t:'Teil 3',i:'Pročitaj e-mail i izaberi a, b ili c.',d:'Lesen Sie die E-Mail und die Aufgaben.',
+  text:'Hallo Jonas,\nvielen Dank für deine Einladung zum Grillen am Samstag! Leider kann ich nicht kommen, denn meine Schwester heiratet an dem Tag in Graz. Ich fahre schon am Freitag mit dem Zug hin und komme erst am Montag zurück.\nAber ich habe eine Idee: Am nächsten Wochenende ist das Stadtfest. Wollen wir zusammen hingehen? Am Samstag habe ich frei, am Sonntag muss ich arbeiten. Schreib mir, ob du Zeit hast!\nLiebe Grüße\nMira',
+  items:[{q:'Mira kann nicht zum Grillen kommen, weil …',o:['sie arbeiten muss.','ihre Schwester heiratet.','sie krank ist.'],a:1},
+   {q:'Mira fährt nach Graz …',o:['am Freitag.','am Samstag.','am Montag.'],a:0},
+   {q:'Mira fährt …',o:['mit dem Auto.','mit dem Zug.','mit dem Bus.'],a:1},
+   {q:'Mira möchte mit Jonas …',o:['grillen.','zum Stadtfest gehen.','nach Graz fahren.'],a:1},
+   {q:'Am nächsten Wochenende hat Mira Zeit …',o:['am Samstag.','am Sonntag.','am Montag.'],a:0}]},
+ {t:'Teil 4',i:'Pet osoba traži nešto. Koji oglas (a–f) odgovara kojoj osobi? Za jednu osobu nema oglasa → izaberi x.',d:'Welche Anzeige passt? Für eine Person gibt es keine passende Anzeige: Wählen Sie x.',keep:true,
+  list:[['a','Gitarrenunterricht für Anfänger – auch am Wochenende. 15 € pro Stunde.'],['b','Nachhilfe in Mathe für Schüler der Klassen 5–10. Abends und online.'],['c','Gebrauchtes Fahrrad, 3 Jahre alt, sehr guter Zustand, 150 €.'],['d','Wir suchen Babysitter für zwei Kinder (3 und 6 Jahre), Mo–Fr nachmittags.'],['e','Kochkurs: Italienisch kochen, Samstag 10–14 Uhr, 45 €.'],['f','Zimmer in WG frei, 350 € warm, nahe Uni, ab 1. Mai.']],
+  opts:['a','b','c','d','e','f','x'],
+  items:[{q:'Sara (19) beginnt im Mai ihr Studium und sucht eine günstige Unterkunft.',a:5},{q:'Herr Kovač möchte am Wochenende ein Instrument lernen.',a:0},{q:'Lea (17) hat nachmittags Zeit und möchte mit Kindern Geld verdienen.',a:3},{q:'Familie Braun sucht ein neues Auto.',a:6},{q:'Tim hat Probleme in Mathematik und braucht abends Hilfe.',a:1}]}]},
+hoeren:{min:30,desc:'4 dijela · 20 zadataka',intro:'Slušaš radio, telefonske poruke, razgovore i intervju.',parts:[
+ {t:'Teil 1',i:'Slušaš pet kratkih tekstova. Svaki čuješ dva puta. Izaberi a, b ili c.',d:'Sie hören fünf kurze Texte. Sie hören jeden Text zweimal.',plays:2,
+  items:[{au:'Das Wetter für morgen: Am Vormittag regnet es noch, am Nachmittag scheint dann überall die Sonne. Die Temperaturen liegen bei achtzehn Grad.',q:'Wie ist das Wetter morgen Nachmittag?',o:['Es regnet.','Es ist sonnig.','Es schneit.'],a:1},
+   {au:'Hallo Frau Ivić, hier ist das Reisebüro Sonnenschein. Ihre Tickets für die Reise nach Rom sind da. Sie können sie ab morgen bei uns abholen. Wir haben bis neunzehn Uhr geöffnet.',q:'Was soll Frau Ivić tun?',o:['Die Tickets abholen.','Das Reisebüro anrufen.','Die Reise bezahlen.'],a:0},
+   {au:'Achtung, liebe Fahrgäste: Wegen Bauarbeiten fährt die U-Bahn-Linie drei heute nur bis zum Hauptbahnhof. Bitte nehmen Sie ab dort den Bus achtundfünfzig.',q:'Was müssen die Fahrgäste ab dem Hauptbahnhof machen?',o:['Zu Fuß gehen.','Den Bus nehmen.','Ein Taxi nehmen.'],a:1},
+   {au:'Und jetzt ein Tipp für das Wochenende: Im Stadtpark gibt es am Samstag ein Konzert für die ganze Familie. Der Eintritt ist frei. Los geht es um sechzehn Uhr.',q:'Was kostet das Konzert?',o:['Nichts.','16 Euro.','6 Euro.'],a:0},
+   {au:'Hallo Daniel, hier ist Ivana. Ich stehe vor dem Kino, aber du bist nicht da. Der Film beginnt in zehn Minuten. Ich kaufe schon mal die Karten. Bis gleich!',q:'Was macht Ivana?',o:['Sie geht nach Hause.','Sie kauft die Karten.','Sie wartet im Café.'],a:1}]},
+ {t:'Teil 2',i:'Slušaš razgovor jednom. Šta Karim radi koji dan? Izaberi aktivnost za svaki dan.',d:'Sie hören ein Gespräch. Sie hören den Text einmal. Was macht Karim wann?',plays:1,keep:true,
+  au:[['Frau','Du, Karim, was machst du eigentlich nächste Woche?'],['Karim','Puh, viel! Am Montag habe ich einen Arzttermin. Am Dienstag gehe ich nach der Arbeit ins Fitnessstudio.'],['Frau','Und am Mittwoch?'],['Karim','Am Mittwoch kommt meine Mutter zu Besuch, da koche ich. Am Donnerstag habe ich frei, da gehe ich schwimmen. Und am Freitag fahre ich zu meinem Freund nach Köln.']],
+  opts:['Arzt','Fitnessstudio','kochen','schwimmen','nach Köln fahren','Kino'],
+  items:[{q:'Montag',a:0},{q:'Dienstag',a:1},{q:'Mittwoch',a:2},{q:'Donnerstag',a:3},{q:'Freitag',a:4}]},
+ {t:'Teil 3',i:'Slušaš pet kratkih razgovora. Svaki čuješ dva puta. Izaberi a, b ili c.',d:'Sie hören fünf kurze Gespräche. Sie hören jeden Text zweimal.',plays:2,
+  items:[{au:[['Mann','Guten Tag, ich möchte ein Paket nach Bosnien schicken. Was kostet das?'],['Frau','Wie schwer ist es?'],['Mann','Ungefähr fünf Kilo.'],['Frau','Dann kostet es zweiunddreißig Euro.']],q:'Wie viel kostet das Paket?',o:['5 Euro','23 Euro','32 Euro'],a:2},
+   {au:[['Frau','Entschuldigung, ich suche die Toiletten.'],['Mann','Die sind im ersten Stock, neben dem Aufzug.'],['Frau','Und wo ist der Aufzug?'],['Mann','Gleich da hinten links.']],q:'Wo sind die Toiletten?',o:['Im Erdgeschoss.','Im ersten Stock.','Im Keller.'],a:1},
+   {au:[['Mann','Was ist los? Du siehst müde aus.'],['Frau','Ich habe schlecht geschlafen. Mein Nachbar hat bis drei Uhr laut Musik gehört.'],['Mann','Oh nein! Sprich doch mal mit ihm.']],q:'Warum ist die Frau müde?',o:['Sie hat lange gearbeitet.','Der Nachbar war laut.','Sie war auf einer Party.'],a:1},
+   {au:[['Mann','Möchtest du am Wochenende mit uns wandern?'],['Frau','Gern, aber am Samstag muss ich arbeiten.'],['Mann','Wir gehen am Sonntag.'],['Frau','Super, dann komme ich mit!']],q:'Wann geht die Frau wandern?',o:['Am Samstag.','Am Sonntag.','Gar nicht.'],a:1},
+   {au:[['Mann','Ich hätte gern ein Kilo Äpfel und zwei Zitronen.'],['Verkäuferin','Gern. Noch etwas?'],['Mann','Ja, ein Brot, bitte. Ach nein, Brot habe ich noch zu Hause.']],q:'Was kauft der Mann?',o:['Äpfel und Zitronen.','Äpfel, Zitronen und Brot.','Nur Brot.'],a:0}]},
+ {t:'Teil 4',i:'Slušaš intervju na radiju dva puta. Da li je rečenica tačna: Ja ili Nein?',d:'Sie hören ein Interview. Sie hören den Text zweimal. Wählen Sie Ja oder Nein.',plays:2,rf:YN,
+  au:[['Moderatorin','Herzlich willkommen, Herr Hadžić. Sie haben vor zwei Jahren ein Restaurant in Stuttgart eröffnet. Wie war der Anfang?'],['Herr Hadžić','Ehrlich gesagt, schwer. Ich habe vorher zehn Jahre als Koch in einem Hotel gearbeitet, aber ein eigenes Restaurant ist etwas ganz anderes.'],['Moderatorin','Was kochen Sie denn?'],['Herr Hadžić','Bosnische Spezialitäten, zum Beispiel Ćevapi und Burek. Aber wir haben auch vegetarische Gerichte, die sind bei jungen Gästen sehr beliebt.'],['Moderatorin','Wer arbeitet bei Ihnen?'],['Herr Hadžić','Meine Frau macht die Buchhaltung, und wir haben vier Mitarbeiter.'],['Moderatorin','Und Ihre Pläne?'],['Herr Hadžić','Nächstes Jahr möchten wir ein zweites Restaurant in Ulm eröffnen.']],
+  items:[{q:'Herr Hadžić hat das Restaurant vor zwei Jahren eröffnet.',a:true},{q:'Vorher hat er in einem Hotel gearbeitet.',a:true},{q:'Im Restaurant gibt es kein vegetarisches Essen.',a:false},{q:'Seine Frau kocht im Restaurant.',a:false},{q:'Er möchte ein zweites Restaurant in Stuttgart eröffnen.',a:false}]}]},
+schreiben:{min:30,desc:'2 dijela · SMS + e-mail',intro:'Pišeš dvije kratke poruke. Obradi sve tačke iz zadatka.',tasks:[
+ {type:'text',t:'Teil 1 · SMS',i:'Napiši SMS (20–30 riječi). Obradi sve tri tačke.',words:20,
+  d:'Sie sind mit Ihrer Freundin Jana zum Essen verabredet, aber Sie kommen zu spät. Schreiben Sie Jana eine SMS.',
+  pts:['Entschuldigen Sie sich.','Schreiben Sie, warum Sie später kommen.','Schreiben Sie, wann Sie da sind.'],
+  model:'Hallo Jana,\nes tut mir leid, ich komme etwas später. Mein Bus hat Verspätung. Ich bin um halb acht da. Bestell doch schon etwas zu trinken!\nBis gleich\nAmir'},
+ {type:'text',t:'Teil 2 · E-Mail',i:'Napiši e-mail (30–40 riječi). Obradi sve tri tačke. Ne zaboravi pozdrav i potpis.',words:30,
+  d:'Sie können am Montag nicht zum Deutschkurs kommen. Schreiben Sie Ihrer Kursleiterin, Frau Schulz, eine E-Mail.',
+  pts:['Entschuldigen Sie sich und nennen Sie den Grund.','Fragen Sie nach den Hausaufgaben.','Fragen Sie, wann der nächste Test ist.'],
+  model:'Liebe Frau Schulz,\nleider kann ich am Montag nicht zum Kurs kommen, weil ich einen Termin beim Arzt habe. Können Sie mir bitte sagen, welche Hausaufgaben wir machen sollen? Und wann ist der nächste Test?\nVielen Dank und viele Grüße\nAmir Hodžić'}]},
+sprechen:{min:15,desc:'3 dijela · u paru',intro:'Na ispitu govoriš s partnerom. Ovdje vježbaš sam: snimi se i uporedi s primjerom.',tasks:[
+ {t:'Teil 1 · Fragen zur Person',i:'Postavi partneru pitanja uz ove riječi i odgovori na njegova pitanja.',cards:['Geburtstag?','Wohnort?','Beruf?','Familie?','Hobby?'],
+  model:'Wann hast du Geburtstag? – Am 14. Mai.\nWo wohnst du? – In Stuttgart, in einer kleinen Wohnung.\nWas bist du von Beruf? – Ich bin Elektriker.\nHast du Familie? – Ja, meine Eltern und mein Bruder leben in Bosnien.\nWas ist dein Hobby? – Ich spiele gern Fußball.',
+  phrases:['Wann …?','Wo …?','Was …?','Hast du …?']},
+ {t:'Teil 2 · Über sich sprechen',i:'Pričaj o temi „Šta radiš za vikend?". Spomeni sve četiri tačke.',cards:['Familie','Freunde','Sport','Essen'],
+  model:'Am Wochenende schlafe ich zuerst lange. Am Samstag telefoniere ich mit meiner Familie in Bosnien. Am Nachmittag treffe ich oft Freunde, wir gehen zusammen in ein Café. Am Sonntag spiele ich Fußball im Verein. Abends koche ich gern, zum Beispiel Suppe oder Fleisch mit Gemüse.',
+  phrases:['Am Wochenende …','Zuerst … dann … danach …','Ich … gern.','Meistens / oft / manchmal …']},
+ {t:'Teil 3 · Gemeinsam etwas planen',i:'Želite zajedno posjetiti prijatelja u bolnici u subotu. Pronađite zajednički termin. Tvoj kalendar:',cards:['8–12: Arbeit','13:00: Mittagessen mit Mutter','15–16: Friseur','18:00: Kino'],
+  model:'Wann hast du am Samstag Zeit? Ich arbeite bis zwölf Uhr. – Um eins esse ich mit meiner Mutter. Geht es um zwei? – Ja, das passt. Aber um drei muss ich zum Friseur. – Dann gehen wir von zwei bis drei ins Krankenhaus. Bringen wir Blumen mit? – Gute Idee!',
+  phrases:['Hast du um … Zeit?','Da kann ich leider nicht, ich …','Geht es um …?','Das passt gut.','Wollen wir … mitbringen?']}]}},
+
+/* =================================== B1 =================================== */
+B1:{name:'Goethe-Zertifikat B1',info:'Lesen 65 · Hören 40 · Schreiben 60 · Sprechen 15 min',
+lesen:{min:65,desc:'5 dijelova · 30 zadataka',intro:'Čitaš blog, novinske članke, oglase, mišljenja čitalaca i pravila.',parts:[
+ {t:'Teil 1',i:'Pročitaj blog. Da li je rečenica tačna (Richtig) ili netačna (Falsch)?',d:'Lesen Sie den Text. Sind die Aussagen richtig oder falsch?',rf:RF,
+  text:'Mein erstes Jahr in Deutschland\nVor genau einem Jahr bin ich von Mostar nach Nürnberg gezogen. Ich hatte einen Arbeitsvertrag als Kfz-Mechaniker, aber ich konnte kaum Deutsch. Die ersten Wochen waren hart: In der Werkstatt haben alle sehr schnell gesprochen, und oft habe ich nur genickt, obwohl ich nichts verstanden habe. Ein Kollege, Stefan, hat mir dann geholfen. Er hat mir jeden Tag fünf neue Wörter auf einen Zettel geschrieben – meistens Werkzeuge und Autoteile. Abends habe ich zusätzlich zweimal pro Woche einen Deutschkurs an der Volkshochschule besucht. Am schwierigsten fand ich übrigens nicht die Grammatik, sondern die Briefe von Ämtern. Inzwischen verstehe ich fast alles, und letzten Monat habe ich die B1-Prüfung bestanden. Mein nächstes Ziel: der Lkw-Führerschein.',
+  items:[{q:'Der Autor lebt seit einem Jahr in Nürnberg.',a:true},{q:'Als er ankam, sprach er schon gut Deutsch.',a:false},{q:'Am Anfang hat er bei der Arbeit nicht immer alles verstanden.',a:true},{q:'Stefan hat ihm Wörter aus dem Arbeitsalltag beigebracht.',a:true},{q:'Für ihn war die Grammatik das größte Problem.',a:false},{q:'Er hat die B1-Prüfung noch nicht gemacht.',a:false}]},
+ {t:'Teil 2',i:'Pročitaj dva članka i izaberi a, b ili c.',d:'Lesen Sie die Texte und die Aufgaben. Wählen Sie die richtige Lösung.',
+  text:'Immer mehr Firmen testen die Vier-Tage-Woche\nEine Softwarefirma aus Hannover hat es vor einem Jahr ausprobiert: Die Mitarbeiter arbeiten nur noch von Montag bis Donnerstag, bekommen aber das gleiche Gehalt. Das Ergebnis überrascht viele: Die Zahl der Krankheitstage ist um ein Drittel gesunken, und die Firma findet leichter neue Mitarbeiter. Allerdings müssen die Teams ihre Arbeit besser planen. Besprechungen dürfen zum Beispiel höchstens 30 Minuten dauern. Nicht alle Branchen können das Modell übernehmen: In Krankenhäusern oder im Handwerk ist es schwieriger, weil Kunden und Patienten jeden Tag versorgt werden müssen.',
+  items:[{q:'In der Firma aus Hannover …',o:['arbeiten die Mitarbeiter vier Tage und verdienen weniger.','arbeiten die Mitarbeiter vier Tage für das gleiche Geld.','arbeiten alle nur noch von zu Hause.'],a:1},
+   {q:'Seit der Vier-Tage-Woche …',o:['sind die Mitarbeiter seltener krank.','gibt es mehr Besprechungen.','sucht die Firma keine Mitarbeiter mehr.'],a:0},
+   {q:'Im Text steht, dass die Vier-Tage-Woche …',o:['für alle Branchen geeignet ist.','im Handwerk besonders einfach ist.','nicht in jedem Beruf leicht möglich ist.'],a:2},
+   {text:'Repair-Café: Reparieren statt wegwerfen\nJeden ersten Samstag im Monat treffen sich im Gemeindehaus in Bochum Menschen mit kaputten Toastern, Lampen oder Hosen. Ehrenamtliche Helfer – darunter Elektriker, Schneiderinnen und Fahrradmechaniker – reparieren die Sachen gemeinsam mit den Besitzern. Bezahlen muss niemand, aber viele Besucher geben eine kleine Spende für Kaffee und Ersatzteile. „Es geht nicht nur ums Geld", sagt Organisatorin Ute Brand. „Die Leute lernen, wie ihre Geräte funktionieren, und produzieren weniger Müll." Etwa 70 Prozent der Gegenstände können repariert werden.',
+    q:'Das Repair-Café findet … statt.',o:['jeden Samstag','einmal im Monat','jeden ersten Montag'],a:1},
+   {q:'Die Reparatur …',o:['kostet eine feste Gebühr.','ist kostenlos.','bezahlt die Stadt.'],a:1},
+   {q:'Laut Ute Brand ist ein Ziel auch, …',o:['neue Geräte zu verkaufen.','dass die Leute etwas lernen.','Geld für den Verein zu sammeln.'],a:1}]},
+ {t:'Teil 3',i:'Sedam osoba traži kurs ili aktivnost. Koji oglas (a–j) odgovara kome? Ako nijedan ne odgovara, izaberi x.',d:'Lesen Sie die Situationen und die Anzeigen. Welche Anzeige passt? Für eine Situation gibt es keine Anzeige: x.',keep:true,
+  list:[['a','Abendschule: Realschulabschluss in zwei Jahren nachholen. Unterricht Mo–Do 18–21 Uhr.'],['b','Erste-Hilfe-Kurs für den Führerschein, Samstag 9–17 Uhr, 45 €.'],['c','Online-Kurs Excel für Einsteiger – flexible Zeiten, mit Zertifikat.'],['d','Laufgruppe für Anfänger, jeden Sonntag 9 Uhr im Stadtpark, kostenlos.'],['e','Elterncafé: Austausch für Mütter und Väter, Kinderbetreuung vor Ort, mittwochs 10 Uhr.'],['f','Bewerbungstraining: Lebenslauf, Anschreiben, Vorstellungsgespräch – gratis.'],['g','Tanzkurs für Paare: Salsa für Anfänger, freitags 20 Uhr.'],['h','Gitarre für Erwachsene – Einzelunterricht bei Ihnen zu Hause.'],['i','Deutschkurs B2 für Pflegekräfte mit Fachwortschatz, vormittags.'],['j','Fotokurs: Mit dem Smartphone schöne Bilder machen, zwei Abende.']],
+  opts:['a','b','c','d','e','f','g','h','i','j','x'],
+  items:[{q:'Nermin macht den Führerschein und braucht noch einen Nachweis über Erste Hilfe.',a:1},{q:'Jelena ist Krankenschwester und möchte ihr Deutsch für den Beruf verbessern.',a:8},{q:'Thomas will nach Feierabend einen Schulabschluss machen.',a:0},{q:'Amra hat ein Baby und sucht Kontakt zu anderen Eltern.',a:4},{q:'Herr Lang muss für die Arbeit lernen, mit Tabellen am Computer zu arbeiten, hat aber keine festen Zeiten.',a:2},{q:'Mia möchte mit dem Joggen anfangen, hat aber wenig Geld.',a:3},{q:'Dragan sucht einen Kurs, in dem er lernt, alte Möbel zu reparieren.',a:10}]},
+ {t:'Teil 4',i:'Tema: „Treba li zabraniti mobitele u školama?" Da li je osoba ZA zabranu (Ja) ili PROTIV (Nein)?',d:'Ist die Person für ein Handyverbot an Schulen? Wählen Sie Ja oder Nein.',rf:YN,
+  items:[{q:'Laura: Meine Tochter schaut in jeder Pause aufs Handy und redet kaum noch mit Freunden. In der Schule sollten Handys in der Tasche bleiben.',a:true},
+   {q:'Kemal: Ein Verbot bringt nichts. Die Schüler müssen lernen, vernünftig mit dem Handy umzugehen – und das geht nur, wenn sie es benutzen dürfen.',a:false},
+   {q:'Birgit (Lehrerin): Seit unsere Schule Handys verboten hat, sind die Schüler im Unterricht viel konzentrierter.',a:true},
+   {q:'Jonas (16): Ich nutze das Handy im Unterricht als Wörterbuch und für Recherchen. Ohne wäre das viel schwieriger.',a:false},
+   {q:'Petra: Für Notfälle müssen Kinder erreichbar sein. Ein komplettes Verbot finde ich falsch.',a:false},
+   {q:'Ahmed: Cybermobbing passiert oft während der Schulzeit. Ohne Handys gäbe es weniger Probleme.',a:true},
+   {q:'Sanja: Schulen sollten digitale Medien sinnvoll einsetzen, statt sie zu verbieten. Wir leben nun mal im 21. Jahrhundert.',a:false}]},
+ {t:'Teil 5',i:'Pročitaj kućni red fitness centra i izaberi a, b ili c.',d:'Lesen Sie die Hausordnung und die Aufgaben.',
+  text:'Hausordnung Fitnessstudio FitLine\n1. Das Training ist nur mit gültiger Mitgliedskarte erlaubt. Bitte zeigen Sie die Karte am Eingang.\n2. Aus hygienischen Gründen muss auf allen Geräten ein Handtuch benutzt werden.\n3. Getränke sind nur in verschlossenen Plastikflaschen erlaubt, Glasflaschen sind verboten.\n4. Die Spinde müssen nach dem Training geleert werden. Spinde, die nach 23 Uhr noch verschlossen sind, werden geöffnet.\n5. Jugendliche unter 16 Jahren dürfen nur in Begleitung eines Erwachsenen trainieren.',
+  items:[{q:'Am Eingang muss man …',o:['bezahlen.','die Mitgliedskarte zeigen.','ein Handtuch kaufen.'],a:1},{q:'Auf den Geräten …',o:['muss man ein Handtuch benutzen.','darf man nichts trinken.','darf man nur 30 Minuten trainieren.'],a:0},{q:'Glasflaschen …',o:['sind erlaubt.','muss man am Eingang abgeben.','darf man nicht mitbringen.'],a:2},{q:'Ein 15-Jähriger darf …',o:['allein trainieren.','mit einem Erwachsenen trainieren.','gar nicht trainieren.'],a:1}]}]},
+hoeren:{min:40,desc:'4 dijela · 30 zadataka',intro:'Slušaš obavještenja, poruke, vođenje kroz muzej, razgovor i radio diskusiju.',parts:[
+ {t:'Teil 1',i:'Slušaš pet kratkih tekstova, svaki dva puta. Za svaki tekst riješi dva zadatka.',d:'Sie hören fünf kurze Texte. Sie hören jeden Text zweimal. Zu jedem Text lösen Sie zwei Aufgaben.',plays:2,
+  items:[{au:'Und hier noch eine Meldung aus der Region: Wegen eines Unfalls ist die Autobahn A neun zwischen Ingolstadt und Nürnberg in Richtung Norden gesperrt. Es gibt bereits zehn Kilometer Stau. Die Polizei empfiehlt, über die Bundesstraße dreizehn zu fahren. Die Sperrung dauert voraussichtlich bis zum Nachmittag.',q:'Die Autobahn ist in beide Richtungen gesperrt.',o:RF,a:1},
+   {q:'Was empfiehlt die Polizei?',o:['Zu Hause bleiben.','Eine andere Straße nehmen.','Mit dem Zug fahren.'],a:1},
+   {au:'Hallo Herr Marić, hier ist Sandra Kühn von der Firma Elektro-Bauer. Wir haben Ihre Bewerbung bekommen und möchten Sie gern zu einem Gespräch einladen. Hätten Sie am Mittwoch, den zwölften, um zehn Uhr Zeit? Bitte bringen Sie Ihre Zeugnisse mit. Rufen Sie mich doch kurz zurück, damit ich den Termin eintragen kann.',q:'Herr Marić soll zu einem Vorstellungsgespräch kommen.',o:RF,a:0},
+   {q:'Was soll Herr Marić mitbringen?',o:['Seinen Ausweis.','Seine Zeugnisse.','Einen Lebenslauf.'],a:1},
+   {au:'Liebe Kundinnen und Kunden, nur heute: Alle Wintermäntel und Winterschuhe sind um vierzig Prozent reduziert. Außerdem erhalten Sie in unserer Kinderabteilung im zweiten Stock beim Kauf von zwei Artikeln den dritten gratis. Wir wünschen Ihnen einen schönen Einkauf.',q:'Heute sind Wintersachen billiger.',o:RF,a:0},
+   {q:'Was bekommt man in der Kinderabteilung?',o:['Vierzig Prozent Rabatt.','Beim Kauf von zwei Artikeln den dritten gratis.','Ein kleines Geschenk.'],a:1},
+   {au:'Sie wollen Geld sparen und gleichzeitig etwas für die Umwelt tun? Dann schalten Sie Ihre Geräte ganz aus, statt sie im Stand-by-Modus zu lassen. Ein durchschnittlicher Haushalt kann so bis zu hundert Euro im Jahr sparen. Am einfachsten geht das mit einer Steckerleiste mit Schalter.',q:'Geräte im Stand-by-Modus verbrauchen keinen Strom.',o:RF,a:1},
+   {q:'Wie viel kann ein Haushalt sparen?',o:['Bis zu 10 Euro im Monat.','Bis zu 100 Euro im Jahr.','Bis zu 100 Euro im Monat.'],a:1},
+   {au:'Hi Lejla, hier ist Mario. Wegen Samstag: Das Fußballspiel fällt aus, der Platz ist zu nass. Wir wollen stattdessen bowlen gehen, um sieben im Bowlingcenter am Bahnhof. Kommst du mit? Jens bringt seine neue Freundin mit. Sag mir bis Freitag Bescheid, dann reserviere ich eine Bahn.',q:'Das Fußballspiel findet am Samstag statt.',o:RF,a:1},
+   {q:'Was soll Lejla tun?',o:['Eine Bahn reservieren.','Bis Freitag Bescheid sagen.','Jens anrufen.'],a:1}]},
+ {t:'Teil 2',i:'Slušaš vodiča u muzeju. Tekst čuješ jednom. Izaberi a, b ili c.',d:'Sie hören einen Text. Sie hören den Text einmal.',plays:1,
+  au:'Guten Tag und herzlich willkommen im Museum für Technik! Ich bin Frau Weiß und begleite Sie heute durch die Ausstellung. Die Führung dauert etwa neunzig Minuten. Wir beginnen im Erdgeschoss mit der Geschichte des Autos. Danach fahren wir mit dem Aufzug in den zweiten Stock, wo Sie die Ausstellung über Elektrizität sehen. Dort dürfen Sie viele Experimente selbst ausprobieren. Bitte fotografieren Sie dort aber ohne Blitz. Im ersten Stock befinden sich das Café und der Museumsshop. Ihre Jacken und Taschen können Sie kostenlos in den Schließfächern neben der Kasse lassen. Sie brauchen nur eine Ein-Euro-Münze, die Sie später zurückbekommen. Die Führung endet um zwölf Uhr im Café, wo jeder Teilnehmer ein Getränk gratis bekommt.',
+  items:[{q:'Die Führung dauert …',o:['eine Stunde.','anderthalb Stunden.','zwei Stunden.'],a:1},{q:'Was gibt es im zweiten Stock?',o:['Die Geschichte des Autos.','Experimente zur Elektrizität.','Das Café.'],a:1},{q:'Beim Fotografieren …',o:['ist der Blitz verboten.','muss man bezahlen.','gibt es keine Regeln.'],a:0},{q:'Die Schließfächer …',o:['kosten einen Euro.','sind kostenlos.','sind im ersten Stock.'],a:1},{q:'Am Ende der Führung …',o:['bekommt man ein Getränk gratis.','muss man in den Shop gehen.','gibt es ein Mittagessen.'],a:0}]},
+ {t:'Teil 3',i:'Slušaš razgovor dvoje prijatelja jednom. Tačno ili netačno?',d:'Sie hören ein Gespräch. Sie hören das Gespräch einmal.',plays:1,rf:RF,
+  au:[['Anna','Hey Emir! Lange nicht gesehen. Wie geht es dir?'],['Emir','Gut, danke! Ich bin gerade umgezogen, deshalb hatte ich so wenig Zeit.'],['Anna','Ach, wohin denn?'],['Emir','In eine Wohnung in der Südstadt. Sie ist größer als meine alte und hat sogar einen Balkon. Nur die Miete ist ein bisschen höher.'],['Anna','Und wie bist du umgezogen? Mit einer Firma?'],['Emir','Nein, das war mir zu teuer. Meine Brüder haben mir geholfen, und wir haben einen Transporter gemietet.'],['Anna','Und die Nachbarn?'],['Emir','Bis jetzt sehr nett. Die Frau unter mir hat mir sogar einen Kuchen gebracht.'],['Anna','Wie schön! Machst du eine Einweihungsparty?'],['Emir','Ja, aber erst nächsten Monat. Ich muss noch die Küche einrichten.'],['Anna','Sag Bescheid, ich helfe gern!']],
+  items:[{q:'Emir hatte wenig Zeit, weil er umgezogen ist.',a:true},{q:'Die neue Wohnung ist kleiner als die alte.',a:false},{q:'Die neue Wohnung ist teurer.',a:true},{q:'Eine Umzugsfirma hat Emir geholfen.',a:false},{q:'Emirs Brüder haben beim Umzug geholfen.',a:true},{q:'Eine Nachbarin hat Emir einen Kuchen gebracht.',a:true},{q:'Die Party ist nächste Woche.',a:false}]},
+ {t:'Teil 4',i:'Slušaš radio diskusiju dva puta. Ko šta kaže? Izaberi osobu.',d:'Sie hören eine Diskussion. Sie hören die Diskussion zweimal. Wer sagt was?',plays:2,keep:true,
+  au:[['Moderator','Willkommen zu unserer Sendung „Thema am Abend". Heute geht es um das Homeoffice. Bei mir sind Frau Lehmann, Personalchefin einer Versicherung, und Herr Šabić, Programmierer. Frau Lehmann, viele Firmen holen ihre Leute wieder ins Büro zurück. Warum?'],['Frau Lehmann','Ich verstehe die Firmen. Wenn alle zu Hause arbeiten, fehlt der spontane Austausch in der Kaffeeküche. Gerade neue Kollegen lernen im Büro viel schneller.'],['Herr Šabić','Das sehe ich anders. Ich arbeite seit drei Jahren zu Hause und bin viel produktiver. Im Büro werde ich ständig unterbrochen.'],['Moderator','Aber fühlen Sie sich nicht manchmal allein, Herr Šabić?'],['Herr Šabić','Manchmal schon. Deshalb gehe ich einmal pro Woche ins Büro. Das finde ich ideal.'],['Frau Lehmann','Genau so ein Modell bieten wir inzwischen an: zwei Tage zu Hause, drei Tage im Büro. Das ist ein guter Kompromiss.'],['Moderator','Und was ist mit den Kosten? Die Mitarbeiter bezahlen zu Hause ja Strom und Heizung selbst.'],['Herr Šabić','Richtig, und das wird oft vergessen. Dafür spare ich aber jeden Tag eine Stunde Fahrzeit.'],['Frau Lehmann','Wir zahlen unseren Mitarbeitern deshalb einen Zuschuss für das Homeoffice.'],['Moderator','Zum Schluss: Wie sieht die Arbeit in zehn Jahren aus?'],['Frau Lehmann','Das Büro wird nicht verschwinden, aber es wird mehr ein Ort für Teamarbeit sein.'],['Herr Šabić','Ich glaube, dass man in Zukunft selbst entscheiden kann, wo man arbeitet.']],
+  opts:['Moderator','Frau Lehmann','Herr Šabić'],
+  items:[{q:'Neue Mitarbeiter lernen im Büro schneller.',a:1},{q:'Im Büro kann man sich schlechter konzentrieren.',a:2},{q:'Zu Hause zahlen die Mitarbeiter die Energiekosten selbst.',a:0},{q:'Einmal pro Woche ins Büro zu gehen, ist ideal.',a:2},{q:'Eine Mischung aus Büro und Homeoffice ist ein guter Kompromiss.',a:1},{q:'Durch das Homeoffice spart man Zeit.',a:2},{q:'Die Firma gibt Geld für die Arbeit zu Hause.',a:1},{q:'In Zukunft wählen die Menschen ihren Arbeitsort selbst.',a:2}]}]},
+schreiben:{min:60,desc:'3 zadatka · 80 + 80 + 40 riječi',intro:'Pišeš neformalni e-mail, mišljenje za forum i kratku formalnu poruku. Za svaki zadatak je preporučeno vrijeme: 20 / 25 / 15 minuta.',tasks:[
+ {type:'text',t:'Aufgabe 1 · E-Mail an einen Freund (ca. 80 Wörter)',i:'Napiši e-mail prijatelju. Obradi sve tri tačke, s uvodom i završetkom.',words:80,
+  d:'Sie waren letztes Wochenende auf der Hochzeit eines Freundes. Ihr Freund Daniel konnte nicht kommen. Schreiben Sie Daniel eine E-Mail.',
+  pts:['Beschreiben Sie: Wie war die Feier?','Begründen Sie: Was hat Ihnen besonders gut gefallen?','Machen Sie einen Vorschlag für ein Treffen.'],
+  model:'Lieber Daniel,\nschade, dass du am Samstag nicht bei Marcos Hochzeit warst! Die Feier war wirklich toll. Zuerst waren wir in der Kirche, danach haben wir in einem Restaurant am See gefeiert. Es gab über hundert Gäste und eine Live-Band. Besonders gut hat mir das Essen gefallen, weil es Spezialitäten aus Marcos Heimat gab. Außerdem haben wir bis drei Uhr nachts getanzt. Ich habe viele Fotos gemacht. Hast du nächsten Freitag Zeit? Dann können wir zusammen essen gehen und ich zeige dir die Bilder.\nViele Grüße\nAmir'},
+ {type:'text',noLetter:true,t:'Aufgabe 2 · Meinung im Forum (ca. 80 Wörter)',i:'Napiši svoje mišljenje u gostinjsku knjigu emisije. Osvrni se i na Katjino mišljenje.',words:80,
+  d:'Sie haben im Fernsehen eine Diskussion zum Thema „Sollen Kinder schon im Kindergarten eine Fremdsprache lernen?" gesehen. Im Online-Gästebuch der Sendung schreibt Katja: „Kinder sollen spielen. Fremdsprachen lernen sie früh genug in der Schule." Schreiben Sie nun Ihre Meinung.',
+  pts:['Eigene Meinung klar nennen','Meinung begründen','Beispiel oder eigene Erfahrung','Auf Katjas Meinung reagieren'],
+  model:'Ich bin anderer Meinung als Katja. Meiner Meinung nach ist der Kindergarten der beste Ort, um eine Fremdsprache zu lernen. Kleine Kinder lernen Sprachen spielerisch und ohne Angst vor Fehlern. Ich sehe das bei meinem Neffen: Er ist fünf Jahre alt und singt schon englische Lieder. Natürlich hat Katja recht, dass Kinder viel spielen sollen. Aber das ist kein Widerspruch, denn man kann eine Sprache auch beim Spielen lernen. Deshalb finde ich Fremdsprachen im Kindergarten sinnvoll.'},
+ {type:'text',formal:true,t:'Aufgabe 3 · Formelle Nachricht (ca. 40 Wörter)',i:'Napiši kratku formalnu poruku šefici. Izvini se ljubazno i objasni zašto ne možeš doći.',words:40,
+  d:'Sie haben morgen einen Termin bei Ihrer Chefin, Frau Bergmann, können aber nicht kommen. Schreiben Sie Frau Bergmann eine E-Mail.',
+  pts:['Höflich entschuldigen','Grund nennen','Neuen Termin vorschlagen oder um Rückmeldung bitten'],
+  model:'Sehr geehrte Frau Bergmann,\nleider kann ich morgen nicht zu unserem Termin um 10 Uhr kommen, weil mein Sohn krank ist und ich bei ihm bleiben muss. Es tut mir sehr leid. Wäre es möglich, den Termin auf Donnerstag zu verschieben?\nMit freundlichen Grüßen\nAmir Hodžić'}]},
+sprechen:{min:15,desc:'3 dijela · u paru',intro:'Na ispitu govoriš s partnerom: zajedno nešto planirate, držiš prezentaciju i reaguješ na prezentaciju partnera.',tasks:[
+ {t:'Teil 1 · Gemeinsam etwas planen (ca. 3 Min.)',i:'Kolega ima rođendan i želite mu zajedno organizovati iznenađenje. Pričajte o ovim tačkama, dajte prijedloge i reagujte na prijedloge partnera.',cards:['Wann feiern?','Wo feiern?','Welches Geschenk?','Wer wird eingeladen?','Essen und Getränke?'],
+  model:'Was hältst du davon, wenn wir am Freitag nach der Arbeit feiern? – Gute Idee, da haben alle Zeit.\nWo sollen wir feiern? Ich schlage vor, wir machen es im Pausenraum. – Ja, das ist praktisch.\nWas könnten wir ihm schenken? Er fährt gern Fahrrad. – Wie wäre es mit einem Gutschein für ein Fahrradgeschäft?\nWen laden wir ein? – Ich denke, das ganze Team.\nUnd was ist mit Essen? – Ich kann einen Kuchen backen, und du kümmerst dich um die Getränke, okay?',
+  phrases:['Wie wäre es, wenn …?','Ich schlage vor, dass …','Was hältst du davon?','Das ist eine gute Idee, aber …','Einverstanden! / Dann machen wir es so.']},
+ {t:'Teil 2 · Ein Thema präsentieren (ca. 3 Min.)',i:'Održi kratku prezentaciju na temu „Arbeiten im Homeoffice". Prati ovih pet folija.',cards:['1. Thema vorstellen','2. Persönliche Erfahrung','3. Situation im Heimatland','4. Vor- und Nachteile + Meinung','5. Abschluss und Dank'],
+  model:'Ich möchte heute über das Thema „Arbeiten im Homeoffice" sprechen. Zuerst erzähle ich von meiner Erfahrung, dann von der Situation in meinem Heimatland, und am Ende nenne ich Vor- und Nachteile.\nIch arbeite als Elektriker, deshalb kann ich nicht von zu Hause arbeiten. Meine Schwester arbeitet aber zwei Tage pro Woche im Homeoffice.\nIn Bosnien ist Homeoffice noch nicht so verbreitet wie in Deutschland, vor allem in kleinen Firmen.\nEin Vorteil ist, dass man keine Fahrzeit hat. Ein Nachteil ist, dass man weniger Kontakt zu Kollegen hat. Ich finde eine Mischung aus Büro und Homeoffice am besten.\nDamit bin ich am Ende. Vielen Dank für Ihre Aufmerksamkeit! Haben Sie Fragen?',
+  phrases:['Ich möchte über … sprechen.','Zuerst … dann … zum Schluss …','In meinem Heimatland …','Ein Vorteil / Nachteil ist, dass …','Vielen Dank fürs Zuhören.']},
+ {t:'Teil 3 · Über ein Thema sprechen (ca. 2 Min.)',i:'Partner je održao prezentaciju „Sport im Alltag". Daj povratnu informaciju (šta ti se svidjelo) i postavi jedno pitanje. Zatim odgovori na pitanje o svojoj prezentaciji.',cards:['Rückmeldung geben','Eine Frage stellen','Auf eine Frage antworten'],
+  model:'Vielen Dank für deine Präsentation. Besonders interessant fand ich, dass du jeden Tag mit dem Fahrrad zur Arbeit fährst. Ich habe eine Frage: Was machst du, wenn es im Winter regnet oder schneit?\n– Frage an mich: „Würdest du gern im Homeoffice arbeiten?" – Antwort: Ehrlich gesagt nicht jeden Tag. Ich brauche den Kontakt zu Kollegen, aber ein oder zwei Tage pro Woche fände ich gut.',
+  phrases:['Vielen Dank für die Präsentation.','Besonders interessant fand ich …','Ich habe eine Frage zu …','Das ist eine gute Frage.']}]}},
+
+/* =================================== B2 =================================== */
+B2:{name:'Goethe-Zertifikat B2',info:'Lesen 65 · Hören 40 · Schreiben 75 · Sprechen 15 min',
+lesen:{min:65,desc:'5 dijelova · 30 zadataka',intro:'Čitaš mišljenja, novinske članke, komentare i propise. Tekstovi su duži, a odgovori su često skriveni u drugačijim riječima.',parts:[
+ {t:'Teil 1',i:'Četiri osobe pišu o volontiranju. Na koju osobu (A–D) se odnosi rečenica?',d:'Lesen Sie die Texte. Auf welche Person trifft die Aussage zu?',keep:true,
+  list:[['A · Sabine','Seit ich in Rente bin, lese ich zweimal pro Woche Kindern in der Stadtbibliothek vor. Viele von ihnen haben zu Hause keine Bücher. Für mich ist das keine Pflicht, sondern ein Geschenk: Die Kinder halten mich jung. Allerdings ärgert es mich, dass die Stadt gleichzeitig Stellen in der Bibliothek streicht – Ehrenamt darf bezahlte Arbeit nicht ersetzen.'],['B · Mehmed','Ich arbeite Vollzeit und habe zwei Kinder. Für ein regelmäßiges Ehrenamt fehlt mir einfach die Zeit, auch wenn ich deshalb ein schlechtes Gewissen habe. Ab und zu helfe ich bei Aktionen meines Sportvereins, etwa beim Sommerfest. Ich finde, Arbeitgeber sollten ihren Mitarbeitern ein paar freie Tage für soziales Engagement geben.'],['C · Julia','Während meines Studiums habe ich ein Jahr lang Geflüchteten bei Behördengängen geholfen. Das hat mich mehr geprägt als jedes Seminar. Ich habe gelernt, geduldig zu sein und Probleme pragmatisch zu lösen. Heute leite ich ein Team und frage in Bewerbungsgesprächen gezielt nach solchen Erfahrungen.'],['D · Robert','Ehrlich gesagt sehe ich das Ganze kritisch. Viele Vereine verlassen sich auf Freiwillige, und wenn diese ausfallen, bricht alles zusammen. Ich spende lieber regelmäßig Geld an Organisationen, die professionell arbeiten. Das ist für mich die wirksamere Form der Hilfe.']],
+  opts:['A','B','C','D'],
+  items:[{q:'Freiwillige Arbeit darf kein Ersatz für reguläre Stellen sein.',a:0},{q:'Unternehmen sollten soziales Engagement unterstützen.',a:1},{q:'Die Erfahrung war lehrreicher als das Studium.',a:2},{q:'Geld zu geben, hilft mehr als eigene Mitarbeit.',a:3},{q:'Familie und Beruf lassen kaum Zeit für ein Ehrenamt.',a:1},{q:'Die Person profitiert persönlich vom Kontakt mit jungen Menschen.',a:0},{q:'Die Person achtet bei Bewerbern auf ehrenamtliche Erfahrung.',a:2},{q:'Organisationen, die nur mit Freiwilligen arbeiten, sind instabil.',a:3},{q:'Die Person engagiert sich nur gelegentlich.',a:1}]},
+ {t:'Teil 2',i:'U tekstu nedostaje šest rečenica. Koja rečenica (a–h) ide na koje mjesto? Dvije rečenice su višak.',d:'Welcher Satz passt in die Lücke? Zwei Sätze passen nicht.',keep:true,
+  text:'Schlafen wir zu wenig?\nViele Menschen klagen über Müdigkeit am Tag. (1) … Laut einer aktuellen Studie schläft jeder dritte Erwachsene in Deutschland weniger als sechs Stunden pro Nacht. (2) … Experten empfehlen sieben bis neun Stunden. Ein Grund für das Problem ist das Smartphone. (3) … Das blaue Licht der Bildschirme hemmt nämlich die Produktion des Schlafhormons Melatonin. Doch nicht nur die Technik ist schuld. (4) … Wer abends noch E-Mails vom Chef beantwortet, kann schlecht abschalten. Was hilft also? (5) … Außerdem sollte das Schlafzimmer kühl und dunkel sein. (6) … Und wer trotzdem nicht einschlafen kann, sollte lieber aufstehen und etwas lesen, statt sich stundenlang im Bett zu wälzen.',
+  list:[['a','Das ist deutlich zu wenig.'],['b','Viele schauen noch im Bett auf ihr Handy.'],['c','Auch Stress im Beruf spielt eine große Rolle.'],['d','Schlafforscher raten zu festen Schlafenszeiten, auch am Wochenende.'],['e','Ideal sind etwa 18 Grad.'],['f','Doch woran liegt das eigentlich?'],['g','Kaffee am Abend ist dagegen kein Problem.'],['h','Die meisten Menschen schlafen am Wochenende länger.']],
+  opts:['a','b','c','d','e','f','g','h'],
+  items:[{q:'Lücke (1)',a:5},{q:'Lücke (2)',a:0},{q:'Lücke (3)',a:1},{q:'Lücke (4)',a:2},{q:'Lücke (5)',a:3},{q:'Lücke (6)',a:4}]},
+ {t:'Teil 3',i:'Pročitaj članak i izaberi a, b ili c.',d:'Lesen Sie den Text und die Aufgaben.',
+  text:'Lastenräder erobern die Städte\nSie sind breit, schwer und auf den ersten Blick wenig elegant – und trotzdem sieht man sie in deutschen Großstädten immer häufiger: Lastenräder. Eltern transportieren damit ihre Kinder in den Kindergarten, Handwerker ihr Werkzeug, Paketdienste ihre Sendungen. Im vergangenen Jahr wurden in Deutschland über 200.000 Lastenräder verkauft, die meisten davon mit Elektromotor.\nDer Grund liegt auf der Hand: In der Innenstadt ist man mit dem Rad oft schneller als mit dem Auto, und die Parkplatzsuche entfällt. Viele Städte fördern den Kauf mit Zuschüssen von bis zu 1.000 Euro, denn jedes Lastenrad kann im Idealfall ein Auto ersetzen.\nKritiker bemängeln allerdings, dass die Räder mit Preisen zwischen 3.000 und 8.000 Euro für viele Familien unbezahlbar seien. Zudem fehle es an geeigneten Abstellplätzen: In engen Treppenhäusern oder Hinterhöfen ist kaum Platz für die sperrigen Fahrzeuge. Einige Städte reagieren darauf mit öffentlichen Leihsystemen. In Berlin etwa können Bürger kostenlos Lastenräder für bis zu drei Tage ausleihen – ein Angebot, das vor allem am Wochenende stark genutzt wird.',
+  items:[{q:'Lastenräder werden genutzt …',o:['nur von Familien.','von verschiedenen Gruppen.','vor allem von Touristen.'],a:1},{q:'Die meisten verkauften Lastenräder …',o:['haben einen Elektromotor.','kosten unter 3.000 Euro.','werden von Firmen gekauft.'],a:0},{q:'Ein Vorteil in der Innenstadt ist, dass …',o:['man keinen Parkplatz suchen muss.','Lastenräder steuerfrei sind.','man überall fahren darf.'],a:0},{q:'Städte fördern den Kauf, weil …',o:['sie daran verdienen.','Lastenräder Autos ersetzen können.','die Fahrradindustrie es verlangt.'],a:1},{q:'Kritiker sagen, dass …',o:['Lastenräder zu langsam sind.','sich viele kein Lastenrad leisten können.','Lastenräder gefährlich sind.'],a:1},{q:'In Berlin …',o:['kann man Lastenräder kostenlos leihen.','sind Lastenräder am Wochenende verboten.','bekommt man 1.000 Euro beim Leihen.'],a:0}]},
+ {t:'Teil 4',i:'Šest komentara o kancelarijama otvorenog tipa (Großraumbüro). Koja rečenica (a–h) najbolje sažima komentar? Dvije su višak.',d:'Welche Aussage passt zu welchem Kommentar? Zwei Aussagen passen nicht.',keep:true,
+  list:[['a','Die Lautstärke verhindert konzentriertes Arbeiten.'],['b','Kommunikation im Team wird einfacher.'],['c','Rückzugsräume sind die Lösung.'],['d','Der Firma geht es vor allem ums Sparen.'],['e','Krankheiten verbreiten sich schneller.'],['f','Es kommt auf die Art der Arbeit an.'],['g','Großraumbüros schonen die Umwelt.'],['h','Junge Leute wollen nur noch im Homeoffice arbeiten.']],
+  opts:['a','b','c','d','e','f','g','h'],
+  items:[{q:'Seit wir im Großraumbüro sitzen, telefonieren ständig fünf Leute gleichzeitig. Ich trage inzwischen den ganzen Tag Kopfhörer, sonst schaffe ich gar nichts.',a:0},{q:'Früher musste ich für jede Frage durch drei Flure laufen. Jetzt frage ich einfach den Kollegen nebenan, und das Problem ist in zwei Minuten gelöst.',a:1},{q:'Bei uns gibt es neben dem offenen Bereich kleine Räume, in die man sich für Telefonate oder konzentrierte Aufgaben zurückziehen kann. Seitdem sind alle zufrieden.',a:2},{q:'Machen wir uns nichts vor: Großraumbüros werden gebaut, weil man auf weniger Fläche mehr Mitarbeiter unterbringen kann. Mit Teamgeist hat das wenig zu tun.',a:3},{q:'Im letzten Winter hatte nach zwei Wochen die halbe Abteilung Grippe. In Einzelbüros wäre das kaum passiert.',a:4},{q:'Für Kreative und Projektteams ist der offene Raum ideal, für Buchhalter, die stundenlang Zahlen prüfen, eher nicht.',a:5}]},
+ {t:'Teil 5',i:'Pročitaj pravilnik o radu od kuće i izaberi a, b ili c.',d:'Lesen Sie die Vereinbarung und die Aufgaben.',
+  text:'Betriebsvereinbarung zur mobilen Arbeit\n§ 1 Beschäftigte können bis zu zwei Tage pro Woche mobil arbeiten, sofern ihre Tätigkeit dies zulässt. Der Antrag ist bei der direkten Vorgesetzten zu stellen.\n§ 2 Während der Kernarbeitszeit von 10 bis 15 Uhr müssen mobil Arbeitende telefonisch und per E-Mail erreichbar sein.\n§ 3 Für den Datenschutz ist der Beschäftigte selbst verantwortlich. Vertrauliche Unterlagen dürfen zu Hause nicht ausgedruckt werden.\n§ 4 Die Firma stellt einen Laptop zur Verfügung. Private Geräte dürfen für dienstliche Zwecke nicht genutzt werden.',
+  items:[{q:'Wer mobil arbeiten möchte, …',o:['beantragt das bei der Personalabteilung.','fragt die direkte Vorgesetzte.','braucht keinen Antrag.'],a:1},{q:'Zwischen 10 und 15 Uhr …',o:['muss man erreichbar sein.','muss man im Büro sein.','hat man Pause.'],a:0},{q:'Private Laptops …',o:['darf man für die Arbeit benutzen.','darf man nicht für die Arbeit nutzen.','bezahlt die Firma.'],a:1}]}]},
+hoeren:{min:40,desc:'4 dijela · 30 zadataka',intro:'Slušaš obavještenja, intervju, diskusiju i predavanje. Na B2 nivou većinu tekstova čuješ samo jednom.',parts:[
+ {t:'Teil 1',i:'Pet kratkih tekstova, svaki čuješ jednom. Za svaki tekst riješi dva zadatka.',d:'Sie hören fünf kurze Texte. Sie hören jeden Text einmal.',plays:1,
+  items:[{au:'Achtung, eine Durchsage für alle Fahrgäste des ICE fünfhundertachtundsiebzig nach Hamburg: Aufgrund einer Signalstörung verzögert sich die Abfahrt um voraussichtlich fünfundzwanzig Minuten. Fahrgäste mit Anschluss in Hannover werden gebeten, sich an das Zugpersonal zu wenden. Wir bitten um Ihr Verständnis.',q:'Der Zug fällt aus.',o:RF,a:1},
+   {q:'Was sollen Fahrgäste mit Anschluss tun?',o:['Einen anderen Zug nehmen.','Das Zugpersonal ansprechen.','In Hannover aussteigen.'],a:1},
+   {au:'Sie planen eine Renovierung? Dann sollten Sie jetzt handeln: Ab Januar steigen die Preise für viele Baumaterialien um bis zu zwölf Prozent. Fachleute raten außerdem, Handwerker frühzeitig zu buchen, denn die Wartezeiten liegen derzeit bei mehreren Monaten.',q:'Baumaterialien werden ab Januar teurer.',o:RF,a:0},
+   {q:'Was raten Fachleute?',o:['Mit der Renovierung zu warten.','Handwerker früh zu buchen.','Selbst zu renovieren.'],a:1},
+   {au:'Guten Tag, Herr Begić, hier spricht Claudia Hoffmann von der Personalabteilung. Ihr Antrag auf Weiterbildung wurde genehmigt. Die Firma übernimmt achtzig Prozent der Kursgebühren, den Rest müssten Sie selbst tragen. Den Vertrag dazu schicke ich Ihnen per Post. Bitte senden Sie ihn unterschrieben bis Ende des Monats zurück.',q:'Die Firma bezahlt die Weiterbildung komplett.',o:RF,a:1},
+   {q:'Was soll Herr Begić tun?',o:['Die Kursgebühr überweisen.','Den Vertrag unterschrieben zurückschicken.','Frau Hoffmann zurückrufen.'],a:1},
+   {au:'Eine neue Studie der Universität Mannheim zeigt: Wer regelmäßig ehrenamtlich tätig ist, fühlt sich im Durchschnitt glücklicher und gesünder. Besonders stark ist der Effekt bei Menschen über sechzig. Die Forscher betonen jedoch, dass das Ehrenamt freiwillig sein muss. Wer sich verpflichtet fühlt, profitiert kaum.',q:'Laut der Studie profitieren ältere Menschen besonders.',o:RF,a:0},
+   {q:'Die Forscher betonen, dass …',o:['jeder ein Ehrenamt haben sollte.','das Engagement freiwillig sein muss.','Ehrenamt bezahlt werden sollte.'],a:1},
+   {au:'Und hier noch ein Hinweis für alle, die am Samstag zum Stadtmarathon wollen: Die Innenstadt ist von sieben bis fünfzehn Uhr für Autos gesperrt. Die Straßenbahnen fahren in dieser Zeit alle fünf Minuten. Wer mit dem Auto anreist, sollte die Park-and-Ride-Plätze am Stadtrand nutzen.',q:'Am Samstagvormittag kann man nicht mit dem Auto in die Innenstadt fahren.',o:RF,a:0},
+   {q:'Was wird Autofahrern empfohlen?',o:['Früh zu kommen.','Am Stadtrand zu parken.','Ein Taxi zu nehmen.'],a:1}]},
+ {t:'Teil 2',i:'Slušaš intervju jednom. Izaberi a, b ili c.',d:'Sie hören ein Interview. Sie hören den Text einmal.',plays:1,
+  au:[['Moderatorin','Frau Doktor Arslan, Sie forschen zum Thema Mehrsprachigkeit. Schadet es Kindern, wenn sie mit zwei Sprachen aufwachsen?'],['Dr. Arslan','Nein, im Gegenteil. Früher glaubte man, Kinder würden durch zwei Sprachen verwirrt. Heute wissen wir: Mehrsprachige Kinder können sich oft besser konzentrieren und leichter zwischen Aufgaben wechseln.'],['Moderatorin','Aber lernen sie nicht langsamer sprechen?'],['Dr. Arslan','Am Anfang kann der Wortschatz in jeder einzelnen Sprache etwas kleiner sein. Zusammengenommen kennen die Kinder aber genauso viele Wörter wie einsprachige. Das gleicht sich meist bis zur Grundschule aus.'],['Moderatorin','Was raten Sie Eltern, die selbst nicht gut Deutsch sprechen?'],['Dr. Arslan','Sprechen Sie mit Ihrem Kind die Sprache, in der Sie sich am wohlsten fühlen, meistens die Muttersprache. Deutsch lernt das Kind dann im Kindergarten. Wichtig ist, dass es früh mit Gleichaltrigen spielt.'],['Moderatorin','Und wenn ein Kind die Sprachen mischt?'],['Dr. Arslan','Das ist völlig normal und kein Zeichen für ein Problem. Das Gehirn nutzt einfach alle Wörter, die es kennt.'],['Moderatorin','Gibt es auch Nachteile?'],['Dr. Arslan','Der größte Nachteil ist eigentlich gesellschaftlich: Manche Sprachen haben ein höheres Ansehen als andere. Wenn ein Kind merkt, dass seine Familiensprache weniger wert ist, will es sie oft nicht mehr sprechen.']],
+  items:[{q:'Früher glaubte man, dass zwei Sprachen …',o:['Kinder verwirren.','Kinder intelligenter machen.','keinen Einfluss haben.'],a:0},{q:'Mehrsprachige Kinder …',o:['sprechen später.','können oft gut zwischen Aufgaben wechseln.','haben in jeder Sprache einen größeren Wortschatz.'],a:1},{q:'Der Wortschatz …',o:['bleibt immer kleiner.','ist insgesamt ähnlich groß.','ist nur in der Muttersprache groß.'],a:1},{q:'Eltern sollten mit ihrem Kind …',o:['nur Deutsch sprechen.','die Sprache sprechen, in der sie sich wohlfühlen.','beide Sprachen gleichzeitig sprechen.'],a:1},{q:'Wenn Kinder Sprachen mischen, …',o:['ist das normal.','sollte man einen Arzt fragen.','muss man sie sofort korrigieren.'],a:0},{q:'Den größten Nachteil sieht Frau Arslan …',o:['in der Schule.','im unterschiedlichen Ansehen von Sprachen.','beim Lernen der Grammatik.'],a:1}]},
+ {t:'Teil 3',i:'Slušaš diskusiju jednom. Ko šta kaže?',d:'Sie hören eine Diskussion. Sie hören den Text einmal. Wer sagt was?',plays:1,keep:true,
+  au:[['Moderatorin','Willkommen zu „Streitpunkt". Immer mehr Städte sperren ihre Zentren für Autos. Herr Fischer, Sie haben ein Schuhgeschäft in der Altstadt. Was halten Sie davon?'],['Herr Fischer','Ich mache mir Sorgen. Viele meiner Kunden kommen aus den Dörfern rundherum, und die kommen nun mal mit dem Auto. Wenn sie nicht mehr in die Stadt fahren können, kaufen sie online.'],['Frau Kim','Diese Angst höre ich oft. Aber Untersuchungen aus anderen Städten zeigen, dass Fußgänger und Radfahrer häufiger kommen und am Ende sogar mehr Geld ausgeben.'],['Moderatorin','Aber nicht jeder kann Rad fahren. Was ist mit älteren Menschen?'],['Frau Kim','Da haben Sie recht. Deshalb gehören zu einer autofreien Innenstadt auch gute Busverbindungen und Parkhäuser am Rand.'],['Herr Fischer','Das klingt schön in der Theorie. Aber bei uns fährt der Bus abends nur einmal pro Stunde.'],['Moderatorin','Herr Fischer, gibt es denn gar nichts Positives?'],['Herr Fischer','Doch, ehrlich gesagt: Seit die Straße vor meinem Laden verkehrsberuhigt ist, sitzen die Leute wieder draußen in den Cafés. Die Atmosphäre ist schöner geworden.'],['Frau Kim','Und genau das ist der Punkt: Eine Innenstadt muss ein Ort sein, an dem man sich gern aufhält.']],
+  opts:['Moderatorin','Herr Fischer','Frau Kim'],
+  items:[{q:'Kunden vom Land kommen meist mit dem Auto.',a:1},{q:'Fußgänger geben insgesamt mehr Geld aus.',a:2},{q:'Nicht alle Menschen können mit dem Fahrrad fahren.',a:0},{q:'Der öffentliche Nahverkehr ist noch nicht gut genug.',a:1},{q:'Busse und Parkhäuser am Stadtrand sind notwendig.',a:2},{q:'Die Atmosphäre in der Straße hat sich verbessert.',a:1}]},
+ {t:'Teil 4',i:'Slušaš predavanje jednom. Izaberi a, b ili c.',d:'Sie hören einen Vortrag. Sie hören den Text einmal.',plays:1,
+  au:'Guten Tag, meine Damen und Herren. In meinem Vortrag geht es um Gewohnheiten, also um Dinge, die wir tun, ohne darüber nachzudenken. Etwa vierzig Prozent unserer täglichen Handlungen sind Gewohnheiten. Das ist eigentlich praktisch, denn so spart unser Gehirn Energie. Jede Gewohnheit besteht aus drei Teilen: einem Auslöser, einer Handlung und einer Belohnung. Ein Beispiel: Sie kommen müde nach Hause, das ist der Auslöser. Sie setzen sich vor den Fernseher, das ist die Handlung. Und Sie entspannen sich, das ist die Belohnung. Wer eine schlechte Gewohnheit ändern möchte, sollte nicht versuchen, sie einfach zu unterdrücken. Das funktioniert selten. Besser ist es, die Handlung durch eine andere zu ersetzen, die eine ähnliche Belohnung bringt, zum Beispiel ein kurzer Spaziergang statt Fernsehen. Und wie lange dauert es, bis eine neue Gewohnheit entsteht? Oft liest man von einundzwanzig Tagen. Studien zeigen jedoch, dass es im Durchschnitt etwa zwei Monate dauert, je nach Person zwischen drei Wochen und acht Monaten. Wichtig ist: Wer einmal einen Tag auslässt, muss nicht von vorn beginnen. Entscheidend ist die Regelmäßigkeit über einen längeren Zeitraum. Zum Schluss noch ein Tipp: Verbinden Sie neue Gewohnheiten mit bestehenden. Wenn Sie zum Beispiel mehr Wasser trinken möchten, trinken Sie jedes Mal ein Glas, nachdem Sie Kaffee gekocht haben.',
+  items:[{q:'Wie viele unserer Handlungen sind Gewohnheiten?',o:['etwa 14 Prozent','etwa 40 Prozent','etwa 60 Prozent'],a:1},{q:'Gewohnheiten sind praktisch, weil …',o:['das Gehirn Energie spart.','man mehr Freizeit hat.','sie immer gesund sind.'],a:0},{q:'Eine Gewohnheit besteht aus …',o:['zwei Teilen.','drei Teilen.','vier Teilen.'],a:1},{q:'Im Beispiel ist die Müdigkeit …',o:['die Belohnung.','der Auslöser.','die Handlung.'],a:1},{q:'Um eine schlechte Gewohnheit zu ändern, sollte man …',o:['sie unterdrücken.','sie durch eine andere Handlung ersetzen.','sich selbst bestrafen.'],a:1},{q:'Eine neue Gewohnheit entsteht im Durchschnitt in …',o:['21 Tagen.','etwa zwei Monaten.','acht Monaten.'],a:1},{q:'Wenn man einen Tag auslässt, …',o:['muss man neu anfangen.','ist das kein großes Problem.','dauert es doppelt so lange.'],a:1},{q:'Der letzte Tipp lautet:',o:['Neue Gewohnheiten mit bestehenden verbinden.','Mehr Kaffee trinken.','Jeden Tag etwas Neues ausprobieren.'],a:0}]}]},
+schreiben:{min:75,desc:'2 zadatka · 150 + 100 riječi',intro:'Aufgabe 1: forum, oko 50 minuta. Aufgabe 2: formalna poruka na poslu, oko 25 minuta.',tasks:[
+ {type:'text',noLetter:true,t:'Aufgabe 1 · Forumsbeitrag (ca. 150 Wörter)',i:'Napiši prilog za online forum. Izaberi TRI od četiri tačke. Uvod i zaključak ne zaboravi.',words:150,
+  d:'Thema: „Sollte die Arbeitswoche auf vier Tage verkürzt werden?" Schreiben Sie einen Forumsbeitrag. Wählen Sie dafür drei der folgenden Punkte aus.',
+  pts:['Gründe, warum viele eine kürzere Arbeitswoche wünschen','Vor- und Nachteile für Arbeitgeber','Andere Möglichkeiten, Arbeit und Freizeit zu vereinbaren','Situation in Ihrem Heimatland','Einleitung und Schluss mit eigener Meinung'],
+  model:'In letzter Zeit wird viel über die Vier-Tage-Woche diskutiert. Ich möchte dazu meine Meinung sagen.\nViele Menschen wünschen sich mehr Zeit für Familie, Hobbys und Erholung. Gerade Eltern fühlen sich oft gestresst, weil Arbeit und Kinderbetreuung kaum zu vereinbaren sind.\nFür Arbeitgeber hat das Modell Vor- und Nachteile. Einerseits sind ausgeruhte Mitarbeiter motivierter und seltener krank. Andererseits ist die Planung schwieriger, vor allem im Handwerk oder in der Pflege, wo jeden Tag jemand da sein muss.\nEs gibt aber auch andere Lösungen, zum Beispiel flexible Arbeitszeiten oder ein bis zwei Tage Homeoffice pro Woche. So kann jeder selbst entscheiden, was am besten zu seinem Leben passt.\nInsgesamt halte ich die Vier-Tage-Woche für eine gute Idee, aber sie sollte freiwillig sein. Nicht jede Branche kann sie einführen, und nicht jeder Mitarbeiter wünscht sie sich.'},
+ {type:'text',formal:true,t:'Aufgabe 2 · Formelle Nachricht (ca. 100 Wörter)',i:'Napiši formalni e-mail šefici odjela. Obradi sve četiri tačke, poštuj formalni stil.',words:100,
+  d:'Ihre Abteilungsleiterin, Frau Dr. Wagner, hat Sie gebeten, nächste Woche zwei neue Kollegen einzuarbeiten. Sie haben aber bereits einen wichtigen Kundentermin. Schreiben Sie Frau Dr. Wagner eine E-Mail.',
+  pts:['Für das Vertrauen bedanken','Das Problem erklären','Einen Vorschlag machen','Um Rückmeldung bitten'],
+  model:'Sehr geehrte Frau Dr. Wagner,\nvielen Dank für Ihr Vertrauen, dass ich die neuen Kollegen einarbeiten soll. Diese Aufgabe übernehme ich sehr gern.\nLeider habe ich am Dienstag und Mittwoch nächster Woche einen wichtigen Termin bei unserem Kunden in Augsburg, der schon seit Langem feststeht. An diesen Tagen bin ich nicht im Büro.\nIch schlage deshalb vor, dass Herr Krause die Einarbeitung am Montag und Dienstag übernimmt und ich ab Donnerstag weitermache. Alternativ könnte ich die neuen Kollegen bereits am Montag in die wichtigsten Abläufe einführen.\nIch wäre Ihnen dankbar, wenn Sie mir kurz mitteilen könnten, welche Lösung Ihnen lieber ist.\nMit freundlichen Grüßen\nAmir Hodžić'}]},
+sprechen:{min:15,desc:'2 dijela · u paru',intro:'Teil 1: kratak govor (oko 4 minute) i pitanja. Teil 2: diskusija s partnerom (oko 5 minuta).',tasks:[
+ {t:'Teil 1 · Vortrag halten (ca. 4 Min.)',i:'Održi kratak govor na temu „Online einkaufen oder im Geschäft?" Prati strukturu na karticama.',cards:['Einleitung: Thema nennen','Eigene Erfahrung','Situation im Heimatland','Vor- und Nachteile','Eigene Meinung & Schluss'],
+  model:'Ich spreche heute über die Frage, ob man lieber online oder im Geschäft einkaufen sollte.\nIch selbst kaufe Elektronik meistens online, weil ich dort Preise leicht vergleichen kann. Kleidung kaufe ich dagegen lieber im Laden, weil ich sie anprobieren möchte.\nIn Bosnien wächst der Onlinehandel zwar, aber viele Menschen kaufen noch auf Märkten oder in kleinen Geschäften, vor allem Lebensmittel.\nFür den Onlinekauf spricht, dass er bequem ist und rund um die Uhr funktioniert. Dagegen spricht, dass viele Pakete zurückgeschickt werden, was schlecht für die Umwelt ist. Außerdem leiden die Innenstädte.\nMeiner Meinung nach brauchen wir beides. Ich würde mir wünschen, dass lokale Geschäfte auch online sichtbar sind. Vielen Dank fürs Zuhören.',
+  phrases:['In meinem Vortrag geht es um …','Ich habe die Erfahrung gemacht, dass …','Dafür spricht, dass … / Dagegen spricht …','Meiner Ansicht nach …','Abschließend möchte ich sagen …']},
+ {t:'Teil 2 · Diskussion (ca. 5 Min.)',i:'Diskutuj s partnerom: „Sollte Social Media erst ab 16 Jahren erlaubt sein?" Iznesi argumente, reaguj na partnera, na kraju pokušaj naći zajednički stav.',cards:['Schutz der Kinder','Rolle der Eltern','Kontrolle möglich?','Kontakt zu Freunden','Medienkompetenz in der Schule'],
+  model:'Ich bin der Meinung, dass eine Altersgrenze sinnvoll wäre, weil Kinder vor Cybermobbing geschützt werden müssen. – Da stimme ich dir teilweise zu. Aber wie will man das kontrollieren? Kinder finden immer einen Weg.\nDas stimmt, aber eine klare Regel hilft den Eltern, Nein zu sagen. – Trotzdem: Viele Jugendliche halten über soziale Medien Kontakt zu Freunden. Ein Verbot würde sie ausschließen.\nWas hältst du davon, wenn Schulen mehr Medienkompetenz unterrichten? – Das finde ich sehr wichtig. Vielleicht können wir uns darauf einigen: eine Altersgrenze für bestimmte Plattformen und gleichzeitig mehr Unterricht zum Thema.',
+  phrases:['Ich bin der Meinung, dass …','Da stimme ich dir zu, aber …','Das sehe ich anders, weil …','Was hältst du von …?','Können wir uns darauf einigen, dass …?']}]}}
+};
+
+
+/* ============ ISPIT (UI) ============ */
+const MODS=[['lesen','📖','Lesen','Čitanje'],['hoeren','🎧','Hören','Slušanje'],['schreiben','✍️','Schreiben','Pisanje'],['sprechen','🗣️','Sprechen','Govor']];
+const MODN={lesen:'Lesen',hoeren:'Hören',schreiben:'Schreiben',sprechen:'Sprechen'};
+let EX=null;
+const fmtT=t=>esc(t).replace(/\n/g,'<br>');
+const scriptTxt=s=>typeof s==='string'?esc(s):s.map(([w,t])=>`<b>${esc(w)}:</b> ${esc(t)}`).join('<br>');
+const LET='abcdefghijklmnop';
+
+function vExam(m){
+  const R=S.exam||{};
+  let h=`<h2 class="t">Probni ispit</h2><p class="muted" style="margin-top:-6px;font-weight:600">Po formatu Goethe-Zertifikata: 4 modula, pravo vrijeme i bodovi. Za prolaz treba <b>60 %</b> u svakom modulu.</p>`;
+  for(const lv of ['A1','A2','B1','B2']){const E=EXAMS[lv],r=R[lv]||{};const passed=MODS.every(([k])=>(r[k]??-1)>=60);
+    h+=`<div class="card xlv"><div class="xlh"><span class="lvb">${lv}</span><div style="flex:1"><div style="font-weight:900">${esc(E.name)}</div><div class="small muted">${esc(E.info)}</div></div>${passed?'<span class="pass">✓ Položeno</span>':''}</div>`;
+    for(const [k,ic,de,bs] of MODS){const M=E[k],sc=r[k];
+      h+=`<button class="xmod" data-exam="${lv}|${k}"><span class="xi">${ic}</span><span class="xt"><b>${de}</b> · ${bs}<br><span class="small muted">${M.min} min · ${esc(M.desc)}</span></span><span class="xs ${sc==null?'':sc>=60?'ok':'bad'}">${sc==null?'›':sc+' %'}</span></button>`;}
+    h+='</div>';}
+  h+=`<div class="note" style="margin-top:16px">ℹ️ Zadaci su originalni i napravljeni po uzoru na Goethe ispit: isti moduli, vrijeme, broj zadataka i vrste zadataka. Službeni probni testovi (Übungssätze) su besplatni na stranici <a href="https://www.goethe.de/de/spr/prf/ueb/pa1.html" target="_blank" rel="noopener">Goethe-Instituta</a>.</div>`;
+  m.innerHTML=h;
+}
+function examSheet(lv,k){
+  const E=EXAMS[lv],M=E[k],sc=(S.exam?.[lv]||{})[k];
+  const how={lesen:'Odgovore biraš tapom. Možeš se vraćati i mijenjati odgovore dok ne predaš.',hoeren:'Svaki tekst smiješ pustiti onoliko puta koliko piše (1× ili 2×), kao na pravom ispitu. Najbolje slušaj sa slušalicama.',schreiben:'Pišeš na tastaturi. Nakon predaje dobiješ primjer rješenja i sam ocijeniš koje tačke si obradio.',sprechen:'Pročitaj zadatak, snimi se (🎙️) i preslušaj. Zatim uporedi s primjerom i ocijeni se.'}[k];
+  sheet(`<div class="sh-h" style="color:var(--blue)">${lv} · ${esc(E.name)}</div><h3>${MODN[k]}</h3><p class="muted" style="font-weight:600">${esc(M.intro)}</p><div class="note">⏱ ${M.min} minuta · ${esc(M.desc)}<br>✅ Prolaz: 60 %<br>${how}</div>${sc!=null?`<p class="small muted">Najbolji rezultat: <b>${sc} %</b></p>`:''}<button class="btn" id="xgo">Počni ispit</button><button class="btn ghost" id="xno">Nazad</button>`);
+  $('#xgo').onclick=()=>startExam(lv,k);$('#xno').onclick=closeSheet;
+}
+function prepItem(it,p){
+  const o=it.o||p.opts||p.rf;let a=it.a;
+  if(typeof a==='boolean')a=a?0:1;
+  let opts=o.slice();
+  if(it.o&&!p.keep&&it.o!==RF&&it.o!==YN&&!p.rf){const idx=shuf(opts.map((_,i)=>i));opts=idx.map(i=>o[i]);a=idx.indexOf(a);}
+  return {...it,o:opts,a,shared:!it.o&&!!p.opts};
+}
+function startExam(lv,k){
+  closeSheet();try{speechSynthesis.cancel();}catch(e){}
+  const M=EXAMS[lv][k];
+  EX={lv,k,M,ans:{},plays:{},au:{},rec:{},rate:{},chk:{},t0:Date.now(),end:Date.now()+M.min*60000,done:false};
+  EX.parts=(M.parts||[]).map(p=>({...p,items:p.items.map(it=>prepItem(it,p))}));
+  const d=document.createElement('div');d.className='lesson';d.id='exam';
+  d.innerHTML=`<div class="lhead"><button class="xbtn" id="xx">✕</button><div style="flex:1;font-weight:900;font-size:17px">${lv} · ${MODN[k]}</div><div class="timer" id="tm"></div></div><div class="lbody" id="xb"></div><div class="lfoot" id="xfo"><div class="fin"><div id="xf" class="small muted" style="margin-bottom:2px"></div><button class="btn" id="xs">${k==='sprechen'?'Završi i ocijeni':'Predaj'}</button></div></div>`;
+  document.body.appendChild(d);
+  $('#xx').onclick=()=>{if(EX.done)return endExam();sheet(`<div style="text-align:center">${mascot(80,'sad')}<h3>Prekinuti ispit?</h3><p class="muted">Rezultat se neće sačuvati.</p><button class="btn" id="qk">Nastavi ispit</button><button class="btn ghost" id="qq" style="color:var(--red)">Prekini</button></div>`);$('#qk').onclick=closeSheet;$('#qq').onclick=()=>{closeSheet();endExam();};};
+  $('#xs').onclick=submitExam;
+  const xb=$('#xb');xb.onclick=examClick;xb.oninput=examInput;
+  if(k==='lesen'||k==='hoeren')renderObj();else if(k==='schreiben')renderWrite();else renderSpeak();
+  tick();EX.iv=setInterval(tick,1000);
+}
+function endExam(){if(EX){clearInterval(EX.iv);try{speechSynthesis.cancel();}catch(e){}if(EX.mr)try{EX.mr.stop();}catch(e){}}const d=$('#exam');if(d)d.remove();EX=null;render();}
+function tick(){
+  if(!EX)return;const tm=$('#tm');if(!tm)return;
+  if(EX.done||EX.k==='sprechen'){const s=Math.round((Date.now()-EX.t0)/1000);if(!EX.done)tm.textContent='⏱ '+Math.floor(s/60)+':'+String(s%60).padStart(2,'0');return;}
+  const left=Math.max(0,Math.round((EX.end-Date.now())/1000));
+  tm.textContent='⏳ '+Math.floor(left/60)+':'+String(left%60).padStart(2,'0');tm.classList.toggle('low',left<300);
+  if(left<=0){finishExam(true);}
+}
+function playBtn(id,plays,script){EX.au[id]=script;const used=EX.plays[id]||0,left=plays?plays-used:99;
+  return `<button class="xplay" data-au="${id}" data-max="${plays||0}" ${TTS&&left>0?'':'disabled'}>🔊 ${TTS?'Slušaj':'Zvuk nije podržan'} ${plays&&TTS?`<span class="pl">${left}×</span>`:''}</button>${TTS?'':`<button class="xtr" data-tr="${id}">📄 Prikaži tekst</button><div class="xm-text sm" id="tr-${id}" hidden>${scriptTxt(script)}</div>`}`;}
+let voiceBase=0;
+function playScript(script){
+  if(!TTS)return;try{speechSynthesis.cancel();}catch(e){}
+  const lines=typeof script==='string'?[['',script]]:script,who=[...new Set(lines.map(l=>l[0]))];
+  const base=Math.max(0,voices.findIndex(v=>v.name===S.voice));
+  lines.forEach(([w,t])=>{try{const u=new SpeechSynthesisUtterance(t);u.lang='de-DE';u.rate=S.rate*0.95;const k=who.indexOf(w);if(voices.length)u.voice=voices[(base+k)%voices.length];u.pitch=[1,0.8,1.25,0.95][k%4];speechSynthesis.speak(u);}catch(e){}});
+}
+function renderObj(){
+  let h=`<div class="note" style="margin-bottom:14px">${esc(EX.M.intro)}</div>`,n=0;
+  EX.parts.forEach((p,pi)=>{
+    h+=`<section class="xm-part"><div class="xm-pt">${esc(p.t)}</div><div class="xm-ins">${esc(p.i)}</div><div class="xm-de">${esc(p.d)}</div>`;
+    if(p.au)h+=playBtn('p'+pi,p.plays,p.au);
+    if(p.text)h+=`<div class="xm-text">${fmtT(p.text)}</div>`;
+    if(p.list)h+=`<div class="xm-ads">${p.list.map(([l,t])=>`<div><b>${esc(l)}</b> ${esc(t)}</div>`).join('')}</div>`;
+    p.items.forEach((it,ii)=>{const key=pi+'-'+ii;n++;
+      h+=`<div class="xm-item" id="it-${key}"><div class="xm-q"><span class="xn">${n}</span><div style="flex:1">`;
+      if(it.au)h+=playBtn('i'+key,p.plays,it.au);
+      if(it.text)h+=`<div class="xm-text sm">${fmtT(it.text)}</div>`;
+      if(it.sign)h+=`<div class="xm-sign">${fmtT(it.sign)}</div>`;
+      h+=`<div class="xm-qt">${esc(it.q)}</div></div></div><div class="xm-opts ${it.shared?'chips':''} ${it.o.length===2&&!it.shared&&it.o[0].length<12?'two':''}">${it.o.map((o,oi)=>`<button class="xo" data-k="${key}" data-o="${oi}">${it.shared||it.o===RF||it.o.length===2&&o.length<12?'':`<span class="xl">${LET[oi]}</span>`}<span>${esc(o)}</span></button>`).join('')}</div><div class="xm-fb" id="fb-${key}"></div></div>`;});
+    h+='</section>';});
+  $('#xb').innerHTML=h;updCount();
+}
+function updCount(){if(!EX||EX.done)return;const tot=EX.parts.reduce((s,p)=>s+p.items.length,0),a=Object.keys(EX.ans).length;const f=$('#xf');if(f)f.textContent=EX.k==='lesen'||EX.k==='hoeren'?`Odgovoreno: ${a} / ${tot}`:'';}
+function examClick(e){
+  const b=e.target.closest('button');if(!b||!EX)return;
+  if(b.dataset.au){const id=b.dataset.au,max=+b.dataset.max;if(max&&(EX.plays[id]||0)>=max&&!EX.done)return;EX.plays[id]=(EX.plays[id]||0)+1;playScript(EX.au[id]);
+    if(max&&!EX.done){const left=max-EX.plays[id];const pl=b.querySelector('.pl');if(pl)pl.textContent=left+'×';if(left<=0)setTimeout(()=>{b.disabled=true;},300);}return;}
+  if(b.dataset.tr){const t=$('#tr-'+b.dataset.tr);if(t)t.hidden=!t.hidden;return;}
+  if(b.dataset.k&&!EX.done){const k=b.dataset.k;EX.ans[k]=+b.dataset.o;b.parentNode.querySelectorAll('.xo').forEach(x=>x.classList.toggle('sel',x===b));updCount();return;}
+  if(b.dataset.rec!==undefined){recToggle(b,+b.dataset.rec);return;}
+  if(b.dataset.show!==undefined){const el=$('#sh-'+b.dataset.show);if(el){el.hidden=!el.hidden;b.textContent=el.hidden?'💡 Prikaži primjer i fraze':'🙈 Sakrij primjer';}return;}
+  if(b.dataset.rt!==undefined){const [t,c,v]=b.dataset.rt.split('-').map(Number);EX.rate[t+'-'+c]=v;b.parentNode.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));calcSelf();return;}
+  if(b.dataset.c){const ta=b.closest('.xw').querySelector('textarea');const p=ta.selectionStart??ta.value.length;ta.value=ta.value.slice(0,p)+b.dataset.c+ta.value.slice(ta.selectionEnd??p);ta.focus();ta.setSelectionRange(p+1,p+1);examInput({target:ta});return;}
+}
+function examInput(e){const t=e.target;
+  if(t.dataset&&t.dataset.wc!==undefined){const n=wc(t.value),T=EX.M.tasks[+t.dataset.wc];const el=$('#wc-'+t.dataset.wc);if(el){el.textContent=`${n} / ~${T.words} riječi`;el.className='wcount '+(n>=T.words*0.8?'ok':'');}}
+  if(t.dataset&&t.dataset.ck!==undefined){EX.chk[t.dataset.ck]=t.checked;calcSelf();}
+}
+const wc=s=>(s.trim().match(/\S+/g)||[]).length;
+function renderWrite(){
+  let h=`<div class="note" style="margin-bottom:14px">${esc(EX.M.intro)}</div>`;
+  EX.M.tasks.forEach((T,ti)=>{
+    h+=`<section class="xm-part xw"><div class="xm-pt">${esc(T.t)}</div><div class="xm-ins">${esc(T.i)}</div>`;
+    if(T.type==='form'){h+=`<div class="xm-text">${fmtT(T.text)}</div><div class="xform"><div class="xf-h">Sportverein Fit+ · Anmeldung</div>${T.fields.map((f,fi)=>`<label><span>${esc(f[0])}</span>${typeof f[1]==='string'?`<input value="${esc(f[1])}" disabled>`:`<input data-ff="${ti}-${fi}" autocomplete="off" autocapitalize="off" spellcheck="false">`}</label>`).join('')}</div>`;}
+    else{h+=`<div class="xm-text">${fmtT(T.d)}</div><ul class="xpts">${T.pts.map(p=>`<li>${esc(p)}</li>`).join('')}</ul><textarea class="xta" data-wc="${ti}" rows="9" placeholder="Piši ovdje na njemačkom…" spellcheck="false"></textarea><div class="xta-bar"><div class="chars">${['ä','ö','ü','ß','„','"'].map(c=>`<button data-c="${c}">${c}</button>`).join('')}</div><span class="wcount" id="wc-${ti}">0 / ~${T.words} riječi</span></div>`;}
+    h+=`<div id="rv-${ti}"></div></section>`;});
+  $('#xb').innerHTML=h;
+}
+function renderSpeak(){
+  const can=!!(navigator.mediaDevices&&window.MediaRecorder);
+  let h=`<div class="note" style="margin-bottom:14px">${esc(EX.M.intro)}${can?'':'<br>🎙️ Snimanje ovdje nije dostupno (otvori aplikaciju u Chromeu na svom sajtu). Možeš i dalje vježbati naglas.'}</div>`;
+  EX.M.tasks.forEach((T,ti)=>{
+    h+=`<section class="xm-part"><div class="xm-pt">${esc(T.t)}</div><div class="xm-ins">${esc(T.i)}</div><div class="xcards">${T.cards.map(c=>`<span>${esc(c)}</span>`).join('')}</div>
+    ${can?`<div class="xrec"><button class="btn red sm" data-rec="${ti}">🎙️ Snimi odgovor</button><audio id="au-${ti}" controls hidden></audio></div>`:''}
+    <button class="btn ghost sm" data-show="${ti}">💡 Prikaži primjer i fraze</button>
+    <div id="sh-${ti}" hidden><div class="xm-text">${fmtT(T.model)}</div><div class="xph">${T.phrases.map(p=>`<span>${esc(p)}</span>`).join('')}</div></div>
+    <div class="xself"><div class="small" style="font-weight:900;margin:12px 0 6px">Ocijeni se:</div>${['Zadatak ispunjen','Tečno i razumljivo','Malo grešaka'].map((c,ci)=>`<div class="xsr"><span>${c}</span><div class="seg">${['Ne','Djelimično','Da'].map((v,vi)=>`<button data-rt="${ti}-${ci}-${vi}">${v}</button>`).join('')}</div></div>`).join('')}</div></section>`;});
+  $('#xb').innerHTML=h;
+}
+async function recToggle(b,ti){
+  if(EX.mr){try{EX.mr.stop();}catch(e){}return;}
+  try{const st=await navigator.mediaDevices.getUserMedia({audio:true});const mr=new MediaRecorder(st),ch=[];
+    mr.ondataavailable=e=>ch.push(e.data);
+    mr.onstop=()=>{st.getTracks().forEach(t=>t.stop());const au=$('#au-'+ti);if(au){au.src=URL.createObjectURL(new Blob(ch,{type:mr.mimeType||'audio/webm'}));au.hidden=false;}b.textContent='🎙️ Snimi ponovo';b.classList.remove('pulse');if(EX)EX.mr=null;};
+    mr.start();EX.mr=mr;b.textContent='⏹ Zaustavi snimanje';b.classList.add('pulse');
+  }catch(e){b.textContent='🎙️ Mikrofon nije dozvoljen';b.disabled=true;}
+}
+function submitExam(){
+  if(!EX)return;
+  if(EX.done){endExam();return;}
+  if(EX.k==='lesen'||EX.k==='hoeren'){const tot=EX.parts.reduce((s,p)=>s+p.items.length,0),miss=tot-Object.keys(EX.ans).length;
+    if(miss>0){sheet(`<h3>Predati ispit?</h3><p class="muted">Nisi odgovorio na <b>${miss}</b> ${miss===1?'zadatak':'zadataka'}. Neodgovoreni zadaci nose 0 bodova.</p><button class="btn" id="qy">Predaj</button><button class="btn ghost" id="qn">Nastavi</button>`);$('#qy').onclick=()=>{closeSheet();finishExam(false);};$('#qn').onclick=closeSheet;return;}}
+  finishExam(false);
+}
+function saveScore(pct){S.exam=S.exam||{};S.exam[EX.lv]=S.exam[EX.lv]||{};const prev=S.exam[EX.lv][EX.k];if(prev==null||pct>prev)S.exam[EX.lv][EX.k]=pct;
+  const today=dk();if(!EX.xp){EX.xp=true;const xp=EX.k==='lesen'||EX.k==='hoeren'?25:15;S.xp+=xp;S.daily[today]=(S.daily[today]||0)+xp;if(S.last!==today){S.streak=(S.last===dk(dayOff(-1)))?S.streak+1:1;S.last=today;}}save();}
+function finishExam(timeUp){
+  if(!EX||EX.done)return;EX.done=true;clearInterval(EX.iv);try{speechSynthesis.cancel();}catch(e){}
+  const tm=$('#tm');if(tm)tm.style.display='none';
+  const xb=$('#xb'),xs=$('#xs');
+  if(EX.k==='lesen'||EX.k==='hoeren'){
+    let ok=0,tot=0;
+    EX.parts.forEach((p,pi)=>p.items.forEach((it,ii)=>{tot++;const key=pi+'-'+ii,a=EX.ans[key],good=a===it.a;if(good)ok++;
+      document.querySelectorAll(`[data-k="${key}"]`).forEach(b=>{const o=+b.dataset.o;b.classList.remove('sel');if(o===it.a)b.classList.add('right');else if(o===a)b.classList.add('wrong');});
+      const fb=$('#fb-'+key);if(fb)fb.innerHTML=good?'<span class="okc">✓ Tačno</span>':`<span class="badc">✗ ${a==null?'Bez odgovora':'Netačno'}</span> · Tačno: <b>${esc(it.o[it.a])}</b>`;}));
+    if(EX.k==='hoeren'){document.querySelectorAll('.xplay').forEach(b=>{b.disabled=!TTS;const pl=b.querySelector('.pl');if(pl)pl.remove();const id=b.dataset.au;if(!$('#tr-'+id))b.insertAdjacentHTML('afterend',`<details class="xtrans"><summary>📄 Transkript</summary><div>${scriptTxt(EX.au[id])}</div></details>`);});}
+    const pct=Math.round(100*ok/tot);saveScore(pct);
+    xb.insertAdjacentHTML('afterbegin',resultCard(pct,`${ok} / ${tot} tačnih${timeUp?' · ⏰ Vrijeme je isteklo':''}`));
+    xb.scrollTop=0;xs.textContent='Zatvori';$('#xf').textContent='';beep(pct>=60?'win':'bad');if(pct>=60)confetti();
+  }else if(EX.k==='schreiben'){
+    EX.M.tasks.forEach((T,ti)=>{const rv=$('#rv-'+ti);
+      if(T.type==='form'){let h='<div class="xrv">';T.fields.forEach((f,fi)=>{if(typeof f[1]==='string')return;const inp=document.querySelector(`[data-ff="${ti}-${fi}"]`),v=norm(inp.value),good=f[1].some(x=>norm(x)===v||(v.length>2&&v.includes(norm(x))));EX.chk[`f${ti}-${fi}`]=good;inp.disabled=true;inp.classList.add(good?'okb':'badb');if(!good)h+=`<div class="small"><span class="badc">✗</span> ${esc(f[0])}: <b>${esc(f[1][0])}</b></div>`;});rv.innerHTML=h+'</div>';}
+      else{const ta=document.querySelector(`[data-wc="${ti}"]`),txt=ta.value,n=wc(txt);ta.readOnly=true;
+        const lines=txt.trim().split('\n'),first=(lines[0]||'').trim(),last=lines.slice(-3).join(' ');
+        const ckW=n>=T.words*0.8,ckA=T.noLetter||/^(liebe|lieber|hallo|hi|sehr geehrte|guten tag)/i.test(first),ckG=T.noLetter||/(grüße|gruß|grüßen|bis bald|bis dann|bis gleich|tschüss|alles gute)/i.test(last);
+        EX.auto=EX.auto||{};EX.auto[ti]=[ckW,ckA,ckG];
+        rv.innerHTML=`<div class="xrv"><div class="small" style="font-weight:900;margin-bottom:6px">Automatska provjera</div><div class="small">${ckW?'✅':'⚠️'} Dužina: ${n} riječi (cilj ~${T.words})</div>${T.noLetter?'':`<div class="small">${ckA?'✅':'⚠️'} Pozdrav na početku${T.formal?' (formalno: „Sehr geehrte …")':''}</div><div class="small">${ckG?'✅':'⚠️'} Pozdrav na kraju${T.formal?' („Mit freundlichen Grüßen")':''}</div>`}
+          <div class="small" style="font-weight:900;margin:12px 0 6px">Označi koje tačke si obradio:</div>${T.pts.map((p,pi)=>`<label class="xck"><input type="checkbox" data-ck="t${ti}-${pi}"> ${esc(p)}</label>`).join('')}
+          <details class="xtrans" open><summary>💡 Primjer rješenja</summary><div>${fmtT(T.model)}</div></details></div>`;}
+    });
+    xb.insertAdjacentHTML('afterbegin',`<div id="res"></div>`);calcSelf();xb.scrollTop=0;xs.textContent='Zatvori';$('#xf').textContent='';
+  }else{xb.insertAdjacentHTML('afterbegin',`<div id="res"></div>`);EX.done=true;calcSelf();xb.scrollTop=0;xs.textContent='Zatvori';$('#xf').textContent='';}
+}
+function calcSelf(){
+  if(!EX)return;let pct;
+  if(EX.k==='schreiben'){if(!EX.done)return;const sc=EX.M.tasks.map((T,ti)=>{if(T.type==='form'){const fs=T.fields.map((f,fi)=>typeof f[1]==='string'?null:EX.chk[`f${ti}-${fi}`]).filter(x=>x!==null);return fs.filter(Boolean).length/fs.length;}
+      const pts=T.pts.filter((_,pi)=>EX.chk[`t${ti}-${pi}`]).length/T.pts.length,au=EX.auto?.[ti]||[0,0,0];return pts*0.7+(au[0]?0.15:0)+(au[1]&&au[2]?0.15:au[1]||au[2]?0.07:0);});
+    const w=EX.M.tasks.map(T=>T.type==='form'?0.4:T.words>=100?1.4:1);pct=Math.round(100*sc.reduce((s,v,i)=>s+v*w[i],0)/w.reduce((a,b)=>a+b,0));}
+  else{const n=EX.M.tasks.length*3,s=Object.values(EX.rate).reduce((a,b)=>a+b,0);pct=Math.round(100*s/(n*2));if(!EX.done)return;}
+  const r=$('#res');if(r){r.innerHTML=resultCard(pct,EX.k==='schreiben'?'Procjena: označi tačke koje si obradio, a rezultat se odmah ažurira.':'Samoprocjena: ocijeni svaki zadatak, a rezultat se odmah ažurira.');}
+  saveScore(pct);
+}
+function resultCard(pct,sub){const pass=pct>=60;return `<div class="xres ${pass?'ok':'bad'}">${mascot(70,pass?'happy':'sad')}<div><div class="xr-p">${pct} %</div><div class="xr-s">${pass?'✓ Položeno':'✗ Nije položeno'} <span class="small">(prolaz 60 %)</span></div><div class="small" style="margin-top:4px">${sub}</div></div></div>`;}
+
 /* ============ EVENTS ============ */
 document.addEventListener('click',e=>{
-  const t=e.target.closest('[data-say],[data-tab],[data-node],[data-start],[data-jump],[data-tip],[data-goal],[data-snd],[data-rate],[data-info]');if(!t)return;
+  const t=e.target.closest('[data-exam],[data-say],[data-tab],[data-node],[data-start],[data-jump],[data-tip],[data-goal],[data-snd],[data-rate],[data-info]');if(!t)return;
   const d=t.dataset;
   if(d.say!==undefined){speak(d.say,d.slow==='1');return;}
+  if(d.exam){const [lv,k]=d.exam.split('|');examSheet(lv,k);return;}
   if(d.tab){closeSheet();tab=d.tab;render();scrollTo(0,0);}
   else if(d.node)nodeSheet(+d.node);
   else if(d.start){const i=+d.start;startLesson(i>>2,i&3,'lesson');}
