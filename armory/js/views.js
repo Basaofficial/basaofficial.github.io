@@ -39,7 +39,7 @@ function viewSettings(){
   <div class="card col"><b>Keš</b><div class="sm mut">Podaci o itemima se čuvaju na telefonu da se brže učitava.</div>
    <button class="btn ghost" onclick="Object.keys(localStorage).filter(k=>k.startsWith('ba_it_')).forEach(k=>localStorage.removeItem(k));toast('Keš obrisan')">Obriši keš itema</button></div>
   <div class="card sm mut">#Bash Armory · by <a style="color:var(--g)" href="https://instagram.com/basa.gtm">@basa.gtm</a><br>
-  Podaci: Warmane Armory API · itemi i 3D: Wowhead. Neslužbena fan aplikacija, nije povezana s Blizzard Entertainmentom, Warmaneom ni Wowheadom. World of Warcraft® je registrovani žig Blizzard Entertainment, Inc.; slike, ikone i 3D modeli © Blizzard Entertainment.<br><a style="color:var(--g)" href="../datenschutz.html">Datenschutz · Privatnost</a><br>
+  Podaci: Warmane Armory API · itemi i 3D: Wowhead. Neslužbena fan aplikacija, nije povezana s Blizzard Entertainmentom, Warmaneom ni Wowheadom. World of Warcraft® je registrovani žig Blizzard Entertainment, Inc.; slike, ikone i 3D modeli © Blizzard Entertainment.<br><a style="color:var(--g)" href="../impressum.html">Impressum</a> · <a style="color:var(--g)" href="../datenschutz.html">Datenschutz · Privatnost</a><br>
   <a style="color:var(--g)" href="https://paypal.me/basagtm">☕ Buy me a coffee</a></div>`;
 }
 

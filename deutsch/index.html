@@ -2108,7 +2108,7 @@ function vProfile(m){
   </div>
   <div class="sec"><a class="card res" href="../"><span class="e">🧪</span><span><div class="tt">bashlab</div><div class="ds">Sve moje aplikacije · @basa.gtm</div></span></a></div>
   ${myDataSection()}${(isStaff()||admHasKey()||modHasKey())?'<div class="sec"><button class="btn" data-tab="admin" style="background:#ffc800;box-shadow:0 4px 0 #e0a800;color:#3c3c3c">👑 Admin / moderator panel</button></div>':''}
-  <div class="sec"><div class="note">💾 Napredak se čuva u ovom pregledniku na ovom uređaju.</div><button class="btn ghost" id="rst" style="color:var(--red)">Resetuj napredak</button><p class="small" style="text-align:center;margin-top:18px"><a href="datenschutz.html" target="_blank" rel="noopener">Datenschutz · Izjava o privatnosti</a></p></div>`;
+  <div class="sec"><div class="note">💾 Napredak se čuva u ovom pregledniku na ovom uređaju.</div><button class="btn ghost" id="rst" style="color:var(--red)">Resetuj napredak</button><p class="small" style="text-align:center;margin-top:18px"><a href="../impressum.html" target="_blank" rel="noopener">Impressum</a> · <a href="datenschutz.html" target="_blank" rel="noopener">Datenschutz · Izjava o privatnosti</a></p></div>`;
   const vs=$('#vs');if(vs)vs.onchange=()=>{S.voice=vs.value;save();};
   bindMyData();
   $('#rst').onclick=()=>{sheet(`<div style="text-align:center">${mascot(80,'sad')}<h3>Obrisati sav napredak?</h3><p class="muted">XP, niz i završene lekcije biće izbrisani.</p><button class="btn red" id="ry">Da, obriši</button><button class="btn ghost" id="rn">Odustani</button></div>`);$('#ry').onclick=()=>{S=def();save();closeSheet();render();};$('#rn').onclick=closeSheet;};
