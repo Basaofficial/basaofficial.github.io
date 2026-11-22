@@ -22,7 +22,7 @@ header.top{position:sticky;top:0;z-index:5;background:var(--bg);display:flex;jus
 main{padding:16px 16px 110px}
 nav.bottom{position:fixed;bottom:0;left:0;right:0;background:var(--bg);border-top:2px solid var(--line);z-index:5}
 nav.bottom .in{display:flex;max-width:560px;margin:0 auto}
-nav.bottom button{flex:1;background:none;border:0;padding:9px 0 12px;font-size:10.5px;font-weight:800;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer}
+nav.bottom button{flex:1;min-width:0;background:none;border:0;padding:9px 0 12px;font-size:10px;font-weight:800;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer}
 nav.bottom button .ic{font-size:23px;filter:grayscale(1);opacity:.6}
 nav.bottom button.on{color:var(--blue)}
 nav.bottom button.on .ic{filter:none;opacity:1}
@@ -217,6 +217,13 @@ select{width:100%;font:inherit;padding:12px;border:2px solid var(--line);border-
 .btn.sm{padding:10px;font-size:14px;margin-top:6px}
 .pulse{animation:pls 1s infinite}@keyframes pls{50%{opacity:.6}}
 .xsr{display:flex;align-items:center;gap:8px;margin:6px 0}.xsr>span{flex:1;font-size:14px;font-weight:800}.xsr .seg{flex:1.6}.xsr .seg button{padding:7px 2px;font-size:12px}
+.lbme{background:rgba(28,176,246,.12);color:var(--blue);border-radius:12px;padding:10px 12px;font-weight:800;margin-bottom:10px}
+.lbr{display:flex;align-items:center;gap:10px;padding:10px 4px;border-bottom:2px solid var(--line)}
+.lbr.me{background:rgba(88,204,2,.12);border-radius:12px;border-bottom-color:transparent}
+.lbp{width:30px;text-align:center;font-weight:900;font-size:17px;color:var(--muted)}
+.lbav{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:900;flex:none}
+.lbn{flex:1;font-weight:900;display:flex;flex-direction:column;min-width:0;overflow:hidden;text-overflow:ellipsis}.lbn small{color:var(--muted);font-weight:700;font-size:12px}
+.lbv{font-weight:900;color:#e5a800;white-space:nowrap}
 canvas#cf{position:fixed;inset:0;pointer-events:none;z-index:60}
 .shake{animation:shake .35s}
 @keyframes shake{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
@@ -1713,6 +1720,7 @@ const def=()=>({exam:{},xp:0,hearts:5,heartTs:Date.now(),streak:0,last:null,done
 function load(){try{const j=JSON.parse(localStorage.getItem(KEY));if(j)return Object.assign(def(),j);}catch(e){}return def();}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
 let S=load();
+if(!S.uid){S.uid=(Math.random().toString(36).slice(2,10)+Date.now().toString(36)).slice(0,16);save();}
 function regen(){if(S.hearts>=5){S.hearts=5;S.heartTs=Date.now();return;}const n=Math.floor((Date.now()-S.heartTs)/HEART_MS);if(n>0){S.hearts=Math.min(5,S.hearts+n);S.heartTs=S.hearts>=5?Date.now():S.heartTs+n*HEART_MS;save();}}
 function streakNow(){if(!S.last)return 0;return (S.last===dk()||S.last===dk(dayOff(-1)))?S.streak:0;}
 const freeM=m=>m==='practice'||m==='vocab';
@@ -1897,7 +1905,7 @@ function finish(){
   else if(L.mode==='vocab'){}
   else if(L.mode==='jump'){for(let i=0;i<=L.u*4+3;i++)S.done[i]=true;}
   else S.done[L.u*4+L.l]=true;
-  save();beep('win');confetti();
+  save();lbPublish();beep('win');confetti();
   const goalHit=before<S.goal&&S.daily[today]>=S.goal;
   const title=L.mode==='jump'?'Jedinica preskočena!':L.mode==='practice'?'Vježba završena!':L.mode==='vocab'?'Riječi naučene!':perfect?'Savršena lekcija!':'Lekcija završena!';
   $('#lb').innerHTML=`<div class="result">${mascot(130)}<h1>${title}</h1>
@@ -1929,13 +1937,13 @@ let t=0;(function f(){x.clearRect(0,0,c.width,c.height);P.forEach(p=>{p.x+=p.vx;
 
 /* ============ VIEWS ============ */
 let tab='learn';
-const TABS=[['learn','🏠','Učenje'],['practice','💪','Vježba'],['exam','📝','Ispit'],['words','📖','Riječi'],['video','🎬','Video'],['profile','👤','Profil']];
+const TABS=[['learn','🏠','Učenje'],['practice','💪','Vježba'],['exam','📝','Ispit'],['rank','🏆','Rang'],['words','📖','Riječi'],['video','🎬','Video'],['profile','👤','Profil']];
 function render(){
   regen();
   const app=$('#app');
   app.innerHTML=`<header class="top"><span class="flag">🇩🇪</span><button class="stat fire" data-info="streak">🔥 ${streakNow()}</button><button class="stat xp" data-info="xp">⚡ ${S.xp}</button><button class="stat heart" data-info="hearts">❤️ ${S.hearts}</button></header><main id="main"></main><nav class="bottom"><div class="in">${TABS.map(([k,i,n])=>`<button data-tab="${k}" class="${tab===k?'on':''}"><span class="ic">${i}</span>${n}</button>`).join('')}</div></nav>`;
   const m=$('#main');
-  ({learn:vLearn,exam:vExam,practice:vPractice,words:vWords,video:vVideo,profile:vProfile})[tab](m);
+  ({learn:vLearn,exam:vExam,rank:vRank,practice:vPractice,words:vWords,video:vVideo,profile:vProfile})[tab](m);
 }
 function vLearn(m){
   const today=S.daily[dk()]||0,g=S.goal,cur=curIdx();
@@ -2435,7 +2443,7 @@ function submitExam(){
   finishExam(false);
 }
 function saveScore(pct){S.exam=S.exam||{};S.exam[EX.lv]=S.exam[EX.lv]||{};const prev=S.exam[EX.lv][EX.k];if(prev==null||pct>prev)S.exam[EX.lv][EX.k]=pct;
-  const today=dk();if(!EX.xp){EX.xp=true;const xp=EX.k==='lesen'||EX.k==='hoeren'?25:15;S.xp+=xp;S.daily[today]=(S.daily[today]||0)+xp;if(S.last!==today){S.streak=(S.last===dk(dayOff(-1)))?S.streak+1:1;S.last=today;}}save();}
+  const today=dk();if(!EX.xp){EX.xp=true;const xp=EX.k==='lesen'||EX.k==='hoeren'?25:15;S.xp+=xp;S.daily[today]=(S.daily[today]||0)+xp;if(S.last!==today){S.streak=(S.last===dk(dayOff(-1)))?S.streak+1:1;S.last=today;}}save();lbPublish();}
 function finishExam(timeUp){
   if(!EX||EX.done)return;EX.done=true;clearInterval(EX.iv);try{speechSynthesis.cancel();}catch(e){}
   const tm=$('#tm');if(tm)tm.style.display='none';
@@ -2474,6 +2482,71 @@ function calcSelf(){
 }
 function resultCard(pct,sub){const pass=pct>=60;return `<div class="xres ${pass?'ok':'bad'}">${mascot(70,pass?'happy':'sad')}<div><div class="xr-p">${pct} %</div><div class="xr-s">${pass?'✓ Položeno':'✗ Nije položeno'} <span class="small">(prolaz 60 %)</span></div><div class="small" style="margin-top:4px">${sub}</div></div></div>`;}
 
+
+/* ============ RANG LISTA (javni MQTT, kao #Bash igre) ============ */
+const LB_T='bashdeutsch/v1/lb/',LB_B=['wss://broker.emqx.io:8084/mqtt','wss://broker.hivemq.com:8884/mqtt'];
+const LB={clients:[],data:{},status:'off',view:'week',last:0};
+function isoWeek(d=new Date()){const t=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));const day=t.getUTCDay()||7;t.setUTCDate(t.getUTCDate()+4-day);const y=new Date(Date.UTC(t.getUTCFullYear(),0,1));return t.getUTCFullYear()+'-W'+Math.ceil(((t-y)/864e5+1)/7);}
+function weekXP(){const d=new Date(),day=(d.getDay()+6)%7;let s=0;for(let i=0;i<=day;i++)s+=S.daily[dk(dayOff(-i))]||0;return s;}
+function myLevel(){const R=S.exam||{};let lv='A1';for(const l of ['A1','A2','B1','B2'])if(MODS.every(([k])=>((R[l]||{})[k]??-1)>=60))lv=l+' ✓';return lv.includes('✓')?lv:UNITS[Math.max(0,curIdx()<0?UNITS.length-1:curIdx()>>2)].lvl;}
+function myEntry(){return {v:1,id:S.uid,n:S.nick,xp:S.xp,wk:weekXP(),wid:isoWeek(),st:streakNow(),lv:myLevel(),w:Object.values(S.words).filter(r=>r.ok>r.bad).length+Object.values(S.vocab||{}).filter(r=>r.b>=3).length,ts:Date.now()};}
+function lbLib(){return new Promise(res=>{if(window.mqtt)return res(true);const add=(src,fb)=>{const s=document.createElement('script');s.src=src;s.onload=()=>res(!!window.mqtt);s.onerror=fb;document.head.appendChild(s);};add('https://unpkg.com/mqtt@5/dist/mqtt.min.js',()=>add('https://cdn.jsdelivr.net/npm/mqtt@5/dist/mqtt.min.js',()=>res(false)));});}
+async function lbConnect(){
+  if(LB.clients.length)return;LB.status='wait';
+  const ok=await lbLib();if(!ok){LB.status='err';lbDraw();return;}
+  LB_B.forEach(u=>{try{const c=mqtt.connect(u,{clientId:'bd_'+Math.random().toString(36).slice(2,10),clean:true,connectTimeout:8000,reconnectPeriod:6000,keepalive:30});
+    c.on('connect',()=>{LB.status='ok';c.subscribe(LB_T+'+');if(LB.want)lbSend(c);lbDraw();});
+    c.on('message',(t,m)=>lbMsg(t,m));c.on('error',()=>{});LB.clients.push(c);}catch(e){}});
+  setTimeout(()=>{if(LB.status==='wait'){LB.status='err';lbDraw();}},10000);
+}
+function lbMsg(t,m){
+  const id=t.slice(LB_T.length);if(!/^[a-z0-9]{6,24}$/.test(id))return;
+  const s=m&&m.toString?m.toString():'';if(!s){delete LB.data[id];lbDrawSoon();return;}
+  try{const e=JSON.parse(s);if(e.id!==id||typeof e.n!=='string'||!/^[\p{L}\p{N}_. -]{3,16}$/u.test(e.n))return;
+    const num=(x,max)=>Math.max(0,Math.min(max,Math.floor(+x||0)));
+    const r={id,n:e.n.slice(0,16),xp:num(e.xp,200000),wk:num(e.wk,20000),wid:String(e.wid||''),st:num(e.st,3650),lv:String(e.lv||'A1').slice(0,5),w:num(e.w,5000),ts:num(e.ts,9e15)};
+    if(Date.now()-r.ts>60*864e5)return;
+    const o=LB.data[id];if(!o||r.ts>=o.ts){LB.data[id]=r;lbDrawSoon();}
+  }catch(err){}
+}
+let lbT=0;function lbDrawSoon(){clearTimeout(lbT);lbT=setTimeout(lbDraw,250);}
+function lbSend(c){if(!S.nick||S.lbOff)return;try{c.publish(LB_T+S.uid,JSON.stringify(myEntry()),{qos:1,retain:true});}catch(e){}}
+function lbPublish(){if(!S.nick||S.lbOff)return;LB.want=true;LB.data[S.uid]=myEntry();if(!LB.clients.length){lbConnect();return;}LB.clients.forEach(c=>{if(c.connected)lbSend(c);});}
+function lbRemove(){LB.clients.forEach(c=>{try{if(c.connected)c.publish(LB_T+S.uid,'',{qos:1,retain:true});}catch(e){}});delete LB.data[S.uid];}
+function vRank(m){
+  if(!S.uid){S.uid=(Math.random().toString(36).slice(2,10)+Date.now().toString(36)).slice(0,16);save();}
+  if(!S.nick&&!S.lbOff){m.innerHTML=`<div style="text-align:center;padding-top:20px">${mascot(110)}<h2 class="t">Rang lista</h2><p class="muted" style="font-weight:600">Takmiči se s ostalima koji uče njemački u Bash Deutsch. Izaberi nadimak: on je jedino što drugi vide.</p></div>
+    <input class="search" id="nk" maxlength="16" placeholder="Nadimak, npr. Basa_93" autocomplete="off"><div class="small muted" id="nkh">3–16 znakova: slova, brojevi, _ . -</div><button class="btn" id="nks">Pridruži se rang listi</button><button class="btn ghost" id="nkn">Ne želim biti na listi</button>`;
+    $('#nks').onclick=()=>{const v=$('#nk').value.trim();if(!/^[\p{L}\p{N}_. -]{3,16}$/u.test(v)){$('#nkh').innerHTML='<span class="badc">Nadimak mora imati 3–16 znakova (slova, brojevi, _ . -).</span>';return;}S.nick=v;S.lbOff=false;save();lbPublish();render();};
+    $('#nkn').onclick=()=>{S.lbOff=true;save();render();};return;}
+  m.innerHTML=`<h2 class="t">🏆 Rang lista</h2><div class="seg" id="lbv">${[['week','Ova sedmica'],['all','Ukupno XP'],['streak','Niz 🔥']].map(([k,n])=>`<button data-lbv="${k}" class="${LB.view===k?'on':''}">${n}</button>`).join('')}</div><div id="lbl" style="margin-top:12px"></div>
+  <div class="sec"><div class="note">🌐 Rezultati idu preko istih javnih servera kao #Bash igre i osvježavaju se svaki put kad neko završi lekciju. Vidi se samo nadimak.</div>
+  ${S.lbOff?`<button class="btn" id="lbon">Pridruži se rang listi</button>`:`<div class="small muted" style="margin-top:10px">Tvoj nadimak: <b>${esc(S.nick)}</b></div><button class="btn ghost" id="lbn">Promijeni nadimak</button><button class="btn ghost" id="lbx" style="color:var(--red)">Ukloni me s liste</button>`}</div>`;
+  m.querySelectorAll('[data-lbv]').forEach(b=>b.onclick=()=>{LB.view=b.dataset.lbv;m.querySelectorAll('[data-lbv]').forEach(x=>x.classList.toggle('on',x===b));lbDraw();});
+  const on=$('#lbon');if(on)on.onclick=()=>{S.lbOff=false;S.nick=null;save();render();};
+  const nn=$('#lbn');if(nn)nn.onclick=()=>{lbRemove();S.nick=null;save();render();};
+  const x=$('#lbx');if(x)x.onclick=()=>{lbRemove();S.lbOff=true;save();render();};
+  if(!S.lbOff)lbPublish();else lbConnect();
+  lbDraw();
+}
+function lbDraw(){
+  const el=$('#lbl');if(!el)return;
+  if(LB.status==='err'&&Object.keys(LB.data).length<=1){el.innerHTML=`<div class="note">⚠️ Ne mogu se spojiti na server rang liste. Provjeri internet. U verziji unutar Claude chata rang lista ne radi, nego samo na <b>basaofficial.github.io/deutsch</b>.</div>`;return;}
+  const wid=isoWeek(),v=LB.view;
+  let rows=Object.values(LB.data);
+  if(v==='week')rows=rows.filter(r=>r.wid===wid&&r.wk>0).sort((a,b)=>b.wk-a.wk);
+  else if(v==='all')rows=rows.filter(r=>r.xp>0).sort((a,b)=>b.xp-a.xp);
+  else rows=rows.filter(r=>r.st>0).sort((a,b)=>b.st-a.st||b.xp-a.xp);
+  const val=r=>v==='week'?`⚡ ${r.wk}`:v==='all'?`⚡ ${r.xp}`:`🔥 ${r.st}`;
+  const me=rows.findIndex(r=>r.id===S.uid);
+  let h=LB.status==='wait'&&rows.length<2?'<p class="muted">Učitavam rezultate…</p>':'';
+  if(me>=0)h+=`<div class="lbme">Ti si <b>#${me+1}</b> od ${rows.length}${v==='week'?' ove sedmice':''}</div>`;
+  else if(!S.lbOff&&S.nick)h+=`<div class="lbme">Završi lekciju da uđeš na listu${v==='streak'?' (niz dana)':''}.</div>`;
+  h+=rows.slice(0,50).map((r,i)=>`<div class="lbr ${r.id===S.uid?'me':''}"><span class="lbp">${i<3?['🥇','🥈','🥉'][i]:i+1}</span><span class="lbav" style="background:${PAL[(r.n.charCodeAt(0)||0)%PAL.length][0]}">${esc(r.n[0]||'?').toUpperCase()}</span><span class="lbn">${esc(r.n)}<small>${esc(r.lv)} · ${r.w} riječi</small></span><span class="lbv">${val(r)}</span></div>`).join('');
+  if(!rows.length&&LB.status==='ok')h+='<p class="muted">Još niko nije na listi ove sedmice. Budi prvi! 💪</p>';
+  el.innerHTML=h;
+}
+
 /* ============ EVENTS ============ */
 document.addEventListener('click',e=>{
   const t=e.target.closest('[data-voc],[data-exam],[data-say],[data-tab],[data-node],[data-start],[data-jump],[data-tip],[data-goal],[data-snd],[data-rate],[data-info]');if(!t)return;
@@ -2502,6 +2575,7 @@ document.addEventListener('keydown',e=>{
 });
 setInterval(()=>{if(!L&&S.hearts<5){const h=S.hearts;regen();if(S.hearts!==h)render();}},60000);
 render();
+if(S.nick&&!S.lbOff)setTimeout(lbPublish,1500);
 </script>
 </body>
 </html>
