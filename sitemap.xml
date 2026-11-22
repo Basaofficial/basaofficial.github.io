@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://basaofficial.github.io/</loc><priority>1.0</priority></url>
-  <url><loc>https://basaofficial.github.io/igre/</loc></url>
-  <url><loc>https://basaofficial.github.io/metar/</loc></url>
-  <url><loc>https://basaofficial.github.io/zvucnik/</loc></url>
-  <url><loc>https://basaofficial.github.io/fit/</loc></url>
-  <url><loc>https://basaofficial.github.io/bashtalk/</loc></url>
-  <url><loc>https://basaofficial.github.io/armory/</loc></url>
-  <url><loc>https://basaofficial.github.io/bash-electro/</loc></url>
+  <url><loc>https://basaofficial.github.io/</loc><lastmod>2026-11-22</lastmod><priority>1.0</priority></url>
+  <url><loc>https://basaofficial.github.io/igre/</loc><lastmod>2026-11-22</lastmod><priority>0.8</priority></url>
+  <url><loc>https://basaofficial.github.io/armory/</loc><lastmod>2026-11-22</lastmod><priority>0.8</priority></url>
+  <url><loc>https://basaofficial.github.io/metar/</loc><lastmod>2026-11-22</lastmod><priority>0.8</priority></url>
+  <url><loc>https://basaofficial.github.io/zvucnik/</loc><lastmod>2026-11-22</lastmod><priority>0.8</priority></url>
+  <url><loc>https://basaofficial.github.io/fit/</loc><lastmod>2026-11-22</lastmod><priority>0.8</priority></url>
+  <url><loc>https://basaofficial.github.io/bashtalk/</loc><lastmod>2026-11-22</lastmod><priority>0.8</priority></url>
+  <url><loc>https://basaofficial.github.io/bash-electro/</loc><lastmod>2026-11-22</lastmod><priority>0.8</priority></url>
 </urlset>

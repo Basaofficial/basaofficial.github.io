@@ -378,3 +378,5 @@ dialog::backdrop{background:rgba(2,4,6,.72);backdrop-filter:blur(10px);-webkit-b
 .req-st.ok{color:var(--g)}
 .req-st.err{color:#ff8a8a}
 .req-st a{color:var(--t);text-decoration:underline}
+
+.seo{position:relative;z-index:2;max-width:760px;margin:40px auto;padding:0 20px;color:#c9d1cc;line-height:1.6}.seo h1{font-size:28px;color:#fff}.seo a{color:#7cff01}

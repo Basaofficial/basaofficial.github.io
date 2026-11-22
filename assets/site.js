@@ -378,14 +378,14 @@ function render(animate = true){
       const p = P.find(x => x.id === r.id);
       if (!p) { location.hash = '#/'; return; }
       app.innerHTML = projectHtml(p);
-      document.title = `${p.name} — bashlab`;
+      document.title = `${p.name} — bashlab · basaofficial`;
       setMeta(pt(p).short);
       scrollTo(0, 0);
       fillProject(p);
       count('/p/' + p.id, p.name);
     } else {
       app.innerHTML = homeHtml();
-      document.title = 'bashlab — basaofficial dev';
+      document.title = 'basaofficial · bashlab — web aplikacije, igre i Android APK';
       setMeta(t('lead'));
       fillHome();
       if (r.anchor) setTimeout(() => { const n = document.getElementById(r.anchor); n && n.scrollIntoView(); }, 0);
