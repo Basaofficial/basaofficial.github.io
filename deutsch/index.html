@@ -6,7 +6,8 @@
 <title>Bash Deutsch – njemački A1–B2</title>
 <meta name="description" content="Uči njemački od A1 do B2: lekcije, slušanje, slaganje rečenica, der/die/das, video izvori. Besplatno.">
 <link rel="icon" href="../assets/icons/icon-192.png">
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+<meta name="theme-color" content="#000000">
 <style>
 :root{--green:#58cc02;--green-d:#46a302;--blue:#1cb0f6;--blue-d:#1899d6;--red:#ff4b4b;--red-d:#ea2b2b;--yellow:#ffc800;--orange:#ff9600;
 --bg:#fff;--text:#3c3c3c;--muted:#8a8a8a;--line:#e5e5e5;--line-d:#cfcfcf;--card:#fff;--soft:#f7f7f7;--okbg:#d7ffb8;--okfg:#58a700;--badbg:#ffdfe0;--badfg:#ea2b2b}
@@ -237,9 +238,64 @@ select{width:100%;font:inherit;padding:12px;border:2px solid var(--line);border-
 canvas#cf{position:fixed;inset:0;pointer-events:none;z-index:60}
 .shake{animation:shake .35s}
 @keyframes shake{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+
+/* ===== AMOLED + glassmorphism (bashlab stil) ===== */
+:root{--bg:#000;--text:#f2f5f3;--muted:#8d979e;--line:rgba(255,255,255,.12);--line-d:rgba(255,255,255,.05);--card:rgba(255,255,255,.055);--soft:rgba(255,255,255,.06);
+--green:#7cff01;--green-d:#4a9c00;--blue:#2fd6ff;--blue-d:#0aa3c7;--red:#ff4d6d;--red-d:#c9304f;--yellow:#ffd60a;--orange:#ff9f1c;
+--okbg:rgba(124,255,1,.12);--okfg:#a6ff4d;--badbg:rgba(255,77,109,.14);--badfg:#ff8aa0;
+--gb:rgba(255,255,255,.12);--gb2:rgba(255,255,255,.22);--blur:blur(22px) saturate(170%);--sh:0 24px 60px -28px rgba(0,0,0,.9),inset 0 1px 0 rgba(255,255,255,.1)}
+html,body{background:#000;color:var(--text);font-family:"Inter",Nunito,system-ui,sans-serif}
+.blobs{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;filter:blur(60px)}
+.blobs i{position:absolute;border-radius:50%;opacity:.45;animation:blob 26s ease-in-out infinite alternate}
+.blobs i:nth-child(1){width:46vmax;height:46vmax;left:-16vmax;top:-14vmax;background:radial-gradient(circle,rgba(124,255,1,.42),transparent 62%)}
+.blobs i:nth-child(2){width:40vmax;height:40vmax;right:-16vmax;top:30vh;background:radial-gradient(circle,rgba(0,210,200,.45),transparent 62%);animation-duration:31s}
+.blobs i:nth-child(3){width:38vmax;height:38vmax;left:10vw;bottom:-22vmax;background:radial-gradient(circle,rgba(140,90,255,.5),transparent 62%);animation-duration:35s}
+@keyframes blob{0%{transform:translate(0,0) scale(1)}50%{transform:translate(6vw,8vh) scale(1.12)}100%{transform:translate(-5vw,-4vh) scale(.94)}}
+@media (prefers-reduced-motion:reduce){.blobs i{animation:none}}
+#app{position:relative;z-index:1}
+.glass,.card,.opt,.tile,.xo,.sbox,.note,.xm-text,.xm-ads div,.xform,.xrv,.search,input.typ,.xta,select,.seg button,.chars button,.bchip,.banb,.xcards span,.wrow .spk,.timer,.lbme,.newsb,.xres,.rs,.intro .spk{
+  background:var(--card)!important;border:1px solid var(--gb)!important;-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);box-shadow:var(--sh)}
+.card,.sbox,.note,.xform,.xrv{border-radius:20px}
+header.top{background:rgba(0,0,0,.55);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);border-bottom:1px solid var(--gb)}
+nav.bottom{background:rgba(0,0,0,.6);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);border-top:1px solid var(--gb)}
+nav.bottom button.on{color:var(--green)}nav.bottom button.on .ic{filter:drop-shadow(0 0 8px rgba(124,255,1,.55))}
+.lesson{background:rgba(0,0,0,.9);-webkit-backdrop-filter:blur(30px) saturate(160%);backdrop-filter:blur(30px) saturate(160%)}
+.lfoot{border-top:1px solid var(--gb);background:rgba(0,0,0,.35)}
+.lfoot.ok{background:rgba(124,255,1,.1)}.lfoot.bad{background:rgba(255,77,109,.12)}
+.sheet-bg{background:rgba(0,0,0,.6);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.sheet{background:rgba(14,18,20,.78);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);border:1px solid var(--gb);border-bottom:0;box-shadow:0 -20px 60px -20px rgba(0,0,0,.9)}
+.btn{background:var(--green);color:#041000;box-shadow:0 4px 0 var(--green-d),0 0 24px -6px rgba(124,255,1,.55);border-radius:16px}
+.btn:active{box-shadow:0 1px 0 var(--green-d)}
+.btn.blue{background:var(--blue);color:#001318;box-shadow:0 4px 0 var(--blue-d),0 0 24px -6px rgba(47,214,255,.5)}
+.btn.red{background:var(--red);color:#fff;box-shadow:0 4px 0 var(--red-d),0 0 24px -6px rgba(255,77,109,.5)}
+.btn.ghost{background:var(--card);color:var(--green);border:1px solid var(--gb2);box-shadow:var(--sh);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur)}
+.btn:disabled{background:rgba(255,255,255,.08);color:var(--muted);box-shadow:none}
+.spk,.xplay{background:linear-gradient(135deg,rgba(47,214,255,.9),rgba(0,210,200,.8));box-shadow:0 4px 0 var(--blue-d),0 0 20px -6px rgba(47,214,255,.6);color:#001318}
+.xplay:disabled{background:rgba(255,255,255,.08);color:var(--muted);box-shadow:none}
+.opt.sel,.xo.sel{border-color:var(--blue)!important;background:rgba(47,214,255,.12)!important;color:var(--blue)}
+.opt.right,.xo.right{border-color:var(--green)!important;background:rgba(124,255,1,.12)!important;color:var(--okfg)}
+.opt.wrong,.xo.wrong{border-color:var(--red)!important;background:rgba(255,77,109,.12)!important;color:var(--badfg)}
+.seg button.on,.bchip.on{border-color:var(--green)!important;color:var(--green);background:rgba(124,255,1,.1)!important}
+.tile.used{background:rgba(255,255,255,.04)!important;border-color:transparent!important;box-shadow:none}
+.unit{border:1px solid rgba(255,255,255,.18);background-image:linear-gradient(135deg,rgba(255,255,255,.18),rgba(255,255,255,0) 60%)!important;-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur)}
+.node{border:1px solid rgba(255,255,255,.25);background-image:linear-gradient(160deg,rgba(255,255,255,.35),rgba(255,255,255,0) 55%)}
+.node.locked{background:rgba(255,255,255,.07);box-shadow:0 7px 0 rgba(255,255,255,.04);border-color:var(--gb);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur)}
+.node.done{background-color:#ffd60a;box-shadow:0 7px 0 #b89600,0 0 26px -6px rgba(255,214,10,.6)}
+.node.cur{outline:3px solid rgba(124,255,1,.45);box-shadow:0 7px 0 var(--cd),0 0 30px -4px rgba(124,255,1,.55)}
+.startb{background:rgba(0,0,0,.6);border:1px solid var(--gb2);color:var(--green);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur)}
+.gbar,.prog{background:rgba(255,255,255,.08)}.prog i{background:var(--green);box-shadow:0 0 12px rgba(124,255,1,.6)}
+.gbar i{box-shadow:0 0 10px rgba(255,214,10,.5)}
+.lvb{box-shadow:0 0 18px -4px currentColor}
+.lbr{border-bottom:1px solid var(--gb)}.lbr.me{background:rgba(124,255,1,.09)}
+.stat.fire{color:var(--orange)}.stat.xp{color:var(--yellow)}.stat.heart{color:var(--red)}
+.xm-part{border-top:1px solid var(--gb)}.xmod{border-top:1px solid var(--gb)}
+.wrow{border-bottom:1px solid var(--gb)}
+h2.t,.utit,.xm-pt{letter-spacing:-.02em}
+a{color:var(--blue)}
 </style>
 </head>
 <body>
+<div class="blobs" aria-hidden="true"><i></i><i></i><i></i></div>
 <div id="app"></div>
 <script>
 /* ============ DATA ============ */
