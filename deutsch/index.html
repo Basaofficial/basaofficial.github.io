@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html lang="bs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Bash Deutsch – njemački A1–B2</title>
+<meta name="description" content="Uči njemački od A1 do B2: lekcije, slušanje, slaganje rečenica, der/die/das, video izvori. Besplatno.">
+<link rel="icon" href="../assets/icons/icon-192.png">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--green:#58cc02;--green-d:#46a302;--blue:#1cb0f6;--blue-d:#1899d6;--red:#ff4b4b;--red-d:#ea2b2b;--yellow:#ffc800;--orange:#ff9600;
+--bg:#fff;--text:#3c3c3c;--muted:#8a8a8a;--line:#e5e5e5;--line-d:#cfcfcf;--card:#fff;--soft:#f7f7f7;--okbg:#d7ffb8;--okfg:#58a700;--badbg:#ffdfe0;--badfg:#ea2b2b}
+@media (prefers-color-scheme: dark){:root{--bg:#131f24;--text:#f1f7fb;--muted:#8fa6b2;--line:#37464f;--line-d:#2a383f;--card:#131f24;--soft:#202f36;--okbg:#1e3a14;--okfg:#79d634;--badbg:#3d1a1d;--badfg:#ff7878}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:Nunito,system-ui,sans-serif;font-weight:700}
+button{font-family:inherit}
+#app{max-width:560px;margin:0 auto;min-height:100vh}
+header.top{position:sticky;top:0;z-index:5;background:var(--bg);display:flex;justify-content:space-between;align-items:center;padding:12px 18px;border-bottom:2px solid var(--line)}
+.stat{display:flex;align-items:center;gap:5px;font-weight:900;font-size:16px;background:none;border:0;color:inherit;cursor:pointer;padding:0}
+.stat.fire{color:var(--orange)}.stat.xp{color:#e5a800}.stat.heart{color:var(--red)}
+.flag{font-size:24px}
+main{padding:16px 16px 110px}
+nav.bottom{position:fixed;bottom:0;left:0;right:0;background:var(--bg);border-top:2px solid var(--line);z-index:5}
+nav.bottom .in{display:flex;max-width:560px;margin:0 auto}
+nav.bottom button{flex:1;background:none;border:0;padding:9px 0 12px;font-size:11px;font-weight:800;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer}
+nav.bottom button .ic{font-size:23px;filter:grayscale(1);opacity:.6}
+nav.bottom button.on{color:var(--blue)}
+nav.bottom button.on .ic{filter:none;opacity:1}
+.btn{display:block;width:100%;border:0;border-radius:16px;padding:14px;font-weight:900;font-size:16px;text-transform:uppercase;letter-spacing:.6px;color:#fff;background:var(--green);box-shadow:0 4px 0 var(--green-d);cursor:pointer;margin-top:10px}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--green-d)}
+.btn:disabled{background:var(--line);color:var(--muted);box-shadow:0 4px 0 var(--line-d);cursor:default;transform:none}
+.btn.blue{background:var(--blue);box-shadow:0 4px 0 var(--blue-d)}
+.btn.red{background:var(--red);box-shadow:0 4px 0 var(--red-d)}
+.btn.ghost{background:var(--card);color:var(--blue);border:2px solid var(--line);box-shadow:0 4px 0 var(--line)}
+.card{border:2px solid var(--line);border-radius:16px;padding:14px}
+.muted{color:var(--muted)}.small{font-size:13px}
+.goal{display:flex;align-items:center;gap:12px}
+.gtxt{flex:1}
+.gbar{height:14px;background:var(--line);border-radius:8px;overflow:hidden;margin:6px 0}
+.gbar i{display:block;height:100%;background:var(--yellow);border-radius:8px}
+.lvl{display:flex;align-items:center;gap:10px;margin:34px 0 -6px;font-weight:900;font-size:18px}
+.lvl span{background:var(--text);color:var(--bg);border-radius:10px;padding:3px 10px;font-size:15px}
+.unit{border-radius:16px;padding:14px 16px;color:#fff;margin:26px 0 22px;display:flex;justify-content:space-between;align-items:center}
+.ulbl{font-size:12px;opacity:.9;font-weight:800;letter-spacing:.4px}
+.utit{font-size:20px;font-weight:900}
+.tipbtn{background:rgba(255,255,255,.2);border:2px solid rgba(255,255,255,.45);border-radius:12px;font-size:20px;padding:6px 10px;cursor:pointer}
+.path{display:flex;flex-direction:column;align-items:center;gap:22px}
+.nwrap{position:relative;display:flex;flex-direction:column;align-items:center}
+.node{width:72px;height:66px;border-radius:50%;border:0;font-size:28px;font-weight:900;cursor:pointer;background:var(--c);box-shadow:0 7px 0 var(--cd);color:#fff}
+.node:active{transform:translateY(5px);box-shadow:0 2px 0 var(--cd)}
+.node.locked{background:var(--line);box-shadow:0 7px 0 var(--line-d);color:var(--muted);font-size:24px}
+.node.done{background:var(--yellow);box-shadow:0 7px 0 #e0a800}
+.node.cur{outline:5px solid var(--line);outline-offset:6px}
+.startb{position:absolute;top:-40px;background:var(--card);border:2px solid var(--line);border-radius:12px;padding:5px 12px;font-weight:900;color:var(--green);font-size:14px;animation:bob 1.2s ease-in-out infinite;white-space:nowrap}
+@keyframes bob{50%{transform:translateY(-5px)}}
+h2.t{font-size:24px;font-weight:900;margin:6px 0 14px}
+/* sheet */
+.sheet-bg{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:50;display:flex;align-items:flex-end;justify-content:center;animation:fade .15s}
+.sheet{background:var(--bg);width:100%;max-width:560px;border-radius:22px 22px 0 0;padding:22px 20px 30px;max-height:86vh;overflow:auto;animation:up .22s ease-out}
+.sheet h3{font-size:22px;margin:4px 0 6px;font-weight:900}
+.sh-h{font-weight:900;font-size:14px;letter-spacing:.4px}
+@keyframes fade{from{opacity:0}}@keyframes up{from{transform:translateY(40px);opacity:.4}}
+.tip p{line-height:1.5}
+.tip table{border-collapse:collapse;width:100%;margin:8px 0}
+.tip td{border:2px solid var(--line);padding:7px 10px}
+.tip b{color:var(--blue)}
+/* lesson */
+.lesson{position:fixed;inset:0;background:var(--bg);z-index:20;display:flex;flex-direction:column}
+.lhead{display:flex;align-items:center;gap:14px;padding:16px 16px 8px;max-width:600px;margin:0 auto;width:100%}
+.xbtn{background:none;border:0;font-size:26px;color:var(--muted);cursor:pointer;padding:0 4px;line-height:1}
+.prog{flex:1;height:16px;background:var(--line);border-radius:8px;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--green);border-radius:8px;transition:width .35s;position:relative}
+.prog i::after{content:"";position:absolute;left:8px;right:8px;top:4px;height:4px;border-radius:2px;background:rgba(255,255,255,.35)}
+.lbody{flex:1;overflow:auto;padding:10px 18px 20px;max-width:600px;margin:0 auto;width:100%}
+.lbody.lock .opt,.lbody.lock .tile,.lbody.lock input,.lbody.lock .chars button{pointer-events:none}
+.lfoot{border-top:2px solid var(--line);padding:14px 18px 22px}
+.lfoot .fin{max-width:600px;margin:0 auto}
+.lfoot.ok{background:var(--okbg);border-color:transparent}
+.lfoot.bad{background:var(--badbg);border-color:transparent}
+.fbt{font-size:22px;font-weight:900;display:flex;align-items:center;gap:10px}
+.lfoot.ok .fbt,.lfoot.ok .fbd{color:var(--okfg)}.lfoot.bad .fbt,.lfoot.bad .fbd{color:var(--badfg)}
+.fbd{margin-top:4px;font-size:16px}
+.combo{display:inline-block;margin-top:6px;background:var(--orange);color:#fff;border-radius:10px;padding:2px 10px;font-size:13px}
+.q h2{font-size:22px;font-weight:900;margin:6px 0 18px}
+.prompt{display:flex;align-items:center;gap:14px;margin-bottom:22px}
+.bubble{border:2px solid var(--line);border-radius:16px;padding:12px 16px;font-size:19px;flex:1}
+.bubble .sub{font-size:14px;color:var(--muted);margin-top:3px}
+.spk{width:50px;height:50px;border-radius:14px;border:0;background:var(--blue);box-shadow:0 4px 0 var(--blue-d);color:#fff;font-size:22px;cursor:pointer;flex:none}
+.spk:active{transform:translateY(3px);box-shadow:0 1px 0 var(--blue-d)}
+.spk.big{width:96px;height:96px;border-radius:24px;font-size:42px}
+.spk.slow{width:60px;height:60px;font-size:26px;border-radius:18px}
+.listen{display:flex;justify-content:center;align-items:flex-end;gap:16px;margin:10px 0 26px}
+.opts{display:grid;gap:10px}
+.opt{border:2px solid var(--line);border-bottom-width:4px;border-radius:14px;padding:14px;background:var(--card);font-size:17px;font-weight:700;color:var(--text);text-align:left;cursor:pointer;display:flex;gap:12px;align-items:center}
+.opt .k{width:28px;height:28px;border:2px solid var(--line);border-radius:8px;display:grid;place-items:center;font-size:13px;color:var(--muted);flex:none}
+.opt.sel{border-color:var(--blue);background:rgba(28,176,246,.12);color:var(--blue)}
+.opt.sel .k{border-color:var(--blue);color:var(--blue)}
+.opt.right{border-color:var(--green);background:rgba(88,204,2,.15);color:var(--okfg)}
+.opt.wrong{border-color:var(--red);background:rgba(255,75,75,.12);color:var(--badfg)}
+.opt.gone{opacity:.3;pointer-events:none}
+.art{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.art .opt{justify-content:center;font-size:22px;font-weight:900;padding:22px 8px}
+.match{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.match .opt{justify-content:center;text-align:center;min-height:58px}
+.answer-line{min-height:120px;background:repeating-linear-gradient(to bottom,transparent 0 56px,var(--line) 56px 58px);padding:6px 0;display:flex;flex-wrap:wrap;gap:8px;align-content:flex-start;margin-bottom:26px}
+.tiles{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.tile{border:2px solid var(--line);border-bottom-width:4px;border-radius:12px;padding:9px 14px;background:var(--card);font-size:17px;font-weight:700;color:var(--text);cursor:pointer;height:48px}
+.tile.used{background:var(--line);color:transparent;border-color:var(--line);pointer-events:none}
+input.typ{width:100%;font:inherit;font-size:19px;padding:15px;border:2px solid var(--line);border-radius:14px;background:var(--soft);color:var(--text);outline:none}
+input.typ:focus{border-color:var(--blue)}
+.chars{display:flex;gap:8px;margin-top:10px}
+.chars button{flex:1;border:2px solid var(--line);border-bottom-width:4px;border-radius:10px;background:var(--card);color:var(--text);font-size:18px;font-weight:800;padding:8px 0;cursor:pointer}
+.badge{display:inline-block;background:var(--purple,#ce82ff);color:#fff;font-size:12px;font-weight:900;border-radius:8px;padding:3px 10px;letter-spacing:.5px;margin-bottom:12px}
+.intro{text-align:center;padding-top:10px}
+.intro .de{font-size:34px;font-weight:900;margin:18px 0 6px}
+.intro .bs{font-size:20px;color:var(--muted)}
+.result{text-align:center;padding-top:30px}
+.result h1{font-size:30px;font-weight:900;color:var(--yellow);margin:12px 0 6px}
+.rstats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:24px 0}
+.rs{border:2px solid var(--c);border-radius:14px;overflow:hidden}
+.rs .h{background:var(--c);color:#fff;font-size:11px;font-weight:900;padding:5px;letter-spacing:.4px}
+.rs .v{font-size:20px;font-weight:900;padding:12px 4px;color:var(--c)}
+/* words */
+.search{width:100%;font:inherit;font-size:16px;padding:13px 14px;border:2px solid var(--line);border-radius:14px;background:var(--soft);color:var(--text);outline:none;margin-bottom:6px}
+.wgrp{margin-top:20px;font-weight:900;font-size:14px;color:var(--muted);letter-spacing:.4px}
+.wrow{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:2px solid var(--line)}
+.wrow .spk{width:40px;height:40px;font-size:17px;border-radius:12px}
+.wrow .tx{flex:1}
+.wrow .d{font-size:17px;font-weight:800}
+.wrow .b{font-size:14px;color:var(--muted)}
+.str{letter-spacing:2px;color:var(--yellow);font-size:12px}
+/* resources */
+.res{display:flex;gap:14px;align-items:flex-start;text-decoration:none;color:inherit;margin-bottom:12px}
+.res .e{font-size:32px;flex:none}
+.res .tt{font-weight:900;font-size:17px}
+.res .ds{font-size:14px;color:var(--muted);margin-top:2px;font-weight:600}
+.chip{display:inline-block;font-size:11px;font-weight:900;border-radius:6px;padding:1px 7px;margin-left:6px;background:var(--blue);color:#fff;vertical-align:middle}
+/* profile */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.sbox{border:2px solid var(--line);border-radius:14px;padding:12px;display:flex;gap:10px;align-items:center}
+.sbox .n{font-size:20px;font-weight:900}
+.sbox .l{font-size:12px;color:var(--muted)}
+.chart{display:flex;align-items:flex-end;gap:8px;height:130px;margin-top:10px}
+.chart .c{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end}
+.chart .bar{width:100%;background:var(--blue);border-radius:6px 6px 0 0;min-height:3px}
+.chart .bar.g{background:var(--yellow)}
+.chart .lb{font-size:11px;color:var(--muted)}
+.seg{display:flex;gap:8px;flex-wrap:wrap}
+.seg button{flex:1;border:2px solid var(--line);border-bottom-width:4px;border-radius:12px;background:var(--card);color:var(--text);padding:10px 6px;font-weight:800;cursor:pointer;font-size:14px}
+.seg button.on{border-color:var(--blue);color:var(--blue);background:rgba(28,176,246,.1)}
+select{width:100%;font:inherit;padding:12px;border:2px solid var(--line);border-radius:12px;background:var(--soft);color:var(--text)}
+.sec{margin-top:26px}
+.sec h3{font-size:18px;font-weight:900;margin:0 0 10px}
+.note{background:var(--soft);border-radius:14px;padding:12px 14px;font-size:14px;line-height:1.45;font-weight:600}
+canvas#cf{position:fixed;inset:0;pointer-events:none;z-index:60}
+.shake{animation:shake .35s}
+@keyframes shake{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+/* ============ DATA ============ */
+const PAL=[['#58cc02','#46a302'],['#1cb0f6','#1899d6'],['#ce82ff','#a568cc'],['#ff9600','#d97f00'],['#ff4b4b','#d93a3a'],['#00cd9c','#00a47d']];
+const RAW=[
+{t:'Pozdravi',de:'Begrüßung',ic:'👋',
+w:`Hallo|zdravo
+Guten Morgen|dobro jutro
+Guten Tag|dobar dan
+Guten Abend|dobro veče
+Gute Nacht|laku noć
+Tschüss|ćao
+Auf Wiedersehen|doviđenja
+Danke|hvala
+Bitte|molim
+Ja|da
+Nein|ne
+Entschuldigung|izvinite`,
+s:`Wie geht es dir?|Kako si?
+Mir geht es gut.|Dobro sam.
+Ich heiße Amir.|Zovem se Amir.
+Wie heißt du?|Kako se zoveš?
+Danke, gut.|Hvala, dobro.
+Freut mich.|Drago mi je.
+Bis morgen.|Vidimo se sutra.`,
+tip:`<p><b>du</b> = ti → prijatelji, porodica, kolege.<br><b>Sie</b> = Vi → šef, ured, doktor, nepoznati ljudi.</p>
+<table><tr><td>Wie geht es <b>dir</b>?</td><td>Kako si? (neformalno)</td></tr><tr><td>Wie geht es <b>Ihnen</b>?</td><td>Kako ste? (formalno)</td></tr></table>
+<p><b>Guten Tag</b> se koristi cijeli dan. Na jugu Njemačke i u Austriji često čuješ <b>Grüß Gott</b> i <b>Servus</b>.</p>`},
+{t:'Ja i ti',de:'Ich und du',ic:'🙋',
+w:`ich|ja
+du|ti
+er|on
+sie|ona
+wir|mi
+bin|sam
+bist|si
+ist|je
+sind|smo
+aus|iz
+Deutschland|Njemačka
+der Mann|čovjek
+die Frau|žena
+müde|umoran`,
+s:`Ich bin aus Bosnien.|Ja sam iz Bosne.
+Wir sind in Deutschland.|Mi smo u Njemačkoj.
+Er ist müde.|On je umoran.
+Sie ist Lehrerin.|Ona je učiteljica.
+Bist du aus Sarajevo?|Jesi li iz Sarajeva?
+Ich bin nicht müde.|Nisam umoran.
+Woher kommst du?|Odakle si?`,
+tip:`<p>Glagol <b>sein</b> (biti) je najvažniji glagol – nauči ga napamet:</p>
+<table><tr><td>ich <b>bin</b></td><td>ja sam</td></tr><tr><td>du <b>bist</b></td><td>ti si</td></tr><tr><td>er / sie / es <b>ist</b></td><td>on / ona / ono je</td></tr><tr><td>wir <b>sind</b></td><td>mi smo</td></tr><tr><td>ihr <b>seid</b></td><td>vi ste</td></tr><tr><td>sie / Sie <b>sind</b></td><td>oni su / Vi ste</td></tr></table>
+<p>Negacija: <b>nicht</b> ide iza glagola → Ich bin <b>nicht</b> müde.</p>`},
+{t:'Brojevi',de:'Zahlen',ic:'🔢',
+w:`eins|jedan
+zwei|dva
+drei|tri
+vier|četiri
+fünf|pet
+sechs|šest
+sieben|sedam
+acht|osam
+neun|devet
+zehn|deset
+zwanzig|dvadeset
+hundert|sto`,
+s:`Ich bin dreißig Jahre alt.|Imam trideset godina.
+Das kostet zehn Euro.|To košta deset eura.
+Ich habe zwei Kinder.|Imam dvoje djece.
+Wie alt bist du?|Koliko imaš godina?
+Wie viel kostet das?|Koliko to košta?
+Meine Nummer ist eins zwei drei.|Moj broj je jedan dva tri.`,
+tip:`<p>Od 21 do 99 jedinica ide <b>prije</b> desetice:</p>
+<table><tr><td>21</td><td><b>einundzwanzig</b> (jedan-i-dvadeset)</td></tr><tr><td>35</td><td><b>fünfunddreißig</b></td></tr><tr><td>99</td><td><b>neunundneunzig</b></td></tr></table>
+<p>Desetice: zwanzig, <b>dreißig</b> (sa ß!), vierzig, fünfzig, sechzig, <b>siebzig</b>, achtzig, neunzig.</p>`},
+{t:'Hrana i piće',de:'Essen und Trinken',ic:'🍞',
+w:`das Brot|hljeb
+das Wasser|voda
+der Kaffee|kafa
+die Milch|mlijeko
+der Apfel|jabuka
+das Fleisch|meso
+der Käse|sir
+das Ei|jaje
+das Bier|pivo
+der Tee|čaj
+die Suppe|supa
+essen|jesti
+trinken|piti`,
+s:`Ich trinke Kaffee.|Pijem kafu.
+Ich esse Brot.|Jedem hljeb.
+Ich habe Hunger.|Gladan sam.
+Ich habe Durst.|Žedan sam.
+Ein Wasser, bitte.|Jednu vodu, molim.
+Die Rechnung, bitte.|Račun, molim.
+Das schmeckt gut.|Ovo je ukusno.`,
+tip:`<p>Svaka imenica ima rod. Uči je <b>uvijek s članom</b>:</p>
+<table><tr><td><b style="color:#1cb0f6">der</b></td><td>muški rod – der Apfel</td></tr><tr><td><b style="color:#ff4b4b">die</b></td><td>ženski rod – die Milch</td></tr><tr><td><b style="color:#58cc02">das</b></td><td>srednji rod – das Brot</td></tr></table>
+<p>Rod se često ne poklapa s našim: <i>jabuka</i> je ženskog roda, a <b>der Apfel</b> muškog.</p>
+<p>Kad nešto naručuješ (akuzativ), samo se muški rod mijenja: ein → <b>einen</b>: Ich möchte <b>einen</b> Kaffee.</p>`},
+{t:'Porodica',de:'Familie',ic:'👨‍👩‍👧',
+w:`die Mutter|majka
+der Vater|otac
+der Bruder|brat
+die Schwester|sestra
+der Sohn|sin
+die Tochter|kćerka
+das Kind|dijete
+die Eltern|roditelji
+die Familie|porodica
+die Ehefrau|supruga
+der Freund|prijatelj
+die Oma|baka
+der Opa|djed`,
+s:`Das ist meine Mutter.|Ovo je moja majka.
+Ich habe einen Bruder.|Imam brata.
+Meine Familie wohnt in Bosnien.|Moja porodica živi u Bosni.
+Hast du Kinder?|Imaš li djece?
+Mein Vater heißt Mehmed.|Moj otac se zove Mehmed.
+Wir sind eine große Familie.|Mi smo velika porodica.`,
+tip:`<p>Posvojne zamjenice zavise od roda imenice:</p>
+<table><tr><td><b>mein</b> Vater / <b>mein</b> Kind</td><td>der / das</td></tr><tr><td><b>meine</b> Mutter / <b>meine</b> Eltern</td><td>die / množina</td></tr></table>
+<p>Isto važi za dein/deine (tvoj), sein/seine (njegov), ihr/ihre (njen).</p>`},
+{t:'Posao',de:'Arbeit',ic:'🛠️',
+w:`die Arbeit|posao
+arbeiten|raditi
+der Chef|šef
+der Kollege|kolega
+die Baustelle|gradilište
+das Werkzeug|alat
+das Kabel|kabl
+die Pause|pauza
+der Feierabend|kraj radnog dana
+der Lohn|plata
+der Urlaub|godišnji odmor
+krank|bolestan
+der Elektriker|električar`,
+s:`Ich arbeite als Elektriker.|Radim kao električar.
+Wann ist Pause?|Kad je pauza?
+Ich bin heute krank.|Danas sam bolestan.
+Wo ist das Werkzeug?|Gdje je alat?
+Ich fange um sieben Uhr an.|Počinjem u sedam sati.
+Heute haben wir viel Arbeit.|Danas imamo puno posla.
+Schönen Feierabend!|Lijep ostatak dana!`,
+tip:`<p><b>Glagol je uvijek na 2. mjestu</b> u izjavnoj rečenici:</p>
+<table><tr><td>Ich <b>arbeite</b> heute.</td></tr><tr><td>Heute <b>arbeite</b> ich.</td></tr></table>
+<p><b>Razdvojni glagoli</b>: prefiks ide na kraj rečenice.<br>an|fangen → Ich <b>fange</b> um sieben Uhr <b>an</b>.</p>`},
+{t:'Grad i saobraćaj',de:'Stadt und Verkehr',ic:'🚌',
+w:`der Bahnhof|željeznička stanica
+der Bus|autobus
+der Zug|voz
+das Auto|auto
+die Straße|ulica
+links|lijevo
+rechts|desno
+geradeaus|pravo
+die Apotheke|apoteka
+der Supermarkt|supermarket
+die Haltestelle|stajalište
+die Fahrkarte|vozna karta
+weit|daleko`,
+s:`Wo ist der Bahnhof?|Gdje je željeznička stanica?
+Gehen Sie geradeaus.|Idite pravo.
+Der Bus kommt um acht.|Autobus dolazi u osam.
+Ich fahre mit dem Auto.|Vozim se autom.
+Ist es weit?|Je li daleko?
+Eine Fahrkarte nach Berlin, bitte.|Jednu kartu za Berlin, molim.`,
+tip:`<p>Prevozno sredstvo ide s <b>mit</b> + dativ:</p>
+<table><tr><td>der Bus → mit <b>dem</b> Bus</td></tr><tr><td>das Auto → mit <b>dem</b> Auto</td></tr><tr><td>die Bahn → mit <b>der</b> Bahn</td></tr></table>
+<p>Pitanje za mjesto: <b>Wo ist …?</b> (Gdje je …?). Pitanje za pravac: <b>Wohin?</b> (Kuda?).</p>`},
+{t:'Vrijeme i dani',de:'Zeit und Tage',ic:'📅',
+w:`Montag|ponedjeljak
+Dienstag|utorak
+Mittwoch|srijeda
+Donnerstag|četvrtak
+Freitag|petak
+Samstag|subota
+Sonntag|nedjelja
+heute|danas
+morgen|sutra
+gestern|jučer
+die Uhr|sat
+die Woche|sedmica
+der Monat|mjesec`,
+s:`Heute ist Montag.|Danas je ponedjeljak.
+Wie spät ist es?|Koliko je sati?
+Es ist acht Uhr.|Osam je sati.
+Am Wochenende habe ich frei.|Za vikend sam slobodan.
+Morgen arbeite ich nicht.|Sutra ne radim.
+Wir sehen uns am Freitag.|Vidimo se u petak.`,
+tip:`<p>Dani su muškog roda i idu s <b>am</b>: <b>am</b> Montag, <b>am</b> Freitag, <b>am</b> Wochenende.</p>
+<p>Sati idu s <b>um</b>: <b>um</b> acht Uhr = u osam sati.</p>
+<p>Pazi: <b>halb neun</b> = 8:30 (pola do devet), ne 9:30!</p>`},
+{t:'Kuća i stan',de:'Wohnen',ic:'🏠',
+w:`die Wohnung|stan
+das Haus|kuća
+das Zimmer|soba
+die Küche|kuhinja
+das Bad|kupatilo
+das Bett|krevet
+der Tisch|sto
+der Stuhl|stolica
+die Tür|vrata
+das Fenster|prozor
+die Miete|kirija
+der Schlüssel|ključ`,
+s:`Meine Wohnung ist klein.|Moj stan je mali.
+Die Küche ist groß.|Kuhinja je velika.
+Wo ist mein Schlüssel?|Gdje je moj ključ?
+Die Miete ist zu hoch.|Kirija je previsoka.
+Ich suche eine Wohnung.|Tražim stan.
+Mach bitte das Fenster zu.|Zatvori prozor, molim te.`,
+tip:`<p>Sve imenice se pišu <b>velikim slovom</b>: die Wohnung, das Fenster, der Tisch.</p>
+<p>Oglasi za stan: <b>Kaltmiete</b> = kirija bez režija, <b>Warmmiete</b> = s grijanjem i režijama, <b>Kaution</b> = depozit.</p>`},
+{t:'Kupovina',de:'Einkaufen',ic:'🛒',
+w:`kaufen|kupiti
+teuer|skupo
+billig|jeftino
+das Geld|novac
+die Kasse|kasa
+die Tüte|kesa
+der Preis|cijena
+das Angebot|akcija
+bar|gotovinom
+die Karte|kartica
+offen|otvoreno
+geschlossen|zatvoreno`,
+s:`Was kostet das?|Šta ovo košta?
+Das ist zu teuer.|To je preskupo.
+Kann ich mit Karte zahlen?|Mogu li platiti karticom?
+Ich zahle bar.|Plaćam gotovinom.
+Brauchen Sie eine Tüte?|Trebate li kesu?
+Der Laden ist geschlossen.|Radnja je zatvorena.`,
+tip:`<p>Modalni glagoli (<b>kann</b>, <b>möchte</b>, <b>muss</b>) su na 2. mjestu, a glavni glagol ide na <b>kraj</b>:</p>
+<table><tr><td>Kann ich mit Karte <b>zahlen</b>?</td></tr><tr><td>Ich möchte ein Brot <b>kaufen</b>.</td></tr></table>
+<p>Na kasi često čuješ: „<b>Bar oder mit Karte?</b>" i „<b>Den Bon dazu?</b>" (Trebate li račun?).</p>`},
+{t:'Doktor i zdravlje',de:'Gesundheit',ic:'🩺',
+w:`der Arzt|doktor
+der Termin|termin
+der Kopf|glava
+der Bauch|stomak
+der Rücken|leđa
+das Fieber|temperatura
+die Tablette|tableta
+die Krankenkasse|zdravstveno osiguranje
+die Schmerzen|bolovi
+die Krankschreibung|potvrda o bolovanju
+der Zahn|zub`,
+s:`Ich brauche einen Termin.|Trebam termin.
+Ich habe Kopfschmerzen.|Boli me glava.
+Mein Rücken tut weh.|Bole me leđa.
+Ich habe Fieber.|Imam temperaturu.
+Ich brauche eine Krankschreibung.|Treba mi potvrda o bolovanju.
+Gute Besserung!|Brz oporavak!`,
+tip:`<p>Dva načina da kažeš da te nešto boli:</p>
+<table><tr><td>Mein Kopf <b>tut weh</b>.</td><td>Boli me glava.</td></tr><tr><td>Ich habe <b>Kopfschmerzen</b>.</td><td>Imam glavobolju.</td></tr></table>
+<p>Isto ide i <b>Bauchschmerzen</b>, <b>Rückenschmerzen</b>, <b>Zahnschmerzen</b>.</p>`},
+{t:'Ured i papiri',de:'Behörden',ic:'📄',
+w:`das Amt|ured
+das Formular|formular
+die Adresse|adresa
+der Ausweis|lična karta
+die Unterschrift|potpis
+das Konto|bankovni račun
+der Brief|pismo
+die Frist|rok
+die Steuer|porez
+anmelden|prijaviti
+unterschreiben|potpisati
+der Vertrag|ugovor`,
+s:`Ich möchte mich anmelden.|Želim se prijaviti.
+Bitte unterschreiben Sie hier.|Molim potpišite ovdje.
+Ich habe einen Brief bekommen.|Dobio sam pismo.
+Wann ist die Frist?|Kada je rok?
+Können Sie das wiederholen?|Možete li to ponoviti?
+Ich verstehe das nicht.|Ne razumijem to.
+Sprechen Sie bitte langsam.|Govorite sporije, molim.`,
+tip:`<p>Formalna molba: glagol na <b>prvo mjesto</b>, pa <b>Sie</b>:</p>
+<table><tr><td><b>Unterschreiben Sie</b> bitte hier.</td></tr><tr><td><b>Sprechen Sie</b> bitte langsam.</td></tr></table>
+<p>Spasonosne rečenice u uredu: <b>Können Sie das wiederholen?</b> · <b>Ich verstehe das nicht.</b> · <b>Was bedeutet das?</b></p>`},
+/* ================= A2 ================= */
+{lvl:'A2',t:'Prošlo vrijeme',de:'Perfekt',ic:'⏪',
+w:`gemacht|uradio
+gegessen|jeo
+getrunken|pio
+gearbeitet|radio
+geschlafen|spavao
+gekauft|kupio
+gesehen|vidio
+gefahren|vozio se
+gegangen|otišao
+gekommen|došao
+geschrieben|napisao
+gelernt|učio`,
+s:`Ich habe gestern viel gearbeitet.|Jučer sam puno radio.
+Wir sind nach München gefahren.|Išli smo u Minhen.
+Hast du schon gegessen?|Jesi li već jeo?
+Ich habe gut geschlafen.|Dobro sam spavao.
+Sie ist nach Hause gegangen.|Otišla je kući.
+Ich habe einen Film gesehen.|Gledao sam film.
+Er hat mir eine Nachricht geschrieben.|Napisao mi je poruku.`,
+tip:`<p>U govoru se za prošlost koristi <b>Perfekt</b>: <b>haben</b> ili <b>sein</b> na 2. mjestu + <b>particip</b> na kraju.</p>
+<table><tr><td>Ich <b>habe</b> Brot <b>gekauft</b>.</td><td>Kupio sam hljeb.</td></tr><tr><td>Wir <b>sind</b> nach Hause <b>gegangen</b>.</td><td>Otišli smo kući.</td></tr></table>
+<p><b>sein</b> ide uz kretanje i promjenu: gehen, fahren, kommen, fliegen, aufstehen. Sve ostalo ide uz <b>haben</b>.</p>
+<p>Pravilni glagoli: ge-…-<b>t</b> (kaufen → gekauft). Nepravilni: ge-…-<b>en</b> (sehen → gesehen). Njih treba učiti napamet.</p>`},
+{lvl:'A2',t:'Slobodno vrijeme',de:'Freizeit',ic:'⚽',
+w:`das Hobby|hobi
+der Sport|sport
+schwimmen|plivati
+lesen|čitati
+spielen|igrati
+das Kino|kino
+der Fußball|fudbal
+die Musik|muzika
+tanzen|plesati
+das Wochenende|vikend
+spazieren gehen|šetati
+kochen|kuhati
+der Verein|klub`,
+s:`Was machst du am Wochenende?|Šta radiš za vikend?
+Ich spiele gern Fußball.|Rado igram fudbal.
+Wir gehen heute Abend ins Kino.|Večeras idemo u kino.
+Hast du Lust auf einen Kaffee?|Imaš li volje za kafu?
+Ich höre gern Musik.|Rado slušam muziku.
+Am Sonntag gehen wir spazieren.|U nedjelju idemo u šetnju.`,
+tip:`<p>Šta voliš raditi: <b>gern</b> iza glagola.</p>
+<table><tr><td>Ich spiele <b>gern</b> Fußball.</td><td>Rado igram fudbal.</td></tr><tr><td>Ich spiele <b>lieber</b> Tennis.</td><td>Radije igram tenis.</td></tr><tr><td>Ich spiele <b>am liebsten</b> Karten.</td><td>Najradije igram karte.</td></tr></table>
+<p>Kuda idemo: in + das = <b>ins</b> Kino, in + die = <b>in die</b> Stadt.</p>`},
+{lvl:'A2',t:'Putovanje',de:'Reisen',ic:'✈️',
+w:`der Flughafen|aerodrom
+der Flug|let
+das Hotel|hotel
+der Koffer|kofer
+der Reisepass|pasoš
+die Reise|putovanje
+das Meer|more
+die Grenze|granica
+buchen|rezervisati
+abfahren|polaziti
+ankommen|stići
+die Verspätung|kašnjenje
+das Gepäck|prtljag`,
+s:`Ich möchte ein Zimmer buchen.|Želim rezervisati sobu.
+Wann fährt der Zug ab?|Kada polazi voz?
+Der Flug hat eine Stunde Verspätung.|Let kasni jedan sat.
+Wir fahren im Sommer ans Meer.|Ljeti idemo na more.
+Wo kann ich mein Gepäck abgeben?|Gdje mogu predati prtljag?
+Wann kommen wir in Sarajevo an?|Kada stižemo u Sarajevo?`,
+tip:`<p>„Idem u/na…" ima više prijedloga:</p>
+<table><tr><td><b>nach</b> + grad/država</td><td>nach Sarajevo, nach Bosnien</td></tr><tr><td><b>ans</b> Meer / <b>an den</b> See</td><td>na more / na jezero</td></tr><tr><td><b>in die</b> Berge / <b>in die</b> Türkei</td><td>u planine / u Tursku</td></tr><tr><td><b>zu</b> + osoba</td><td>zu Freunden, zum Arzt</td></tr><tr><td>nach Hause / zu Hause</td><td>kući / kod kuće</td></tr></table>`},
+{lvl:'A2',t:'Odjeća',de:'Kleidung',ic:'👕',
+w:`die Hose|hlače
+das Hemd|košulja
+die Jacke|jakna
+der Schuh|cipela
+die Größe|veličina
+die Farbe|boja
+schwarz|crno
+weiß|bijelo
+rot|crveno
+blau|plavo
+anprobieren|probati
+passen|odgovarati
+die Umkleidekabine|kabina za presvlačenje`,
+s:`Kann ich die Jacke anprobieren?|Mogu li probati jaknu?
+Welche Größe haben Sie?|Koju veličinu imate?
+Die Hose passt mir nicht.|Hlače mi ne odgovaraju.
+Haben Sie das auch in Schwarz?|Imate li ovo i u crnoj?
+Die Schuhe sind zu klein.|Cipele su premale.
+Ich nehme das blaue Hemd.|Uzimam plavu košulju.`,
+tip:`<p>Pridjev ispred imenice dobija nastavak. Iza <b>der/die/das</b> u nominativu nastavak je <b>-e</b>:</p>
+<table><tr><td>der blau<b>e</b> Pullover</td></tr><tr><td>die rot<b>e</b> Jacke</td></tr><tr><td>das weiß<b>e</b> Hemd</td></tr></table>
+<p>Kad kupuješ (akuzativ), muški rod dobija <b>-en</b>: Ich nehme <b>den</b> blau<b>en</b> Pullover.</p>
+<p><b>passen</b> = odgovarati veličinom. <b>stehen</b> = pristajati: Die Farbe steht dir!</p>`},
+{lvl:'A2',t:'Posao i prijava',de:'Bewerbung',ic:'💼',
+w:`die Bewerbung|prijava za posao
+der Lebenslauf|biografija
+das Vorstellungsgespräch|razgovor za posao
+die Erfahrung|iskustvo
+die Stelle|radno mjesto
+die Ausbildung|zanat
+die Schicht|smjena
+die Überstunden|prekovremeni sati
+kündigen|dati otkaz
+verdienen|zarađivati
+Vollzeit|puno radno vrijeme
+Teilzeit|skraćeno radno vrijeme`,
+s:`Ich habe fünf Jahre Erfahrung.|Imam pet godina iskustva.
+Ich arbeite in der Frühschicht.|Radim u ranoj smjeni.
+Wie viel verdient man hier?|Koliko se ovdje zarađuje?
+Ich habe eine Ausbildung als Elektriker.|Imam zanat električara.
+Ich möchte mich für die Stelle bewerben.|Želim se prijaviti za to radno mjesto.
+Muss ich Überstunden machen?|Moram li raditi prekovremeno?`,
+tip:`<p>Zavisna rečenica s <b>weil</b> (jer) i <b>dass</b> (da): glagol ide na <b>kraj</b>.</p>
+<table><tr><td>Ich lerne Deutsch, weil ich hier <b>arbeite</b>.</td></tr><tr><td>Ich glaube, dass die Stelle gut <b>ist</b>.</td></tr></table>
+<p>Na razgovoru za posao koristi <b>Sie</b>, a na kraju reci: <b>Vielen Dank für das Gespräch!</b></p>`},
+{lvl:'A2',t:'Restoran',de:'Im Restaurant',ic:'🍽️',
+w:`die Speisekarte|jelovnik
+die Vorspeise|predjelo
+das Hauptgericht|glavno jelo
+der Nachtisch|desert
+der Kellner|konobar
+das Trinkgeld|bakšiš
+bestellen|naručiti
+reservieren|rezervisati
+scharf|ljuto
+das Glas|čaša
+der Teller|tanjir
+lecker|ukusno`,
+s:`Ich hätte gern die Speisekarte.|Želio bih jelovnik.
+Wir möchten bestellen.|Želimo naručiti.
+Ich nehme das Hauptgericht ohne Zwiebeln.|Uzimam glavno jelo bez luka.
+Zusammen oder getrennt?|Zajedno ili odvojeno?
+Getrennt, bitte.|Odvojeno, molim.
+Das Essen war sehr lecker.|Hrana je bila jako ukusna.
+Stimmt so.|U redu je, zadržite kusur.`,
+tip:`<p>Ljubazno naručivanje:</p>
+<table><tr><td><b>Ich hätte gern</b> …</td><td>Želio bih …</td></tr><tr><td><b>Ich möchte</b> …</td><td>Htio bih …</td></tr><tr><td><b>Ich nehme</b> …</td><td>Uzimam …</td></tr></table>
+<p>Konobar pita <b>Zusammen oder getrennt?</b>, tj. plaćate li zajedno ili svako svoje. Bakšiš je obično 5–10 %: kažeš iznos sa bakšišom ili <b>Stimmt so</b>.</p>`},
+{lvl:'A2',t:'Vremenska prognoza',de:'Wetter',ic:'🌦️',
+w:`das Wetter|vrijeme (prognoza)
+die Sonne|sunce
+der Regen|kiša
+der Schnee|snijeg
+der Wind|vjetar
+warm|toplo
+kalt|hladno
+heiß|vruće
+bewölkt|oblačno
+das Gewitter|oluja s grmljavinom
+der Grad|stepen
+der Frühling|proljeće
+der Winter|zima`,
+s:`Wie ist das Wetter heute?|Kakvo je vrijeme danas?
+Es regnet seit drei Tagen.|Kiša pada već tri dana.
+Morgen wird es kalt.|Sutra će biti hladno.
+Es sind zwanzig Grad.|Dvadeset je stepeni.
+Im Winter schneit es oft.|Zimi često pada snijeg.
+Nimm einen Regenschirm mit!|Ponesi kišobran!`,
+tip:`<p>Vrijeme se opisuje sa <b>es</b>: <b>es regnet</b> (pada kiša), <b>es schneit</b> (pada snijeg), <b>es ist kalt</b>.</p>
+<p>Budućnost: <b>werden</b> + infinitiv/pridjev → Morgen <b>wird</b> es kalt.</p>
+<p><b>seit</b> = već (od tada do sada): Ich wohne <b>seit</b> zwei Jahren hier.</p>`},
+{lvl:'A2',t:'Telefon i termini',de:'Telefonieren',ic:'📞',
+w:`das Handy|mobitel
+anrufen|nazvati
+zurückrufen|nazvati ponovo
+die Nachricht|poruka
+die Verbindung|veza
+besetzt|zauzeto
+erreichen|dobiti nekoga
+verschieben|pomjeriti
+absagen|otkazati
+der Anrufbeantworter|telefonska sekretarica
+dringend|hitno`,
+s:`Kann ich bitte mit Herrn Müller sprechen?|Mogu li razgovarati s gospodinom Müllerom?
+Ich rufe Sie später zurück.|Nazvaću Vas kasnije.
+Ich muss den Termin absagen.|Moram otkazati termin.
+Können wir den Termin verschieben?|Možemo li pomjeriti termin?
+Die Verbindung ist schlecht.|Veza je loša.
+Es ist dringend.|Hitno je.`,
+tip:`<p>Na telefonu se javljaš prezimenom: „<b>Hodžić, guten Tag!</b>"</p>
+<p>Razdvojni glagol + modalni glagol: tada je glagol na kraju <b>spojen</b>:</p>
+<table><tr><td>Ich <b>rufe</b> Sie <b>zurück</b>.</td></tr><tr><td>Ich <b>muss</b> Sie <b>zurückrufen</b>.</td></tr></table>
+<p>Korisno: <b>Können Sie das bitte buchstabieren?</b> (Možete li to sricati?)</p>`},
+/* ================= B1 ================= */
+{lvl:'B1',t:'Život u Njemačkoj',de:'Leben in Deutschland',ic:'🇩🇪',
+w:`der Alltag|svakodnevica
+die Heimat|domovina
+die Sprache|jezik
+die Gewohnheit|navika
+sich gewöhnen an|navići se na
+vermissen|nedostajati
+der Unterschied|razlika
+die Möglichkeit|mogućnost
+die Integration|integracija
+der Ausländer|stranac
+die Kultur|kultura
+fremd|strano`,
+s:`Als ich nach Deutschland kam, konnte ich kein Deutsch.|Kad sam došao u Njemačku, nisam znao njemački.
+Ich vermisse meine Familie sehr.|Jako mi nedostaje porodica.
+Am Anfang war alles fremd für mich.|Na početku mi je sve bilo strano.
+Ich habe mich an das Wetter gewöhnt.|Navikao sam se na vrijeme.
+Der größte Unterschied ist die Pünktlichkeit.|Najveća razlika je tačnost.
+Früher hatte ich weniger Zeit.|Ranije sam imao manje vremena.`,
+tip:`<p><b>Präteritum</b> se u govoru koristi uglavnom za sein, haben i modalne glagole:</p>
+<table><tr><td>sein → ich <b>war</b></td><td>haben → ich <b>hatte</b></td></tr><tr><td>können → ich <b>konnte</b></td><td>müssen → ich <b>musste</b></td></tr></table>
+<p><b>als</b> = kad (jednom, u prošlosti): <b>Als</b> ich ankam, …<br><b>wenn</b> = kad (svaki put ili u budućnosti): <b>Wenn</b> ich Zeit habe, …</p>`},
+{lvl:'B1',t:'Stan i komšije',de:'Wohnen und Nachbarn',ic:'🏢',
+w:`der Nachbar|komšija
+die Hausordnung|kućni red
+die Nebenkosten|režije
+der Vermieter|stanodavac
+der Mieter|stanar
+die Ruhezeit|vrijeme tišine
+der Müll|smeće
+trennen|razdvajati
+sich beschweren|žaliti se
+laut|bučno
+reparieren|popraviti
+die Heizung|grijanje`,
+s:`Die Heizung funktioniert seit gestern nicht.|Grijanje ne radi od jučer.
+Könnten Sie das bitte reparieren lassen?|Da li biste to mogli dati popraviti?
+Der Müll muss getrennt werden.|Smeće se mora razdvajati.
+Ab zweiundzwanzig Uhr ist Ruhezeit.|Od dvadeset dva sata je vrijeme tišine.
+Mein Nachbar hat sich über die Musik beschwert.|Komšija se žalio na muziku.
+Die Nebenkosten sind dieses Jahr gestiegen.|Režije su ove godine porasle.`,
+tip:`<p>Uljudne molbe s <b>Konjunktivom II</b>:</p>
+<table><tr><td><b>Könnten</b> Sie …?</td><td>Da li biste mogli …?</td></tr><tr><td><b>Würden</b> Sie bitte …?</td><td>Da li biste molim …?</td></tr><tr><td>Ich <b>hätte</b> eine Frage.</td><td>Imao bih pitanje.</td></tr></table>
+<p><b>lassen</b> = dati da neko drugi uradi: Ich <b>lasse</b> das Auto <b>reparieren</b>.</p>`},
+{lvl:'B1',t:'Na radnom mjestu',de:'Am Arbeitsplatz',ic:'🏗️',
+w:`der Arbeitgeber|poslodavac
+der Arbeitnehmer|zaposlenik
+die Besprechung|sastanak
+die Aufgabe|zadatak
+die Verantwortung|odgovornost
+der Urlaubsantrag|zahtjev za godišnji
+die Gehaltserhöhung|povišica
+die Probezeit|probni rad
+pünktlich|na vrijeme
+zuständig|nadležan
+erledigen|obaviti
+die Sicherheit|sigurnost`,
+s:`Ich würde gern nächste Woche Urlaub nehmen.|Volio bih uzeti godišnji sljedeće sedmice.
+Wer ist dafür zuständig?|Ko je za to nadležan?
+Ich habe die Aufgabe schon erledigt.|Već sam obavio zadatak.
+Die Besprechung wurde auf Montag verschoben.|Sastanak je pomjeren na ponedjeljak.
+Nach der Probezeit bekomme ich einen festen Vertrag.|Nakon probnog rada dobijam stalni ugovor.
+Ich möchte über eine Gehaltserhöhung sprechen.|Želim razgovarati o povišici.`,
+tip:`<p><b>Pasiv</b>: važno je šta se radi, a ne ko radi. Gradi se s <b>werden</b> + particip:</p>
+<table><tr><td>Die Besprechung <b>wird</b> verschoben.</td><td>Sastanak se pomjera.</td></tr><tr><td>Die Besprechung <b>wurde</b> verschoben.</td><td>Sastanak je pomjeren.</td></tr><tr><td>Die Arbeit <b>muss</b> erledigt <b>werden</b>.</td><td>Posao mora biti obavljen.</td></tr></table>`},
+{lvl:'B1',t:'Mediji i tehnika',de:'Medien und Technik',ic:'💻',
+w:`das Internet|internet
+die Nachrichten|vijesti
+die Zeitung|novine
+das Gerät|uređaj
+herunterladen|preuzeti
+das Passwort|lozinka
+die Datei|fajl
+speichern|sačuvati
+löschen|izbrisati
+der Bildschirm|ekran
+die Werbung|reklama
+aktualisieren|ažurirati`,
+s:`Ich lese die Nachrichten auf dem Handy.|Čitam vijesti na mobitelu.
+Ich habe mein Passwort vergessen.|Zaboravio sam lozinku.
+Vergiss nicht, die Datei zu speichern.|Ne zaboravi sačuvati fajl.
+Das ist die App, die ich jeden Tag benutze.|To je aplikacija koju koristim svaki dan.
+Kannst du mir helfen, das Programm herunterzuladen?|Možeš li mi pomoći da preuzmem program?
+Es gibt zu viel Werbung im Internet.|Ima previše reklama na internetu.`,
+tip:`<p><b>Odnosna rečenica</b>: der/die/das kao „koji", a glagol ide na kraj.</p>
+<table><tr><td>die App, <b>die</b> ich jeden Tag <b>benutze</b></td></tr><tr><td>der Mann, <b>der</b> hier <b>wohnt</b></td></tr></table>
+<p><b>Infinitiv sa zu</b>: Vergiss nicht, die Datei <b>zu speichern</b>. Kod razdvojnih glagola zu ide u sredinu: herunter<b>zu</b>laden.</p>`},
+{lvl:'B1',t:'Okolina i energija',de:'Umwelt',ic:'🌱',
+w:`die Umwelt|okolina
+der Klimawandel|klimatske promjene
+die Energie|energija
+sparen|štedjeti
+der Strom|struja
+die Solaranlage|solarna elektrana
+das Plastik|plastika
+schützen|zaštititi
+die Luft|zrak
+der Verkehr|saobraćaj
+nachhaltig|održivo
+verbrauchen|trošiti`,
+s:`Wir sollten mehr Energie sparen.|Trebali bismo više štedjeti energiju.
+Viele Leute haben eine Solaranlage auf dem Dach.|Mnogi ljudi imaju solarnu elektranu na krovu.
+Wenn ich Zeit habe, fahre ich mit dem Fahrrad.|Kad imam vremena, vozim se biciklom.
+Der Strom ist in Deutschland sehr teuer.|Struja je u Njemačkoj jako skupa.
+Man sollte weniger Plastik benutzen.|Trebalo bi koristiti manje plastike.
+Die Luft in der Stadt ist schlecht.|Zrak u gradu je loš.`,
+tip:`<p><b>sollte</b> = trebalo bi (savjet): Du <b>solltest</b> mehr schlafen.</p>
+<p><b>man</b> = „se" / bilo ko: <b>Man</b> sollte Energie sparen = Treba štedjeti energiju.</p>
+<p>Ako rečenica počne sa <b>wenn</b>-dijelom, glavni glagol dolazi odmah iza zareza: Wenn ich Zeit habe, <b>fahre</b> ich …</p>`},
+{lvl:'B1',t:'Žalbe i dopisi',de:'Briefe und Beschwerden',ic:'✉️',
+w:`die Beschwerde|žalba
+der Antrag|zahtjev
+die Bestätigung|potvrda
+die Mahnung|opomena
+der Bescheid|rješenje
+der Widerspruch|prigovor
+die Unterlagen|dokumenti
+einreichen|predati
+beantragen|podnijeti zahtjev
+erstatten|vratiti novac
+die Kündigung|otkaz
+mit freundlichen Grüßen|s poštovanjem`,
+s:`Sehr geehrte Damen und Herren,|Poštovane dame i gospodo,
+Hiermit möchte ich mich beschweren.|Ovim putem želim uložiti žalbu.
+Ich bitte um eine schriftliche Bestätigung.|Molim pisanu potvrdu.
+Gegen den Bescheid lege ich Widerspruch ein.|Na rješenje ulažem prigovor.
+Die Unterlagen schicke ich Ihnen im Anhang.|Dokumente Vam šaljem u prilogu.
+Ich würde mich über eine schnelle Antwort freuen.|Bilo bi mi drago dobiti brz odgovor.`,
+tip:`<p>Formalni dopis:</p>
+<table><tr><td>Početak</td><td><b>Sehr geehrte Damen und Herren,</b></td></tr><tr><td>Razlog</td><td><b>Hiermit</b> möchte ich … / <b>Ich schreibe Ihnen, weil</b> …</td></tr><tr><td>Molba</td><td><b>Ich bitte um</b> … / <b>Ich würde mich über … freuen.</b></td></tr><tr><td>Kraj</td><td><b>Mit freundlichen Grüßen</b></td></tr></table>
+<p>Na kraju svakog <b>Bescheida</b> piše do kada možeš uložiti Widerspruch. Taj rok obavezno provjeri.</p>`},
+/* ================= B2 ================= */
+{lvl:'B2',t:'Mišljenje i diskusija',de:'Meinung äußern',ic:'💬',
+w:`die Meinung|mišljenje
+der Vorteil|prednost
+der Nachteil|nedostatak
+überzeugen|uvjeriti
+behaupten|tvrditi
+zustimmen|složiti se
+widersprechen|usprotiviti se
+das Argument|argument
+einerseits|s jedne strane
+andererseits|s druge strane
+die Ansicht|stav
+obwohl|iako`,
+s:`Meiner Meinung nach ist das keine gute Idee.|Po mom mišljenju to nije dobra ideja.
+Da muss ich Ihnen widersprechen.|Tu Vam se moram usprotiviti.
+Einerseits ist es teuer, andererseits spart man Zeit.|S jedne strane je skupo, s druge strane se štedi vrijeme.
+Obwohl er krank war, ist er zur Arbeit gegangen.|Iako je bio bolestan, otišao je na posao.
+Ich stimme dir völlig zu.|Potpuno se slažem s tobom.
+Das überzeugt mich nicht.|To me ne uvjerava.`,
+tip:`<p><b>obwohl</b> i <b>trotzdem</b> znače isto, ali je red riječi drugačiji:</p>
+<table><tr><td><b>Obwohl</b> er krank <b>war</b>, kam er.</td><td>glagol na kraj</td></tr><tr><td>Er war krank, <b>trotzdem kam</b> er.</td><td>glagol odmah</td></tr></table>
+<p>Fraze: <b>Meiner Meinung nach</b> … · <b>Ich bin der Ansicht, dass</b> … · <b>Da bin ich anderer Meinung.</b></p>`},
+{lvl:'B2',t:'Karijera',de:'Karriere',ic:'📈',
+w:`die Weiterbildung|usavršavanje
+die Beförderung|unapređenje
+die Fachkraft|stručnjak
+der Meister|majstor
+die Selbstständigkeit|samozaposlenost
+die Kompetenz|kompetencija
+die Arbeitsbedingungen|uslovi rada
+das Gehalt|plata (mjesečna)
+die Herausforderung|izazov
+sich weiterentwickeln|razvijati se
+anerkennen|priznati
+der Abschluss|diploma`,
+s:`Mein Abschluss wurde in Deutschland anerkannt.|Moja diploma je priznata u Njemačkoj.
+Ich möchte eine Weiterbildung zum Meister machen.|Želim se doškolovati za majstora.
+Fachkräfte werden dringend gesucht.|Stručnjaci se hitno traže.
+Die Arbeitsbedingungen hätten besser sein können.|Uslovi rada su mogli biti bolji.
+Das ist eine große Herausforderung für mich.|To je veliki izazov za mene.
+Ich habe vor, mich selbstständig zu machen.|Planiram se osamostaliti.`,
+tip:`<p><b>Konjunktiv II prošlosti</b> govori šta se moglo ili trebalo desiti:</p>
+<table><tr><td>Ich <b>hätte</b> das gemacht.</td><td>Ja bih to uradio.</td></tr><tr><td>Ich <b>wäre</b> gekommen.</td><td>Ja bih došao.</td></tr><tr><td>Es <b>hätte</b> besser sein <b>können</b>.</td><td>Moglo je biti bolje.</td></tr></table>
+<p><b>vorhaben</b> + zu: Ich habe <b>vor</b>, … <b>zu</b> machen = Planiram …</p>`},
+{lvl:'B2',t:'Društvo',de:'Gesellschaft',ic:'🤝',
+w:`die Gesellschaft|društvo
+die Gleichberechtigung|ravnopravnost
+die Bildung|obrazovanje
+die Armut|siromaštvo
+der Wohlstand|blagostanje
+die Generation|generacija
+das Ehrenamt|volontiranje
+die Vielfalt|raznolikost
+die Rente|penzija
+die Demokratie|demokratija
+die Wahl|izbori
+benachteiligt|zapostavljen`,
+s:`Bildung ist der Schlüssel zum Erfolg.|Obrazovanje je ključ uspjeha.
+Viele Menschen engagieren sich ehrenamtlich.|Mnogi ljudi se volonterski angažuju.
+Ich zahle jeden Monat in die Rentenversicherung ein.|Svaki mjesec uplaćujem u penzijsko osiguranje.
+Die Vielfalt macht eine Stadt interessant.|Raznolikost čini grad zanimljivim.
+Je älter man wird, desto mehr schätzt man die Familie.|Što je čovjek stariji, to više cijeni porodicu.
+Es wird viel über Gleichberechtigung diskutiert.|Mnogo se raspravlja o ravnopravnosti.`,
+tip:`<p><b>je … desto</b> = što … to:</p>
+<table><tr><td><b>Je</b> mehr ich lerne, <b>desto</b> besser spreche ich.</td></tr></table>
+<p>Iza <b>je</b> glagol ide na kraj, a iza <b>desto</b> + komparativa dolazi odmah glagol.</p>
+<p><b>Bezlični pasiv</b>: Es <b>wird</b> viel <b>diskutiert</b> = Mnogo se raspravlja.</p>`},
+{lvl:'B2',t:'Nauka i tehnologija',de:'Wissenschaft und Technik',ic:'🔬',
+w:`die Forschung|istraživanje
+die Entwicklung|razvoj
+die Erfindung|izum
+die künstliche Intelligenz|vještačka inteligencija
+das Ergebnis|rezultat
+die Untersuchung|ispitivanje
+beweisen|dokazati
+der Fortschritt|napredak
+die Daten|podaci
+die Digitalisierung|digitalizacija
+automatisieren|automatizovati
+entdecken|otkriti`,
+s:`Die Ergebnisse der Studie wurden veröffentlicht.|Rezultati studije su objavljeni.
+Künstliche Intelligenz verändert viele Berufe.|Vještačka inteligencija mijenja mnoga zanimanja.
+Die Entwicklung schreitet schnell voran.|Razvoj brzo napreduje.
+Es ist bewiesen, dass Sport gesund ist.|Dokazano je da je sport zdrav.
+Die neu entwickelte Maschine spart viel Zeit.|Novorazvijena mašina štedi puno vremena.
+Viele Arbeitsschritte können automatisiert werden.|Mnogi radni koraci mogu se automatizovati.`,
+tip:`<p><b>Pasiv s modalnim glagolom</b>: modal + particip + <b>werden</b> na kraju:</p>
+<table><tr><td>Das <b>kann</b> automatisiert <b>werden</b>.</td><td>To se može automatizovati.</td></tr><tr><td>Das <b>muss</b> geprüft <b>werden</b>.</td><td>To se mora provjeriti.</td></tr></table>
+<p><b>Particip kao pridjev</b> skraćuje rečenicu: die <b>neu entwickelte</b> Maschine = mašina koja je nedavno razvijena.</p>`},
+{lvl:'B2',t:'Novac i finansije',de:'Finanzen',ic:'💶',
+w:`die Steuererklärung|poreska prijava
+das Einkommen|prihod
+die Versicherung|osiguranje
+der Kredit|kredit
+die Zinsen|kamate
+die Ersparnisse|ušteđevina
+investieren|investirati
+die Inflation|inflacija
+überweisen|uplatiti
+der Haushalt|kućni budžet
+die Ausgaben|troškovi
+absetzen|odbiti od poreza`,
+s:`Ich mache meine Steuererklärung mit ELSTER.|Poresku prijavu radim preko ELSTER-a.
+Die Fahrtkosten kann man von der Steuer absetzen.|Putni troškovi se mogu odbiti od poreza.
+Wegen der Inflation ist alles teurer geworden.|Zbog inflacije je sve poskupjelo.
+Ich überweise das Geld morgen.|Novac uplaćujem sutra.
+Die Zinsen für den Kredit sind gestiegen.|Kamate na kredit su porasle.
+Wir müssen unsere Ausgaben reduzieren.|Moramo smanjiti troškove.`,
+tip:`<p>Prijedlozi s <b>genitivom</b> (pisani i formalni jezik):</p>
+<table><tr><td><b>wegen</b> der Inflation</td><td>zbog inflacije</td></tr><tr><td><b>trotz</b> des Regens</td><td>uprkos kiši</td></tr><tr><td><b>während</b> der Arbeit</td><td>tokom posla</td></tr></table>
+<p>Muški i srednji rod u genitivu: <b>des</b> + -s/-es (des Vertrag<b>s</b>, des Geld<b>es</b>).</p>`},
+{lvl:'B2',t:'Pregovori i formalni jezik',de:'Verhandeln',ic:'📑',
+w:`die Verhandlung|pregovori
+der Kompromiss|kompromis
+die Bedingung|uslov
+die Vereinbarung|dogovor
+vorschlagen|predložiti
+ablehnen|odbiti
+berücksichtigen|uzeti u obzir
+die Stellungnahme|izjava
+verbindlich|obavezujuće
+die Rückmeldung|povratna informacija
+das Anliegen|molba
+voraussichtlich|predviđeno`,
+s:`Ich schlage vor, dass wir einen Kompromiss finden.|Predlažem da nađemo kompromis.
+Unter dieser Bedingung bin ich einverstanden.|Pod tim uslovom se slažem.
+Leider müssen wir Ihr Angebot ablehnen.|Nažalost moramo odbiti Vašu ponudu.
+Ich bitte Sie, mein Anliegen zu berücksichtigen.|Molim Vas da uzmete u obzir moju molbu.
+Die Lieferung erfolgt voraussichtlich nächste Woche.|Isporuka je predviđena za sljedeću sedmicu.
+Er sagte, er habe keine Zeit.|Rekao je da nema vremena.`,
+tip:`<p><b>Konjunktiv I</b> za prenošenje tuđih riječi (vijesti, zapisnici, formalni tekst):</p>
+<table><tr><td>Er sagt: „Ich habe keine Zeit."</td><td>→ Er sagt, er <b>habe</b> keine Zeit.</td></tr><tr><td>„Ich bin krank."</td><td>→ Er sagt, er <b>sei</b> krank.</td></tr><tr><td>„Ich komme morgen."</td><td>→ Er sagt, er <b>komme</b> morgen.</td></tr></table>
+<p>U svakodnevnom govoru češće čuješ samo: Er sagt, <b>dass</b> er keine Zeit <b>hat</b>.</p>`}
+];
+const parse=(txt,u)=>txt.trim().split('\n').map(l=>{const [de,bs]=l.split('|');return {de:de.trim(),bs:bs.trim(),u};});
+const UNITS=RAW.map((r,u)=>({lvl:'A1',...r,c:PAL[u%PAL.length][0],cd:PAL[u%PAL.length][1],words:parse(r.w,u),sents:parse(r.s,u)}));
+const ALLW=UNITS.flatMap(U=>U.words), ALLS=UNITS.flatMap(U=>U.sents);
+const LVL={A1:'Početnik',A2:'Osnovni nivo',B1:'Srednji nivo',B2:'Viši srednji nivo'};
+const curLevel=()=>{const c=curIdx();return c<0?UNITS[UNITS.length-1].lvl:UNITS[c>>2].lvl;};
+const LDESC=['Nove riječi i prvi izrazi.','Još novih riječi i prve rečenice.','Sve zajedno: rečenice, slušanje i pisanje.'];
+const PRAISE=['Odlično!','Super!','Tačno!','Bravo!','Sjajno!','Wunderbar!','Prima!','Genau!','Sehr gut!'];
+
+/* ============ UTILS ============ */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const shuf=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]];}return a;};
+const pick=a=>a[Math.random()*a.length|0];
+const norm=s=>s.toLowerCase().replace(/ß/g,'ss').replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/[.,!?;:"„“'’()\-]/g,' ').replace(/\s+/g,' ').trim();
+const tok=s=>s.replace(/[.,!?"„“]/g,'').split(/\s+/).filter(Boolean);
+const ART=/^(der|die|das) /;
+function lev(a,b){const m=a.length,n=b.length;if(Math.abs(m-n)>1)return 9;const d=[];for(let i=0;i<=m;i++){d[i]=[i];}for(let j=0;j<=n;j++)d[0][j]=j;for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return d[m][n];}
+const dk=(d=new Date())=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const dayOff=n=>{const d=new Date();d.setDate(d.getDate()+n);return d;};
+
+/* ============ STATE ============ */
+const KEY='bashdeutsch-v1', HEART_MS=20*60*1000;
+const def=()=>({xp:0,hearts:5,heartTs:Date.now(),streak:0,last:null,done:{},daily:{},goal:20,words:{},sound:true,rate:0.9,voice:'',lessons:0,perfect:0});
+function load(){try{const j=JSON.parse(localStorage.getItem(KEY));if(j)return Object.assign(def(),j);}catch(e){}return def();}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+let S=load();
+function regen(){if(S.hearts>=5){S.hearts=5;S.heartTs=Date.now();return;}const n=Math.floor((Date.now()-S.heartTs)/HEART_MS);if(n>0){S.hearts=Math.min(5,S.hearts+n);S.heartTs=S.hearts>=5?Date.now():S.heartTs+n*HEART_MS;save();}}
+function streakNow(){if(!S.last)return 0;return (S.last===dk()||S.last===dk(dayOff(-1)))?S.streak:0;}
+const isOpen=i=>i===0||!!S.done[i-1]||!!S.done[i];
+function curIdx(){for(let i=0;i<UNITS.length*4;i++)if(!S.done[i]&&isOpen(i))return i;return -1;}
+
+/* ============ AUDIO ============ */
+const TTS=('speechSynthesis' in window)&&typeof SpeechSynthesisUtterance!=='undefined';
+let voices=[];
+function loadVoices(){try{voices=speechSynthesis.getVoices().filter(v=>/^de/i.test(v.lang));}catch(e){}}
+if(TTS){loadVoices();try{speechSynthesis.onvoiceschanged=()=>{loadVoices();if(tab==='profile')render();};}catch(e){}}
+function speak(t,slow){if(!TTS)return;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='de-DE';u.rate=slow?0.55:S.rate;const v=voices.find(v=>v.name===S.voice)||voices.find(v=>v.lang==='de-DE')||voices[0];if(v)u.voice=v;speechSynthesis.speak(u);}catch(e){}}
+let actx;
+function beep(kind){if(!S.sound)return;try{actx=actx||new(window.AudioContext||window.webkitAudioContext)();const t0=actx.currentTime;
+const N=kind==='ok'?[[660,0],[990,.1]]:kind==='bad'?[[260,0],[200,.13]]:[[523,0],[659,.12],[784,.24],[1047,.36]];
+N.forEach(([f,t])=>{const o=actx.createOscillator(),g=actx.createGain();o.type=kind==='bad'?'triangle':'sine';o.frequency.value=f;g.gain.setValueAtTime(.0001,t0+t);g.gain.exponentialRampToValueAtTime(.16,t0+t+.02);g.gain.exponentialRampToValueAtTime(.0001,t0+t+.2);o.connect(g);g.connect(actx.destination);o.start(t0+t);o.stop(t0+t+.22);});}catch(e){}}
+const spkBtn=(t,cls='')=>TTS?`<button class="spk ${cls}" data-say="${esc(t)}">🔊</button>`:'';
+
+/* ============ MASCOT ============ */
+function mascot(size=90,mood='happy'){const sad=mood==='sad';return `<svg width="${size}" height="${size}" viewBox="0 0 100 100" aria-hidden="true"><ellipse cx="50" cy="94" rx="26" ry="4" fill="rgba(0,0,0,.12)"/><path d="M52 2 L40 22 L50 22 L44 34 L62 15 L52 15 Z" fill="#ff9600"/><circle cx="50" cy="56" r="36" fill="#ffc800"/><circle cx="50" cy="62" r="22" fill="#ffe27a"/><circle cx="37" cy="48" r="10" fill="#fff"/><circle cx="63" cy="48" r="10" fill="#fff"/><circle cx="${sad?36:39}" cy="${sad?51:49}" r="5" fill="#3c3c3c"/><circle cx="${sad?62:65}" cy="${sad?51:49}" r="5" fill="#3c3c3c"/>${sad?'<path d="M40 74 Q50 66 60 74" stroke="#3c3c3c" stroke-width="4" fill="none" stroke-linecap="round"/>':'<path d="M38 66 Q50 80 62 66" stroke="#3c3c3c" stroke-width="4" fill="none" stroke-linecap="round"/><circle cx="28" cy="62" r="5" fill="#ff9b9b" opacity=".6"/><circle cx="72" cy="62" r="5" fill="#ff9b9b" opacity=".6"/>'}</svg>`;}
+
+/* ============ EXERCISE BUILDING ============ */
+const PLANS={
+0:['intro','intro','intro','mc_de_bs','listen_mc','mc_bs_de','match','article','type','mc_de_bs','build_de','build_bs'],
+1:['intro','intro','intro','mc_bs_de','listen_mc','article','match','type','build_de','listen_build','build_bs','mc_de_bs'],
+2:['mc_de_bs','type','build_de','listen_build','article','match','build_bs','type','listen_mc','build_de','listen_build','mc_bs_de'],
+3:['type','build_de','listen_build','article','type','listen_mc','build_de','match','listen_build','type','build_bs','article','build_de','listen_mc'],
+P:['mc_de_bs','type','listen_mc','match','build_de','article','mc_bs_de','listen_build','type','build_bs']
+};
+function buildQueue(words,sents,plan,skipIntro){
+  const wq=shuf(words),sq=shuf(sents);let wi=0,si=0,ii=0;const out=[];
+  for(let t of plan){
+    if(!TTS){if(t==='listen_mc')t='mc_bs_de';if(t==='listen_build')t='build_de';}
+    if(t==='intro'){if(!skipIntro)out.push({type:'intro',w:wq[ii++%wq.length]});continue;}
+    if(t==='article'){const c=shuf(words).find(w=>ART.test(w.de));if(c){out.push({type:'article',w:c});continue;}t='mc_de_bs';}
+    if(t==='match'){const seen=new Set(),ws=[];for(const w of shuf(words.length>=5?words:words.concat(UNITS[words[0].u].words))){const k=norm(w.de)+'|'+norm(w.bs);if(!seen.has(k)&&!ws.some(x=>norm(x.bs)===norm(w.bs)||norm(x.de)===norm(w.de))){seen.add(k);ws.push(w);}if(ws.length>=5)break;}out.push({type:'match',ws});continue;}
+    if(t==='build_de'||t==='build_bs'||t==='listen_build'){if(sq.length){out.push({type:t,s:sq[si++%sq.length]});continue;}t='type';}
+    out.push({type:t,w:wq[wi++%wq.length]});
+  }
+  return out;
+}
+function distract(w,field,n){const seen=new Set([norm(w[field])]),out=[];for(const x of shuf(UNITS[w.u].words).concat(shuf(ALLW))){const k=norm(x[field]);if(seen.has(k))continue;seen.add(k);out.push(x);if(out.length>=n)break;}return out;}
+function extraToks(answer,lang,n){const own=new Set(tok(answer).map(t=>t.toLowerCase()));const c=[];for(const s of shuf(ALLS)){for(const t of tok(s[lang])){const k=t.toLowerCase();if(!own.has(k)&&!c.some(x=>x.toLowerCase()===k))c.push(t);}if(c.length>30)break;}return shuf(c).slice(0,n);}
+
+/* ============ RENDER EXERCISE ============ */
+let X=null;
+function setReady(v){X.ready=v;const cb=$('#cb');if(cb&&L.state==='ask')cb.disabled=!v;}
+function mc(body,head,opts,label,correct,correctText,sayOnTap){
+  body.innerHTML=head+`<div class="opts">${opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="k">${i+1}</span><span>${esc(label(o))}</span></button>`).join('')}</div>`;
+  let sel=-1;const btns=[...body.querySelectorAll('.opt')];
+  btns.forEach(b=>b.onclick=()=>{sel=+b.dataset.i;btns.forEach(x=>x.classList.toggle('sel',x===b));if(sayOnTap)speak(label(opts[sel]));setReady(true);});
+  X={ready:false,check:()=>{const ok=opts[sel]===correct;btns[sel].classList.remove('sel');btns[sel].classList.add(ok?'right':'wrong');if(!ok)btns[opts.indexOf(correct)].classList.add('right');return {ok,correct:correctText};}};
+}
+function tiles(body,head,answer,lang){
+  const all=shuf(tok(answer).concat(extraToks(answer,lang,Math.min(4,Math.max(2,tok(answer).length-1)))));
+  body.innerHTML=head+`<div class="answer-line" id="al"></div><div class="tiles" id="bank">${all.map((t,i)=>`<button class="tile" data-i="${i}">${esc(t)}</button>`).join('')}</div>`;
+  const ch=[],al=body.querySelector('#al'),bank=body.querySelector('#bank');
+  const draw=()=>{al.innerHTML=ch.map(i=>`<button class="tile" data-i="${i}">${esc(all[i])}</button>`).join('');setReady(ch.length>0);};
+  bank.onclick=e=>{const b=e.target.closest('.tile');if(!b||b.classList.contains('used'))return;const i=+b.dataset.i;ch.push(i);b.classList.add('used');if(lang==='de')speak(all[i]);draw();};
+  al.onclick=e=>{const b=e.target.closest('.tile');if(!b)return;const i=+b.dataset.i;ch.splice(ch.indexOf(i),1);bank.querySelector(`[data-i="${i}"]`).classList.remove('used');draw();};
+  X={ready:false,check:()=>({ok:norm(ch.map(i=>all[i]).join(' '))===norm(answer),correct:answer})};
+}
+function renderEx(ex,body){
+  const w=ex.w,s=ex.s;
+  switch(ex.type){
+  case 'intro':
+    body.innerHTML=`<div class="intro"><span class="badge">NOVA RIJEČ</span><div>${spkBtn(w.de,'big')}</div><div class="de">${esc(w.de)}</div><div class="bs">${esc(w.bs)}</div></div>`;
+    speak(w.de);X={ready:true,check:()=>({ok:true})};break;
+  case 'mc_de_bs':
+    mc(body,`<h2>Šta znači ova riječ?</h2><div class="prompt">${spkBtn(w.de)}<div class="bubble">${esc(w.de)}</div></div>`,shuf([w,...distract(w,'bs',3)]),o=>o.bs,w,w.bs,false);speak(w.de);break;
+  case 'mc_bs_de':
+    mc(body,`<h2>Kako se kaže na njemačkom?</h2><div class="prompt"><div class="bubble">„${esc(w.bs)}"</div></div>`,shuf([w,...distract(w,'de',3)]),o=>o.de,w,w.de,true);break;
+  case 'listen_mc':
+    mc(body,`<h2>Šta čuješ?</h2><div class="listen">${spkBtn(w.de,'big')}<button class="spk slow" data-say="${esc(w.de)}" data-slow="1">🐢</button></div>`,shuf([w,...distract(w,'de',3)]),o=>o.de,w,w.de+' = '+w.bs,false);speak(w.de);break;
+  case 'article':{
+    const art=w.de.match(ART)[1],noun=w.de.replace(ART,'');const col={der:'#1cb0f6',die:'#ff4b4b',das:'#58cc02'};
+    body.innerHTML=`<h2>Izaberi tačan član</h2><div class="prompt"><div class="bubble"><b>___ ${esc(noun)}</b><div class="sub">${esc(w.bs)}</div></div></div><div class="art">${['der','die','das'].map(a=>`<button class="opt" data-a="${a}" style="color:${col[a]}">${a}</button>`).join('')}</div>`;
+    let sel=null;const btns=[...body.querySelectorAll('.opt')];
+    btns.forEach(b=>b.onclick=()=>{sel=b.dataset.a;btns.forEach(x=>x.classList.toggle('sel',x===b));setReady(true);});
+    X={ready:false,check:()=>{const ok=sel===art;btns.forEach(b=>{b.classList.remove('sel');if(b.dataset.a===art)b.classList.add('right');else if(b.dataset.a===sel)b.classList.add('wrong');});return {ok,correct:w.de};}};break;}
+  case 'type':{
+    body.innerHTML=`<h2>Napiši na njemačkom</h2><div class="prompt"><div class="bubble">„${esc(w.bs)}"</div></div><input class="typ" id="ti" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Upiši ovdje…"><div class="chars">${['ä','ö','ü','ß'].map(c=>`<button data-c="${c}">${c}</button>`).join('')}</div>`;
+    const inp=body.querySelector('#ti');inp.oninput=()=>setReady(inp.value.trim().length>0);
+    body.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{const p=inp.selectionStart??inp.value.length;inp.value=inp.value.slice(0,p)+b.dataset.c+inp.value.slice(inp.selectionEnd??p);inp.focus();inp.setSelectionRange(p+1,p+1);setReady(true);});
+    setTimeout(()=>{try{inp.focus();}catch(e){}},50);
+    X={ready:false,check:()=>{const a=norm(inp.value),t=norm(w.de),na=norm(w.de.replace(ART,''));
+      if(a===t)return {ok:true,correct:w.de};
+      if(a===na&&t!==na)return {ok:true,correct:w.de,note:'Uči riječ i sa članom: '+w.de};
+      if((t.length>4&&lev(a,t)<=1)||(na.length>4&&lev(a,na)<=1))return {ok:true,correct:w.de,note:'Mala greška u pisanju: '+w.de};
+      return {ok:false,correct:w.de};}};break;}
+  case 'build_de':tiles(body,`<h2>Prevedi rečenicu</h2><div class="prompt"><div class="bubble">„${esc(s.bs)}"</div></div>`,s.de,'de');break;
+  case 'build_bs':tiles(body,`<h2>Prevedi rečenicu</h2><div class="prompt">${spkBtn(s.de)}<div class="bubble">${esc(s.de)}</div></div>`,s.bs,'bs');speak(s.de);break;
+  case 'listen_build':tiles(body,`<h2>Složi šta čuješ</h2><div class="listen">${spkBtn(s.de,'big')}<button class="spk slow" data-say="${esc(s.de)}" data-slow="1">🐢</button></div>`,s.de,'de');speak(s.de);break;
+  case 'match':{
+    const ws=ex.ws,Lc=shuf(ws.map((w,i)=>({i,t:w.de,d:1}))),Rc=shuf(ws.map((w,i)=>({i,t:w.bs,d:0})));let cells='';
+    for(let r=0;r<ws.length;r++)cells+=`<button class="opt" data-i="${Lc[r].i}" data-d="1">${esc(Lc[r].t)}</button><button class="opt" data-i="${Rc[r].i}" data-d="0">${esc(Rc[r].t)}</button>`;
+    body.innerHTML=`<h2>Spoji parove</h2><div class="match">${cells}</div>`;
+    let sl=null,sr=null,left=ws.length,errs=0;
+    body.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{
+      const de=b.dataset.d==='1';if(de){speak(ws[+b.dataset.i].de);if(sl)sl.classList.remove('sel');sl=b;}else{if(sr)sr.classList.remove('sel');sr=b;}b.classList.add('sel');
+      if(sl&&sr){const a=sl,c=sr;sl=sr=null;a.classList.remove('sel');c.classList.remove('sel');
+        if(a.dataset.i===c.dataset.i){a.classList.add('right');c.classList.add('right');beep('ok');setTimeout(()=>{a.classList.add('gone');c.classList.add('gone');},250);rec(ws[+a.dataset.i],true);if(--left===0)setReady(true);}
+        else{errs++;a.classList.add('wrong','shake');c.classList.add('wrong','shake');rec(ws[+a.dataset.i],false);setTimeout(()=>{a.classList.remove('wrong','shake');c.classList.remove('wrong','shake');},450);}}
+    });
+    X={ready:false,match:true,check:()=>({ok:true,note:errs?`Greške pri spajanju: ${errs}`:''})};break;}
+  }
+}
+function rec(w,ok){if(!w)return;const r=S.words[w.de]||(S.words[w.de]={ok:0,bad:0});ok?r.ok++:r.bad++;}
+
+/* ============ LESSON FLOW ============ */
+let L=null;
+function startLesson(u,l,mode){
+  closeSheet();regen();
+  if(mode!=='practice'&&S.hearts<=0)return noHearts();
+  let q;const U=UNITS[u];
+  if(mode==='practice')q=buildPractice();
+  else if(mode==='jump'||l===3)q=buildQueue(U.words,U.sents,PLANS[3],true);
+  else{const W=U.words,h=Math.ceil(W.length/2);
+    if(l===0)q=buildQueue(W.slice(0,h),U.sents.slice(0,3),PLANS[0],!!S.done[u*4]);
+    else if(l===1)q=buildQueue(W.slice(h),U.sents.slice(2,5),PLANS[1],!!S.done[u*4+1]);
+    else q=buildQueue(W,U.sents,PLANS[2],true);}
+  L={q,base:q.length,solved:0,okc:0,att:0,mist:0,combo:0,t0:Date.now(),mode,u,l,state:'ask'};
+  const d=document.createElement('div');d.className='lesson';d.id='lesson';
+  d.innerHTML=`<div class="lhead"><button class="xbtn" id="lx">✕</button><div class="prog"><i id="pg" style="width:0"></i></div><div class="stat heart" id="lh">${mode==='practice'?'❤️ ∞':'❤️ '+S.hearts}</div></div><div class="lbody" id="lb"></div><div class="lfoot" id="lf"><div class="fin"><div id="fbx"></div><button class="btn" id="cb" disabled>Provjeri</button></div></div>`;
+  document.body.appendChild(d);
+  $('#lx').onclick=quitAsk;$('#cb').onclick=onCheck;
+  next();
+}
+function buildPractice(){
+  const us=UNITS.filter((U,u)=>isOpen(u*4)||S.done[u*4]);
+  const words=us.flatMap(U=>U.words),sents=us.flatMap(U=>U.sents);
+  const sc=w=>{const r=S.words[w.de]||{ok:0,bad:0};return r.ok-r.bad*2+Math.random()*1.5;};
+  const weak=words.slice().sort((a,b)=>sc(a)-sc(b)).slice(0,8);
+  return buildQueue(weak,shuf(sents).slice(0,6),PLANS.P,true);
+}
+function updProg(){const p=$('#pg');if(p)p.style.width=Math.min(100,L.solved/L.base*100)+'%';}
+function next(){
+  if(!L.q.length)return finish();
+  const ex=L.q.shift();L.cur=ex;L.state='ask';
+  const lb=$('#lb');lb.className='lbody';lb.scrollTop=0;
+  $('#lf').className='lfoot';$('#fbx').innerHTML='';
+  const cb=$('#cb');cb.className='btn';cb.textContent=ex.type==='intro'?'Nastavi':'Provjeri';
+  renderEx(ex,lb);cb.disabled=!X.ready;updProg();
+}
+function onCheck(){
+  if(L.state==='ask'){
+    if(!X.ready)return;const r=X.check();const ex=L.cur;
+    if(ex.type==='intro'){L.solved++;return next();}
+    L.state='fb';$('#lb').classList.add('lock');
+    if(!X.match){L.att++;rec(ex.w,r.ok);}
+    if(r.ok){L.solved++;L.okc++;L.combo++;beep('ok');
+      if(ex.type==='build_de'||ex.type==='type'||ex.type==='mc_bs_de')speak(ex.s?ex.s.de:ex.w.de);}
+    else{L.mist++;L.combo=0;beep('bad');L.q.push({...ex});
+      if(L.mode!=='practice'){regen();S.hearts=Math.max(0,S.hearts-1);save();$('#lh').textContent='❤️ '+S.hearts;$('#lh').classList.add('shake');}}
+    const lf=$('#lf');lf.className='lfoot '+(r.ok?'ok':'bad');
+    let h=`<div class="fbt">${r.ok?'✅ '+pick(PRAISE):'❌ Netačno'}</div>`;
+    if(!r.ok)h+=`<div class="fbd">Tačan odgovor:<br><b>${esc(r.correct)}</b></div>`;
+    else if(r.note)h+=`<div class="fbd">${esc(r.note)}</div>`;
+    else if(ex.s&&ex.type!=='build_bs')h+=`<div class="fbd">${esc(ex.s.de)} = ${esc(ex.s.bs)}</div>`;
+    if(r.ok&&L.combo>=3&&L.combo%3===0)h+=`<span class="combo">🔥 ${L.combo} zaredom!</span>`;
+    $('#fbx').innerHTML=h;
+    const cb=$('#cb');cb.textContent='Nastavi';cb.className='btn'+(r.ok?'':' red');cb.disabled=false;updProg();save();
+  }else{
+    if(L.mode!=='practice'&&S.hearts<=0)return failScreen();
+    next();
+  }
+}
+function quitAsk(){
+  sheet(`<div style="text-align:center">${mascot(80,'sad')}<h3>Stvarno odustaješ?</h3><p class="muted">Napredak u ovoj lekciji neće biti sačuvan.</p><button class="btn" id="qk">Nastavi učiti</button><button class="btn ghost" id="qq" style="color:var(--red)">Prekini lekciju</button></div>`);
+  $('#qk').onclick=closeSheet;$('#qq').onclick=()=>{closeSheet();endLesson();};
+}
+function endLesson(){try{speechSynthesis.cancel();}catch(e){}const d=$('#lesson');if(d)d.remove();L=null;render();}
+function finish(){
+  const secs=Math.round((Date.now()-L.t0)/1000),acc=L.att?Math.round(100*L.okc/L.att):100,perfect=L.mist===0;
+  let xp=L.mode==='practice'?5:(L.mode==='jump'||L.l===3)?20:10;if(perfect&&L.mode!=='practice')xp+=5;
+  const today=dk(),before=S.daily[today]||0;
+  S.xp+=xp;S.daily[today]=before+xp;S.lessons++;if(perfect)S.perfect++;
+  let streakUp=false;if(S.last!==today){S.streak=(S.last===dk(dayOff(-1)))?S.streak+1:1;S.last=today;streakUp=true;}
+  if(L.mode==='practice'){regen();S.hearts=Math.min(5,S.hearts+1);}
+  else if(L.mode==='jump'){for(let i=0;i<=L.u*4+3;i++)S.done[i]=true;}
+  else S.done[L.u*4+L.l]=true;
+  save();beep('win');confetti();
+  const goalHit=before<S.goal&&S.daily[today]>=S.goal;
+  const title=L.mode==='jump'?'Jedinica preskočena!':L.mode==='practice'?'Vježba završena!':perfect?'Savršena lekcija!':'Lekcija završena!';
+  $('#lb').innerHTML=`<div class="result">${mascot(130)}<h1>${title}</h1>
+  ${streakUp?`<div style="color:var(--orange);font-weight:900;font-size:18px">🔥 Niz: ${S.streak} ${S.streak===1?'dan':'dana'}!</div>`:''}
+  ${goalHit?`<div style="color:#e5a800;font-weight:900;margin-top:6px">🎯 Dnevni cilj ispunjen!</div>`:''}
+  ${L.mode==='practice'?`<div class="muted" style="margin-top:6px">+1 ❤️ srce</div>`:''}
+  <div class="rstats"><div class="rs" style="--c:#ffc800"><div class="h">UKUPNO XP</div><div class="v">⚡ ${xp}</div></div><div class="rs" style="--c:#58cc02"><div class="h">TAČNOST</div><div class="v">🎯 ${acc}%</div></div><div class="rs" style="--c:#1cb0f6"><div class="h">VRIJEME</div><div class="v">⏱ ${Math.floor(secs/60)}:${String(secs%60).padStart(2,'0')}</div></div></div></div>`;
+  $('#pg').style.width='100%';$('#lf').className='lfoot';$('#fbx').innerHTML='';
+  const cb=$('#cb');cb.textContent='Nastavi';cb.className='btn';cb.disabled=false;cb.onclick=endLesson;L.state='done';
+}
+function failScreen(){
+  $('#lb').innerHTML=`<div class="result">${mascot(130,'sad')}<h1 style="color:var(--red)">Nema više srca</h1><p class="muted">Srca se vraćaju sama: 1 svakih 20 minuta.<br>Ili vježbaj i odmah zaradi srce.</p></div>`;
+  $('#lf').className='lfoot';$('#fbx').innerHTML='';
+  const cb=$('#cb');cb.textContent='Vježbaj (+1 ❤️)';cb.className='btn blue';cb.disabled=false;cb.onclick=()=>{endLesson();startLesson(0,0,'practice');};
+  const b2=document.createElement('button');b2.className='btn ghost';b2.textContent='Kraj';b2.onclick=endLesson;$('#lf .fin').appendChild(b2);L.state='done';
+}
+function noHearts(){
+  const mins=Math.max(1,Math.ceil((HEART_MS-(Date.now()-S.heartTs))/60000));
+  sheet(`<div style="text-align:center">${mascot(90,'sad')}<h3>Nemaš srca 💔</h3><p class="muted">Sljedeće srce za ~${mins} min. Vježba ne troši srca i daje +1 srce.</p><button class="btn blue" id="np">Vježbaj</button><button class="btn ghost" id="nc">Zatvori</button></div>`);
+  $('#np').onclick=()=>startLesson(0,0,'practice');$('#nc').onclick=closeSheet;
+}
+
+/* ============ SHEETS / CONFETTI ============ */
+function sheet(html){closeSheet();const d=document.createElement('div');d.className='sheet-bg';d.id='sheet';d.innerHTML=`<div class="sheet">${html}</div>`;d.onclick=e=>{if(e.target===d)closeSheet();};document.body.appendChild(d);return d;}
+function closeSheet(){const s=$('#sheet');if(s)s.remove();}
+function confetti(){const c=document.createElement('canvas');c.id='cf';c.width=innerWidth;c.height=innerHeight;document.body.appendChild(c);const x=c.getContext('2d');
+const cols=['#58cc02','#1cb0f6','#ff4b4b','#ffc800','#ce82ff','#ff9600'];const P=Array.from({length:140},()=>({x:Math.random()*c.width,y:-20-Math.random()*c.height*.5,vx:(Math.random()-.5)*3,vy:2+Math.random()*4,r:Math.random()*6,s:4+Math.random()*6,c:pick(cols),w:Math.random()*.2-.1}));
+let t=0;(function f(){x.clearRect(0,0,c.width,c.height);P.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.04;p.r+=p.w;x.save();x.translate(p.x,p.y);x.rotate(p.r);x.fillStyle=p.c;x.fillRect(-p.s/2,-p.s/4,p.s,p.s/2);x.restore();});if(++t<170)requestAnimationFrame(f);else c.remove();})();}
+
+/* ============ VIEWS ============ */
+let tab='learn';
+const TABS=[['learn','🏠','Učenje'],['practice','💪','Vježba'],['words','📖','Riječi'],['video','🎬','Video'],['profile','👤','Profil']];
+function render(){
+  regen();
+  const app=$('#app');
+  app.innerHTML=`<header class="top"><span class="flag">🇩🇪</span><button class="stat fire" data-info="streak">🔥 ${streakNow()}</button><button class="stat xp" data-info="xp">⚡ ${S.xp}</button><button class="stat heart" data-info="hearts">❤️ ${S.hearts}</button></header><main id="main"></main><nav class="bottom"><div class="in">${TABS.map(([k,i,n])=>`<button data-tab="${k}" class="${tab===k?'on':''}"><span class="ic">${i}</span>${n}</button>`).join('')}</div></nav>`;
+  const m=$('#main');
+  ({learn:vLearn,practice:vPractice,words:vWords,video:vVideo,profile:vProfile})[tab](m);
+}
+function vLearn(m){
+  const today=S.daily[dk()]||0,g=S.goal,cur=curIdx();
+  let h=`<div class="card goal">${mascot(62)}<div class="gtxt"><div style="font-weight:900">${today>=g?'Dnevni cilj ispunjen! 🎉':cur===0&&!S.lessons?'Willkommen! Hajde da počnemo.':'Još '+(g-today)+' XP do dnevnog cilja'}</div><div class="gbar"><i style="width:${Math.min(100,today/g*100)}%"></i></div><div class="small muted">${today} / ${g} XP danas</div></div></div>`;
+  if(!TTS)h+=`<div class="note" style="margin-top:12px">🔇 Ovaj preglednik ne podržava izgovor. Otvori aplikaciju u <b>Chrome-u</b> da čuješ njemački.</div>`;
+  UNITS.forEach((U,u)=>{
+    if(!u||UNITS[u-1].lvl!==U.lvl)h+=`<div class="lvl"><span>${U.lvl}</span>${LVL[U.lvl]}</div>`;
+    h+=`<div class="unit" style="background:${U.c};box-shadow:0 4px 0 ${U.cd}"><div><div class="ulbl">JEDINICA ${u+1} · ${esc(U.de.toUpperCase())}</div><div class="utit">${U.ic} ${esc(U.t)}</div></div><button class="tipbtn" data-tip="${u}" aria-label="Savjet">📘</button></div><div class="path">`;
+    const offs=u%2?[0,-48,0,48]:[0,48,0,-48];
+    for(let l=0;l<4;l++){const i=u*4+l,done=S.done[i],open=isOpen(i);
+      h+=`<div class="nwrap" style="transform:translateX(${offs[l]}px)">${i===cur?'<div class="startb">POČNI</div>':''}<button class="node ${done?'done':''} ${open?'':'locked'} ${i===cur?'cur':''}" data-node="${i}" style="--c:${U.c};--cd:${U.cd}">${l===3?(open?'🏆':'🔒'):done?'✓':open?'★':'🔒'}</button></div>`;}
+    h+='</div>';
+  });
+  h+=`<div style="text-align:center;margin-top:40px" class="muted small">🎓 Ovo je kraj nivoa B2. Ko dođe dovde, priča njemački!</div>`;
+  m.innerHTML=h;
+  const c=m.querySelector('.node.cur');if(c&&S.lessons)setTimeout(()=>c.scrollIntoView({block:'center'}),30);
+}
+function nodeSheet(i){
+  const u=i>>2,l=i&3,U=UNITS[u],open=isOpen(i),done=S.done[i];
+  let h=`<div class="sh-h" style="color:${U.c}">${U.ic} JEDINICA ${u+1} · ${esc(U.t.toUpperCase())}</div><h3>${l===3?'Ispit jedinice':'Lekcija '+(l+1)+' od 3'}</h3><p class="muted">${l===3?'Provjera svega iz jedinice: više pisanja i slušanja.':LDESC[l]}</p>`;
+  if(open)h+=`<button class="btn" data-start="${i}">${done?'Ponovi':'Počni'} +${l===3?20:10} XP</button>`;
+  else{h+=`<p class="muted">🔒 Završi prethodne lekcije da otključaš ovu.</p>`;if(l===0)h+=`<button class="btn blue" data-jump="${u}">Znam ovo već: test za preskakanje</button>`;}
+  h+=`<button class="btn ghost" data-tip="${u}">📘 Gramatika i video</button>`;
+  sheet(h);
+}
+function tipSheet(u){
+  const U=UNITS[u];
+  sheet(`<div class="sh-h" style="color:${U.c}">${U.ic} JEDINICA ${u+1}</div><h3>${esc(U.t)} · ${esc(U.de)}</h3><div class="tip">${U.tip}</div>
+  <div class="sec"><h3>▶️ Video o ovoj temi</h3>
+  <a class="card res" href="https://www.youtube.com/results?search_query=${encodeURIComponent('Deutsch lernen A1 '+U.de)}" target="_blank" rel="noopener"><span class="e">🇩🇪</span><span><div class="tt">YouTube: Deutsch lernen A1 · ${esc(U.de)}</div><div class="ds">Video lekcije na njemačkom za ovu temu</div></span></a>
+  <a class="card res" href="https://www.youtube.com/results?search_query=${encodeURIComponent('njemački jezik za početnike '+U.t)}" target="_blank" rel="noopener"><span class="e">🇧🇦</span><span><div class="tt">YouTube: njemački za početnike · ${esc(U.t)}</div><div class="ds">Objašnjenja na našem jeziku</div></span></a></div>
+  <div class="sec"><h3>📝 Rečenice iz jedinice</h3>${U.sents.map(s=>`<div class="wrow">${spkBtn(s.de)}<div class="tx"><div class="d">${esc(s.de)}</div><div class="b">${esc(s.bs)}</div></div></div>`).join('')}</div>`);
+}
+function vPractice(m){
+  const all=Object.entries(S.words),weak=all.filter(([k,r])=>r.bad>0).sort((a,b)=>(b[1].bad-b[1].ok)-(a[1].bad-a[1].ok)).slice(0,8);
+  m.innerHTML=`<h2 class="t">Vježba</h2><div class="card" style="text-align:center">${mascot(90)}<div style="font-weight:900;font-size:18px;margin-top:6px">Ponovi slabe riječi</div><p class="muted">Vježba bira riječi u kojima najviše griješiš. Ne troši srca i daje <b>+1 ❤️</b> i 5 XP.</p><button class="btn blue" id="pr">Počni vježbu</button></div>
+  <div class="sec"><h3>🎯 Riječi za ponavljanje</h3>${weak.length?weak.map(([de,r])=>{const w=ALLW.find(x=>x.de===de);return w?`<div class="wrow">${spkBtn(w.de)}<div class="tx"><div class="d">${esc(w.de)}</div><div class="b">${esc(w.bs)}</div></div><span class="small" style="color:var(--red)">✗ ${r.bad}</span></div>`:'';}).join(''):'<p class="muted">Još nema grešaka. Samo naprijed! 💪</p>'}</div>`;
+  $('#pr').onclick=()=>startLesson(0,0,'practice');
+}
+function vWords(m){
+  m.innerHTML=`<h2 class="t">Rječnik</h2><input class="search" id="sq" placeholder="🔍 Traži riječ (njemački ili bosanski)…"><div id="wl"></div>`;
+  const draw=()=>{const q=norm($('#sq').value);let h='';
+    UNITS.forEach((U,u)=>{const open=isOpen(u*4)||S.done[u*4];const ws=U.words.concat(U.sents).filter(w=>!q||norm(w.de).includes(q)||norm(w.bs).includes(q));if(!ws.length)return;
+      h+=`<div class="wgrp">${U.ic} ${esc(U.t.toUpperCase())} ${open?'':'🔒'}</div>`;
+      ws.forEach(w=>{const r=S.words[w.de];const st=r?Math.max(0,Math.min(4,r.ok-r.bad)):0;h+=`<div class="wrow">${spkBtn(w.de)}<div class="tx"><div class="d">${esc(w.de)}</div><div class="b">${esc(w.bs)}</div></div>${r?`<span class="str">${'●'.repeat(st)}${'○'.repeat(4-st)}</span>`:''}</div>`;});});
+    $('#wl').innerHTML=h||'<p class="muted">Ništa nije pronađeno.</p>';};
+  $('#sq').oninput=draw;draw();
+}
+const RES=[
+['📺','DW Learn German · Nicos Weg','Besplatni video kurs A1–B1 od Deutsche Welle: serija s vježbama nakon svake epizode.','A1–B1','https://learngerman.dw.com'],
+['🎥','Nicos Weg A1 na YouTube-u','Sve epizode kursa redom, s titlovima.','A1','https://www.youtube.com/results?search_query=Nicos+Weg+A1'],
+['🗣️','Easy German','Razgovori s ljudima na ulici, s njemačkim i engleskim titlovima. Pravi, živi jezik.','A2+','https://www.youtube.com/@EasyGerman'],
+['🇧🇦','Njemački na našem jeziku','Lekcije objašnjene na bosanskom/hrvatskom/srpskom.','A1','https://www.youtube.com/results?search_query=njema%C4%8Dki+jezik+za+po%C4%8Detnike+A1'],
+['📰','Langsam gesprochene Nachrichten','DW vijesti čitane sporo. Odlično za slušanje.','B1','https://www.youtube.com/results?search_query=Langsam+gesprochene+Nachrichten+DW'],
+['🎧','Slow German podcast','Kratke priče o životu u Njemačkoj, sporo izgovorene.','A2–B1','https://www.youtube.com/results?search_query=Slow+German+podcast'],
+['🏛️','Goethe-Institut','Službeni ispiti (A1, B1…) i besplatne vježbe.','A1–C2','https://www.goethe.de'],
+['🔤','DWDS rječnik','Njemački rječnik s primjerima i izgovorom.','sve','https://www.dwds.de'],
+['🌐','Google Translate','Prevod njemački ↔ bosanski, s izgovorom i kamerom za pisma.','sve','https://translate.google.com/?sl=de&tl=bs']
+];
+function vVideo(m){
+  m.innerHTML=`<h2 class="t">Video i izvori</h2><p class="muted" style="margin-top:-6px">Najbolji besplatni izvori, uz lekcije. Otvaraju se u YouTube-u ili pregledniku.</p>
+  ${RES.map(r=>`<a class="card res" href="${r[4]}" target="_blank" rel="noopener"><span class="e">${r[0]}</span><span><div class="tt">${esc(r[1])}<span class="chip">${r[3]}</span></div><div class="ds">${esc(r[2])}</div></span></a>`).join('')}
+  <div class="note" style="margin-top:16px">💡 <b>Plan za svaki dan:</b> 1 lekcija ovdje (5 min) + 1 epizoda Nicos Weg (10 min) + slušaj Easy German usput u autu.</div>`;
+}
+function vProfile(m){
+  const known=Object.values(S.words).filter(r=>r.ok>r.bad).length,doneN=Object.keys(S.done).length;
+  const days=[...Array(7)].map((_,i)=>dayOff(i-6)),vals=days.map(d=>S.daily[dk(d)]||0),mx=Math.max(S.goal,...vals);
+  const DN=['Ned','Pon','Uto','Sri','Čet','Pet','Sub'];
+  m.innerHTML=`<div style="text-align:center">${mascot(100)}<h2 class="t" style="margin-bottom:2px">Moj profil</h2><div class="muted small">Učim njemački 🇩🇪 · Nivo ${curLevel()}</div></div>
+  <div class="sec"><h3>Statistika</h3><div class="grid2">
+  <div class="sbox"><span style="font-size:26px">🔥</span><div><div class="n">${streakNow()}</div><div class="l">dana zaredom</div></div></div>
+  <div class="sbox"><span style="font-size:26px">⚡</span><div><div class="n">${S.xp}</div><div class="l">ukupno XP</div></div></div>
+  <div class="sbox"><span style="font-size:26px">✅</span><div><div class="n">${doneN} / ${UNITS.length*4}</div><div class="l">lekcija završeno</div></div></div>
+  <div class="sbox"><span style="font-size:26px">📖</span><div><div class="n">${known}</div><div class="l">naučenih riječi</div></div></div>
+  </div></div>
+  <div class="sec"><h3>Ova sedmica</h3><div class="card"><div class="chart">${vals.map((v,i)=>`<div class="c"><div class="small" style="font-size:11px">${v||''}</div><div class="bar ${v>=S.goal?'g':''}" style="height:${v/mx*100}%"></div><div class="lb">${DN[days[i].getDay()]}</div></div>`).join('')}</div></div></div>
+  <div class="sec"><h3>Dnevni cilj</h3><div class="seg">${[[10,'Lagano'],[20,'Normalno'],[30,'Ozbiljno'],[50,'Intenzivno']].map(([v,n])=>`<button data-goal="${v}" class="${S.goal===v?'on':''}">${n}<br><span class="small muted">${v} XP</span></button>`).join('')}</div></div>
+  <div class="sec"><h3>Zvuk i izgovor</h3>
+  <div class="seg"><button data-snd="1" class="${S.sound?'on':''}">🔔 Efekti uklj.</button><button data-snd="0" class="${!S.sound?'on':''}">🔕 Isklj.</button></div>
+  <div class="seg" style="margin-top:8px">${[[0.75,'🐢 Sporije'],[0.9,'Normalno'],[1.05,'⚡ Brže']].map(([v,n])=>`<button data-rate="${v}" class="${S.rate===v?'on':''}">${n}</button>`).join('')}</div>
+  ${TTS?(voices.length?`<div style="margin-top:10px"><select id="vs">${voices.map(v=>`<option value="${esc(v.name)}" ${S.voice===v.name?'selected':''}>${esc(v.name)} (${esc(v.lang)})</option>`).join('')}</select></div><button class="btn ghost" data-say="Hallo! Ich lerne Deutsch.">🔊 Probaj glas</button>`:`<div class="note" style="margin-top:10px">Nema njemačkog glasa na uređaju. Na Androidu: Postavke → Pretvaranje teksta u govor → instaliraj njemački jezik, ili otvori aplikaciju u Chrome-u.</div>`):`<div class="note" style="margin-top:10px">🔇 Izgovor nije podržan ovdje. Otvori aplikaciju u Chrome-u.</div>`}
+  </div>
+  <div class="sec"><a class="card res" href="../"><span class="e">🧪</span><span><div class="tt">bashlab</div><div class="ds">Sve moje aplikacije · @basa.gtm</div></span></a></div>
+  <div class="sec"><div class="note">💾 Napredak se čuva u ovom pregledniku na ovom uređaju.</div><button class="btn ghost" id="rst" style="color:var(--red)">Resetuj napredak</button></div>`;
+  const vs=$('#vs');if(vs)vs.onchange=()=>{S.voice=vs.value;save();};
+  $('#rst').onclick=()=>{sheet(`<div style="text-align:center">${mascot(80,'sad')}<h3>Obrisati sav napredak?</h3><p class="muted">XP, niz i završene lekcije biće izbrisani.</p><button class="btn red" id="ry">Da, obriši</button><button class="btn ghost" id="rn">Odustani</button></div>`);$('#ry').onclick=()=>{S=def();save();closeSheet();render();};$('#rn').onclick=closeSheet;};
+}
+
+/* ============ EVENTS ============ */
+document.addEventListener('click',e=>{
+  const t=e.target.closest('[data-say],[data-tab],[data-node],[data-start],[data-jump],[data-tip],[data-goal],[data-snd],[data-rate],[data-info]');if(!t)return;
+  const d=t.dataset;
+  if(d.say!==undefined){speak(d.say,d.slow==='1');return;}
+  if(d.tab){closeSheet();tab=d.tab;render();scrollTo(0,0);}
+  else if(d.node)nodeSheet(+d.node);
+  else if(d.start){const i=+d.start;startLesson(i>>2,i&3,'lesson');}
+  else if(d.jump)startLesson(+d.jump,3,'jump');
+  else if(d.tip)tipSheet(+d.tip);
+  else if(d.goal){S.goal=+d.goal;save();render();}
+  else if(d.snd){S.sound=d.snd==='1';save();render();}
+  else if(d.rate){S.rate=+d.rate;save();render();speak('Guten Tag!');}
+  else if(d.info){const k=d.info;
+    if(k==='hearts'){regen();const mins=Math.max(1,Math.ceil((HEART_MS-(Date.now()-S.heartTs))/60000));sheet(`<h3>❤️ Srca: ${S.hearts} / 5</h3><p class="muted">Svaka greška u lekciji košta 1 srce. ${S.hearts<5?`Sljedeće srce za ~${mins} min.`:'Sva srca su puna!'} Vježba ne troši srca i daje +1.</p><button class="btn blue" data-tab="practice">Idi na vježbu</button>`);}
+    else if(k==='streak')sheet(`<h3>🔥 Niz: ${streakNow()} ${streakNow()===1?'dan':'dana'}</h3><p class="muted">Završi barem jednu lekciju ili vježbu svaki dan da ti niz ne pukne.</p>`);
+    else sheet(`<h3>⚡ ${S.xp} XP</h3><p class="muted">Lekcija +10, ispit +20, savršeno bez greške +5, vježba +5.</p>`);}
+});
+document.addEventListener('keydown',e=>{
+  if(!L||!$('#lesson')||$('#sheet'))return;
+  if(e.key==='Enter'){e.preventDefault();$('#cb').click();return;}
+  if(document.activeElement&&document.activeElement.tagName==='INPUT')return;
+  if(/^[1-4]$/.test(e.key)&&L.state==='ask'){const b=$('#lb').querySelectorAll('.opts .opt')[+e.key-1];if(b)b.click();}
+});
+setInterval(()=>{if(!L&&S.hearts<5){const h=S.hearts;regen();if(S.hearts!==h)render();}},60000);
+render();
+</script>
+</body>
+</html>

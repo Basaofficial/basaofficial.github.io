@@ -177,6 +177,30 @@ window.PROJECTS = [
   }
 },
 {
+  id: "deutsch", name: "Bash Deutsch", tags: ["web"], status: "live", isNew: true,
+  group: "apps", cat: "edu", icon: "book", c: ["#58cc02", "#1cb0f6"],
+  web: "deutsch/",
+  shots: ["deutsch-1", "deutsch-2", "deutsch-3"],
+  platform: "Web",
+  t: {
+    bs: { sub: "Njemački od A1 do B2",
+          short: "Uči njemački kroz kratke lekcije, kao u Duolingu.",
+          long: "32 jedinice od A1 do B2, oko 390 riječi i 200 rečenica. Svaka lekcija ima zadatke: prevod, slušanje, slaganje rečenica, pisanje, spajanje parova i der/die/das.",
+          more: "Uz svaku jedinicu ide kratka gramatika na našem jeziku i video izvori. Srca, XP, niz dana i dnevni cilj drže te da učiš svaki dan, a vježba ponavlja riječi u kojima griješiš.",
+          feats: ["A1, A2, B1 i B2", "9 vrsta zadataka", "Izgovor svake riječi i rečenice", "Gramatika za svaku jedinicu", "Vježba slabih riječi", "Niz dana, XP i dnevni cilj"] },
+    de: { sub: "Deutsch von A1 bis B2",
+          short: "Deutsch lernen in kurzen Lektionen, wie bei Duolingo.",
+          long: "32 Einheiten von A1 bis B2, rund 390 Wörter und 200 Sätze. Jede Lektion hat Aufgaben: Übersetzen, Hören, Sätze bauen, Schreiben, Paare verbinden und der/die/das.",
+          more: "Zu jeder Einheit gibt es kurze Grammatik auf Bosnisch und Videoquellen. Herzen, XP, Serie und Tagesziel halten dich am Ball, und die Übung wiederholt deine schwachen Wörter.",
+          feats: ["A1, A2, B1 und B2", "9 Aufgabentypen", "Aussprache jedes Wortes und Satzes", "Grammatik zu jeder Einheit", "Schwache Wörter üben", "Serie, XP und Tagesziel"] },
+    en: { sub: "German from A1 to B2",
+          short: "Learn German in short lessons, Duolingo style.",
+          long: "32 units from A1 to B2, about 390 words and 200 sentences. Every lesson has exercises: translating, listening, building sentences, typing, matching pairs and der/die/das.",
+          more: "Each unit comes with short grammar notes in Bosnian and video resources. Hearts, XP, streaks and a daily goal keep you going, and practice repeats the words you get wrong.",
+          feats: ["A1, A2, B1 and B2", "9 exercise types", "Pronunciation of every word and sentence", "Grammar for every unit", "Practice weak words", "Streak, XP and daily goal"] }
+  }
+},
+{
   id: "bashmouse", name: "BashMouse", tags: ["apk"], status: "soon",
   group: "apps", cat: "tools", icon: "hand", c: ["#a78bfa", "#ec4899"],
   shots: [],

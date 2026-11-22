@@ -18,7 +18,7 @@ const UI = {
     desc:'Opis', more:'više', features:'Šta zna', install:'Instaliraj', qrT:'Skeniraj telefonom', qrApk:'Sa PC-a na telefon: skeniraj i APK se odmah skida.', qrWeb:'Sa PC-a na telefon: skeniraj i otvori.',
     news:'Šta je novo', newsNone:'Changelog trenutno nije dostupan.', size:'Veličina', version:'Verzija', platform:'Radi na',
     infoH:'Informacije', dev:'Developer', cat:'Kategorija', compat:'Kompatibilnost', price:'Cijena', free:'Besplatno', source:'Izvorni kod', shots:'Pregled',
-    cats:{ games:'Igre', health:'Zdravlje i fitness', social:'Komunikacija', prod:'Produktivnost', tools:'Alati' },
+    cats:{ games:'Igre', health:'Zdravlje i fitness', social:'Komunikacija', prod:'Produktivnost', tools:'Alati', edu:'Obrazovanje' },
     fH:'Prijedlozi i greške', fP:'Imaš ideju šta da dodam, našao si grešku ili imaš pitanje o nekoj od mojih aplikacija? Napiši mi.',
     fName:'Ime', fContact:'Mail ili Instagram', fContactPh:'tvoj@mail.com ili @instagram', fType:'O čemu se radi?',
     fTypes:['Prijedlog','Greška','Pitanje','Nešto drugo'], fAbout:'Odnosi se na', fNew:'Nova ideja',
@@ -29,7 +29,7 @@ const UI = {
     cLang:'Jezik', cTop:'Na početak', cInst:'Instaliraj bashlab kao aplikaciju', cMail:'Kopiraj mail', cCoffee:'Buy me a coffee',
     installApp:'⤓ Instaliraj bashlab', installed:'✓ bashlab je instaliran', offline:'Offline si — prikazujem sačuvanu verziju.',
     activeP:'aktivnih projekata', firstLine:'prva linija koda', coffee:'kafa', inLab:'u labu', unknown:'nije poznato',
-    typed:['whoami → anel aka basa','ls ./projekti → armory  igre  metar  zvucnik  electro  bashtalk  fit','./build --apk --web','echo "dobrodošli u bashlab"'] },
+    typed:['whoami → anel aka basa','ls ./projekti → armory  igre  metar  zvucnik  electro  bashtalk  fit  deutsch','./build --apk --web','echo "dobrodošli u bashlab"'] },
   de: { search:'suchen', projects:'Projekte', about:'Über mich', contact:'Kontakt', all:'alle', web:'web', apk:'apk', game:'spiele',
     lead:'Ich baue Apps, die ich selbst benutze — fürs Handy, fürs Gaming und für die Arbeit.', nproj:'Apps', napk:'APKs', updated:'aktualisiert',
     featured:'Empfohlen', newL:'Neu',
@@ -38,7 +38,7 @@ const UI = {
     desc:'Beschreibung', more:'mehr', features:'Funktionen', install:'Installieren', qrT:'Mit dem Handy scannen', qrApk:'Vom PC aufs Handy: scannen und die APK lädt sofort.', qrWeb:'Vom PC aufs Handy: scannen und öffnen.',
     news:'Neuigkeiten', newsNone:'Changelog gerade nicht verfügbar.', size:'Größe', version:'Version', platform:'Läuft auf',
     infoH:'Informationen', dev:'Entwickler', cat:'Kategorie', compat:'Kompatibilität', price:'Preis', free:'Gratis', source:'Quellcode', shots:'Vorschau',
-    cats:{ games:'Spiele', health:'Gesundheit & Fitness', social:'Kommunikation', prod:'Produktivität', tools:'Dienstprogramme' },
+    cats:{ games:'Spiele', health:'Gesundheit & Fitness', social:'Kommunikation', prod:'Produktivität', tools:'Dienstprogramme', edu:'Bildung' },
     fH:'Vorschläge und Fehler', fP:'Du hast eine Idee, was ich hinzufügen soll, einen Fehler gefunden oder eine Frage zu einer meiner Apps? Schreib mir.',
     fName:'Name', fContact:'Mail oder Instagram', fContactPh:'deine@mail.de oder @instagram', fType:'Worum geht es?',
     fTypes:['Vorschlag','Fehler','Frage','Etwas anderes'], fAbout:'Bezieht sich auf', fNew:'Neue Idee',
@@ -49,7 +49,7 @@ const UI = {
     cLang:'Sprache', cTop:'Nach oben', cInst:'bashlab als App installieren', cMail:'Mail kopieren', cCoffee:'Buy me a coffee',
     installApp:'⤓ bashlab installieren', installed:'✓ bashlab ist installiert', offline:'Du bist offline — zeige gespeicherte Version.',
     activeP:'aktive Projekte', firstLine:'erste Codezeile', coffee:'Kaffee', inLab:'im Lab', unknown:'unbekannt',
-    typed:['whoami → anel aka basa','ls ./projekte → armory  igre  metar  zvucnik  electro  bashtalk  fit','./build --apk --web','echo "willkommen im bashlab"'] },
+    typed:['whoami → anel aka basa','ls ./projekte → armory  igre  metar  zvucnik  electro  bashtalk  fit  deutsch','./build --apk --web','echo "willkommen im bashlab"'] },
   en: { search:'search', projects:'Projects', about:'About', contact:'Contact', all:'all', web:'web', apk:'apk', game:'games',
     lead:'I build apps I actually use — for my phone, for gaming and for work.', nproj:'apps', napk:'APKs', updated:'updated',
     featured:'Featured', newL:'New',
@@ -58,7 +58,7 @@ const UI = {
     desc:'Description', more:'more', features:'What it does', install:'Install', qrT:'Scan with your phone', qrApk:'From PC to phone: scan and the APK downloads right away.', qrWeb:'From PC to phone: scan and open.',
     news:"What's new", newsNone:'Changelog not available right now.', size:'Size', version:'Version', platform:'Runs on',
     infoH:'Information', dev:'Developer', cat:'Category', compat:'Compatibility', price:'Price', free:'Free', source:'Source code', shots:'Preview',
-    cats:{ games:'Games', health:'Health & Fitness', social:'Communication', prod:'Productivity', tools:'Utilities' },
+    cats:{ games:'Games', health:'Health & Fitness', social:'Communication', prod:'Productivity', tools:'Utilities', edu:'Education' },
     fH:'Suggestions and bugs', fP:'Got an idea for something I should add, found a bug or have a question about one of my apps? Let me know.',
     fName:'Name', fContact:'Email or Instagram', fContactPh:'you@mail.com or @instagram', fType:'What is it about?',
     fTypes:['Suggestion','Bug','Question','Something else'], fAbout:'About', fNew:'New idea',
@@ -69,7 +69,7 @@ const UI = {
     cLang:'Language', cTop:'Back to top', cInst:'Install bashlab as an app', cMail:'Copy mail', cCoffee:'Buy me a coffee',
     installApp:'⤓ Install bashlab', installed:'✓ bashlab is installed', offline:"You're offline — showing the saved version.",
     activeP:'active projects', firstLine:'first line of code', coffee:'coffee', inLab:'in the lab', unknown:'unknown',
-    typed:['whoami → anel aka basa','ls ./projects → armory  igre  metar  zvucnik  electro  bashtalk  fit','./build --apk --web','echo "welcome to bashlab"'] }
+    typed:['whoami → anel aka basa','ls ./projects → armory  igre  metar  zvucnik  electro  bashtalk  fit  deutsch','./build --apk --web','echo "welcome to bashlab"'] }
 };
 const qLang = new URLSearchParams(location.search).get('lang');
 let L = (qLang && UI[qLang] && qLang) || localStorage.getItem('bl_lang') || ((navigator.language || '').toLowerCase().startsWith('de') ? 'de' : 'bs');
@@ -95,6 +95,7 @@ const IC = {
   bolt:'<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>',
   hand:'<path d="M18 11V6a2 2 0 0 0-4 0M14 10V4a2 2 0 0 0-4 0v2M10 10.5V6a2 2 0 0 0-4 0v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.9-6-2.4l-3.6-3.6a2 2 0 0 1 2.8-2.8L7 15"/>',
   ruler:'<path d="M3 16.5L16.5 3 21 7.5 7.5 21z"/><path d="M7 12.5l2 2M9.8 9.7l1.4 1.4M12.5 7l2 2M15.3 4.2l1.4 1.4"/>',
+  book:'<path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v17H6.5A2.5 2.5 0 0 0 4 21.5z"/><path d="M4 21.5A2.5 2.5 0 0 1 6.5 19H20M9 7h7M9 11h5"/>',
   speaker:'<path d="M4 9h3l5-4v14l-5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18.5 6a8 8 0 0 1 0 12"/>'
 };
 const svg = (k, sw = 1.8) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round">${IC[k] || ''}</svg>`;
