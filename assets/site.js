@@ -435,7 +435,7 @@ async function fillProject(p){
 /* ---------------- QR kod (učita se tek kad treba) ---------------- */
 let qrLib;
 function qr(url){
-  qrLib = qrLib || new Promise((res, rej) => { const s = document.createElement('script'); s.src = 'https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js'; s.onload = res; s.onerror = rej; document.head.appendChild(s); });
+  qrLib = qrLib || new Promise((res, rej) => { const s = document.createElement('script'); s.src = 'assets/vendor/qrcode.js'; s.onload = res; s.onerror = rej; document.head.appendChild(s); });
   qrLib.then(() => {
     const box = $('#qr'); if (!box) return;
     const q = window.qrcode(0, 'M'); q.addData(url); q.make();

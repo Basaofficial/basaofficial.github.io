@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Datenschutz · bashlab</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#000000">
+<link rel="stylesheet" href="assets/fonts/fonts.css">
+<style>
+:root{--g:#7cff01;--t:#f2f5f3;--m:#9aa3a9;--gb:rgba(255,255,255,.12)}
+*{box-sizing:border-box}
+body{margin:0;background:#04070a;color:var(--t);font-family:Inter,-apple-system,"Segoe UI",Roboto,system-ui,sans-serif;line-height:1.6;font-size:15px}
+main{max-width:780px;margin:0 auto;padding:28px 18px 60px}
+h1{font-size:28px;margin:0 0 4px;letter-spacing:-.02em}
+h2{font-size:19px;margin:28px 0 6px;color:var(--g)}
+h3{font-size:16px;margin:16px 0 4px}
+p,li{color:#dfe5e1}
+.card{background:rgba(255,255,255,.055);border:1px solid var(--gb);border-radius:18px;padding:16px 18px;margin:14px 0}
+.lang{display:flex;gap:8px;margin:14px 0;flex-wrap:wrap}
+.lang a,.back{display:inline-block;border:1px solid var(--gb);border-radius:12px;padding:7px 14px;color:var(--t);text-decoration:none;font-weight:700;background:rgba(255,255,255,.05)}
+a{color:#2fd6ff}
+small{color:var(--m)}
+</style>
+</head>
+<body>
+<main>
+<a class="back" href="./">← bashlab</a>
+<h1>Datenschutzerklärung</h1>
+<small>Stand: 22.11.2026 · gilt für basaofficial.github.io (bashlab) und alle dort veröffentlichten Web-Apps</small>
+<div class="lang"><a href="#de">🇩🇪 Deutsch</a><a href="#bs">🇧🇦 Bosanski</a><a href="deutsch/datenschutz.html">Bash Deutsch (eigene Erklärung)</a></div>
+
+<section id="de">
+<div class="card"><b>Kurz gesagt:</b> bashlab ist ein privates, nicht kommerzielles Projekt. Es gibt keine Werbung, keine Cookies und keine Analyse- oder Tracking-Dienste. Schriftarten und Bibliotheken werden von dieser Website selbst geladen. Daten werden nur dort übertragen, wo eine App es für ihre Funktion braucht (z. B. Online-Spiele oder Chat), wie unten beschrieben.</div>
+
+<h2>1. Verantwortlicher</h2>
+<p>Anel (basaofficial), privat und nicht kommerziell<br>E-Mail: <a href="mailto:basagtm@gmail.com">basagtm@gmail.com</a> · Instagram: @basa.gtm</p>
+
+<h2>2. Hosting (GitHub Pages)</h2>
+<p>Die Website wird über GitHub Pages der GitHub Inc. (USA) bereitgestellt. GitHub verarbeitet beim Aufruf technisch notwendige Daten wie IP-Adresse, Datum, Uhrzeit und Browserinformationen in Server-Logs. Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO (sicherer, stabiler Betrieb). Eine Übermittlung in die USA ist möglich; GitHub stützt sich auf geeignete Garantien (z. B. EU-US Data Privacy Framework bzw. Standardvertragsklauseln). Mehr: <a href="https://docs.github.com/de/site-policy/privacy-policies/github-general-privacy-statement" target="_blank" rel="noopener">Datenschutzerklärung von GitHub</a>.</p>
+
+<h2>3. Speicherung im Browser</h2>
+<p>Einstellungen und App-Daten (z. B. Sprache, Spielstände, Lernfortschritt) werden nur im lokalen Speicher deines Browsers (localStorage/IndexedDB) abgelegt. Eine installierbare Offline-Version nutzt einen Service Worker, der Dateien dieser Website zwischenspeichert. Es werden keine Cookies gesetzt. Du kannst alles über die Browser-Einstellungen löschen.</p>
+
+<h2>4. Startseite</h2>
+<h3>Versions- und Update-Infos (GitHub API)</h3>
+<p>Für Versionsnummern und „Was ist neu" ruft dein Browser öffentliche Daten von api.github.com ab. Dabei sieht GitHub deine IP-Adresse. Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO.</p>
+<h3>Kontaktformular (FormSubmit)</h3>
+<p>Wenn du das Formular „Vorschläge und Fehler" absendest, werden Name, Kontakt (E-Mail oder Instagram), Art der Nachricht, App und Nachricht über den Dienst FormSubmit (formsubmit.co) per E-Mail an den Verantwortlichen weitergeleitet. Dabei sieht der Dienst auch deine IP-Adresse. Rechtsgrundlage: Art. 6 Abs. 1 lit. b bzw. f DSGVO (Bearbeitung deiner Anfrage). Die E-Mails werden gelöscht, wenn die Anfrage erledigt ist. Alternativ kannst du direkt per E-Mail oder Instagram schreiben.</p>
+
+<h2>5. Apps mit Online-Funktionen</h2>
+<h3>#Bash igre (Online-Spiele) und Bash Talk (Chat / Walkie-Talkie)</h3>
+<p>Für das Spielen und Chatten mit anderen werden Nachrichten in Echtzeit über öffentliche MQTT-Server übertragen (u. a. EMQX – broker.emqx.io, HiveMQ – broker.hivemq.com, Eclipse Mosquitto – test.mosquitto.org / mqtt.eclipseprojects.io, Shiftr – public.cloud.shiftr.io). Übertragen werden Spitzname, Spielzüge bzw. Chatnachrichten, Sprach- und Dateinachrichten sowie Online-Status. Die Betreiber sehen deine IP-Adresse; Serverstandorte können außerhalb der EU liegen. In Bash Talk werden Nachrichten in passwortgeschützten Räumen auf deinem Gerät verschlüsselt; in öffentlichen Räumen kann jeder im Raum mitlesen. Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO (Bereitstellung der von dir genutzten Funktion). Die Offline-Funktionen der Android-App laufen direkt zwischen Geräten ohne Server.</p>
+<h3>Bash Armory</h3>
+<p>Die App lädt Charakterdaten von Warmane (armory.warmane.com, teils über einen Weiterleitungsdienst auf workers.dev), Item-Daten von wotlk.murlocvillage.com sowie Bilder und 3D-Modelle von Wowhead/ZAM (wowhead.com, wow.zamimg.com). Dabei sehen diese Anbieter deine IP-Adresse. Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO.</p>
+<h3>Bash Deutsch</h3>
+<p>Für Bash Deutsch gilt eine eigene, ausführliche Erklärung: <a href="deutsch/datenschutz.html">Datenschutz Bash Deutsch</a>.</p>
+<h3 id="electro">bash-electro (Konto, Cloud und Chat)</h3>
+<p>bash-electro funktioniert ohne Konto; Projekte bleiben dann nur in deinem Browser. Wenn du ein Konto anlegst, nutzt die App Google Firebase (Google Ireland Ltd. / Google LLC): <b>Firebase Authentication</b> für die Anmeldung mit E-Mail und Passwort oder mit deinem Google-Konto, und <b>Cloud Firestore</b> zum Speichern von Name, E-Mail, deinen Projekten, Chat-Nachrichten in Kanälen und Nachrichten über das Kontaktformular. Die Firebase-Bibliotheken werden von Google-Servern (www.gstatic.com) geladen. Google verarbeitet dabei auch deine IP-Adresse; eine Übermittlung in die USA ist möglich (EU-US Data Privacy Framework). Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO (Bereitstellung deines Kontos und der Cloud-Funktionen). Die Daten bleiben gespeichert, bis du dein Konto bzw. deine Projekte löschst oder die Löschung per E-Mail verlangst. Mehr: <a href="https://firebase.google.com/support/privacy" target="_blank" rel="noopener">Firebase Datenschutz</a>.</p>
+<h3>Weitere Apps</h3>
+<p>#Bash Fit, #Bash Metar und #Bash Zvučnik arbeiten vollständig auf deinem Gerät; Eingaben, Messungen und Aufnahmen werden nicht übertragen.</p>
+
+<h2>6. Downloads und externe Links</h2>
+<p>APK-Dateien werden von GitHub (github.com, Releases) heruntergeladen. Links zu Instagram, GitHub, YouTube und anderen Seiten öffnen sich erst nach deinem Klick; dann gelten deren Datenschutzbestimmungen.</p>
+
+<h2>7. Deine Rechte</h2>
+<p>Du hast das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit und Widerspruch (Art. 15–21 DSGVO) sowie auf Widerruf einer Einwilligung mit Wirkung für die Zukunft. Schreib dafür an <a href="mailto:basagtm@gmail.com">basagtm@gmail.com</a>. Außerdem kannst du dich bei einer Datenschutz-Aufsichtsbehörde beschweren.</p>
+</section>
+
+<section id="bs">
+<h1 style="margin-top:46px">Izjava o privatnosti</h1>
+<div class="card"><b>Ukratko:</b> bashlab je privatan, nekomercijalan projekat. Nema reklama, kolačića ni praćenja. Fontovi i biblioteke se učitavaju sa ovog sajta. Podaci se šalju samo tamo gdje aplikacija to treba za rad (online igre, chat), kako je opisano ispod.</div>
+<h2>1. Odgovorna osoba</h2><p>Anel (basaofficial) · <a href="mailto:basagtm@gmail.com">basagtm@gmail.com</a> · Instagram @basa.gtm</p>
+<h2>2. Hosting</h2><p>Sajt je na GitHub Pages (GitHub Inc., SAD). GitHub bilježi tehničke podatke poput IP adrese, vremena i preglednika.</p>
+<h2>3. U pregledniku</h2><p>Postavke i podaci aplikacija (napredak, igre, jezik) čuvaju se samo u tvom pregledniku. Kolačići se ne koriste.</p>
+<h2>4. Početna stranica</h2><p>Informacije o verzijama preglednik učitava s api.github.com. Forma „Prijedlozi i greške" šalje ime, kontakt i poruku preko servisa FormSubmit na email admina.</p>
+<h2>5. Online aplikacije</h2><p><b>#Bash igre i Bash Talk:</b> nadimak, potezi, poruke i status idu preko javnih MQTT servera (EMQX, HiveMQ, Mosquitto, Eclipse, Shiftr), koji vide tvoju IP adresu i mogu biti izvan EU. U Bash Talku su sobe sa šifrom šifrovane na tvom uređaju. <b>Bash Armory</b> učitava podatke s Warmanea i murlocvillage.com, a slike i 3D modele s Wowheada. <b>bash-electro</b> radi i bez naloga. Ako napraviš nalog, koristi Google Firebase za prijavu (email i lozinka ili Google nalog) i za čuvanje imena, emaila, projekata, poruka u kanalima i kontakt poruka. <b>Bash Deutsch</b> ima <a href="deutsch/datenschutz.html#bs">svoju izjavu</a>. Ostale aplikacije (Fit, Metar, Zvučnik) rade samo na tvom uređaju.</p>
+<h2>6. Tvoja prava</h2><p>Uvid, ispravka, brisanje, ograničenje, prenos podataka, prigovor i povlačenje saglasnosti. Piši na <a href="mailto:basagtm@gmail.com">basagtm@gmail.com</a>. Možeš se žaliti i nadležnom organu za zaštitu podataka.</p>
+</section>
+</main>
+</body>
+</html>

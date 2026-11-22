@@ -8,8 +8,7 @@
 <title>Bash Talk — offline walkie-talkie i chat | bashlab · basaofficial</title>
 <link rel="canonical" href="https://basaofficial.github.io/bashtalk/">
 <meta name="description" content="Bash Talk: walkie-talkie i chat bez interneta i mreže za Android. Automatsko spajanje i rad u pozadini.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
 <style>
 :root{--bg:#000;--card:#0a0d08;--card2:#11160d;--line:#1d2715;--g:#8dff1a;--g2:#5fd400;--gdim:rgba(141,255,26,.12);--glow:0 0 18px rgba(141,255,26,.45);--t:#e9ffe0;--mut:#7d8f72;--red:#ff3b4e;--yel:#ffd21a}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -112,7 +111,7 @@ body.inapp header .logo{display:none}
 <div class="ov" id="viewer"><img id="viewImg"></div>
 <div id="toast"></div>
 
-<script src="https://unpkg.com/mqtt@5/dist/mqtt.min.js" onerror="this.onerror=null;var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/mqtt@5/dist/mqtt.min.js';s.onload=function(){window.btBoot&&btBoot()};document.head.appendChild(s)"></script>
+<script src="../assets/js/mqtt-mini.js"></script>
 <script>
 (function(){
 'use strict';

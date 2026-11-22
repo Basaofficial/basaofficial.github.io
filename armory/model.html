@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
 <style>
   :root{--g:#8cff2e}
   html,body{margin:0;height:100%;background:#000;color:#e8ffe0;font-family:Inter,system-ui,sans-serif;overflow:hidden;-webkit-tap-highlight-color:transparent;-webkit-font-smoothing:antialiased}
@@ -143,7 +143,7 @@ async function start(){
   buildUi();
   if (DATA.loading) { step("Učitavam lika s Warmanea…", 15); return; }
   step("Učitavam 3D viewer…", 30);
-  if (!window.jQuery) await load("https://code.jquery.com/jquery-3.7.1.min.js");
+  if (!window.jQuery) await load("../assets/vendor/jquery-3.7.1.min.js");
   await load(CONTENT + "viewer/viewer.min.js");
   if (typeof ZamModelViewer !== "function") throw new Error("Wowhead viewer se nije pokrenuo" + (firstErr ? ": " + firstErr : ""));
   step("Oblačim lika (gear i transmog)…", 55);
