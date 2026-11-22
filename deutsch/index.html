@@ -188,6 +188,14 @@ select{width:100%;font:inherit;padding:12px;border:2px solid var(--line);border-
 .xo.right{border-color:var(--green);background:rgba(88,204,2,.15);color:var(--okfg)}
 .xo.wrong{border-color:var(--red);background:rgba(255,75,75,.12);color:var(--badfg)}
 .xm-fb{font-size:13px;margin-top:6px}
+.xexp{margin-top:8px;padding:10px 12px;border-radius:12px;background:rgba(28,176,246,.08);border:1px solid rgba(28,176,246,.25);font-size:13.5px;font-weight:600;line-height:1.45}
+.xexp blockquote{margin:6px 0;padding:6px 10px;border-left:3px solid #ffc800;font-style:italic;background:rgba(255,200,0,.07);border-radius:0 8px 8px 0}
+.xev{background:none;border:0;color:var(--blue);font-weight:800;font-size:13px;padding:2px 0;cursor:pointer}
+mark.evm{background:rgba(255,200,0,.28);color:inherit;border-radius:4px;padding:0 2px;box-shadow:0 0 0 1px rgba(255,200,0,.5)}
+mark.evm::before{content:attr(data-n);font-size:10px;font-weight:900;background:#ffc800;color:#000;border-radius:6px;padding:0 4px;margin-right:3px;vertical-align:top}
+mark.evm.flash{animation:evf 1.4s}@keyframes evf{0%,60%{background:rgba(255,200,0,.85)}100%{background:rgba(255,200,0,.28)}}
+.xtip{margin:8px 0;font-size:13.5px}.xtip summary{cursor:pointer;font-weight:800;color:#ffc800}.xtip div{padding:10px 12px;margin-top:6px;border-radius:12px;background:rgba(255,200,0,.07);border:1px solid rgba(255,200,0,.25);line-height:1.5;font-weight:600}
+.onlybad .xm-item.okit{display:none}
 .okc{color:var(--okfg);font-weight:900}.badc{color:var(--badfg);font-weight:900}
 .xplay{border:0;background:var(--blue);box-shadow:0 3px 0 var(--blue-d);color:#fff;border-radius:12px;padding:9px 14px;font-weight:900;font-size:14px;cursor:pointer;margin:4px 8px 6px 0}
 .xplay:disabled{background:var(--line);box-shadow:none;color:var(--muted)}
@@ -2679,7 +2687,7 @@ function render(){
   const app=$('#app');
   app.innerHTML=`<header class="top"><span class="flag">🇩🇪</span><button class="stat fire" data-info="streak">🔥 ${streakNow()}</button><button class="stat xp" data-info="xp">⚡ ${S.xp}</button><button class="stat heart" data-info="hearts">❤️ ${hTxt()}</button></header><main id="main"></main><nav class="bottom"><div class="in">${TABS.map(([k,i,n])=>`<button data-tab="${k}" class="${tab===k?'on':''}"><span class="ic">${i}</span>${n}</button>`).join('')}</div></nav>`;
   const m=$('#main');
-  ({learn:vLearn,exam:vExam,rank:vRank,admin:vAdmin,mod:vMod,practice:vPractice,words:vWords,video:vVideo,profile:vProfile})[tab](m);
+  ({learn:vLearn,exam:vExam,mistakes:vMistakes,rank:vRank,admin:vAdmin,mod:vMod,practice:vPractice,words:vWords,video:vVideo,profile:vProfile})[tab](m);
   newsDraw();
 }
 function vLearn(m){
@@ -3103,22 +3111,34 @@ const fmtT=t=>esc(t).replace(/\n/g,'<br>');
 const scriptTxt=s=>typeof s==='string'?esc(s):s.map(([w,t])=>`<b>${esc(w)}:</b> ${esc(t)}`).join('<br>');
 const LET='abcdefghijklmnop';
 
+const EXTRA={};
+const xsets=lv=>[EXAMS[lv]].concat(EXTRA[lv]||[]);
+const xset=(lv,si)=>xsets(lv)[si]||EXAMS[lv];
+const xsc=(lv,si)=>((S.exset||{})[lv+'#'+si])||(si===0?(S.exam||{})[lv]||{}:{});
+const GPTS={A1:25,A2:25,B1:100,B2:100};
+const praed=p=>p>=90?'sehr gut':p>=80?'gut':p>=70?'befriedigend':p>=60?'ausreichend':'nicht bestanden';
 function vExam(m){
-  const R=S.exam||{};
-  let h=`<h2 class="t">Probni ispit</h2><p class="muted" style="margin-top:-6px;font-weight:600">Po formatu Goethe-Zertifikata: 4 modula, pravo vrijeme i bodovi. Za prolaz treba <b>60 %</b> u svakom modulu.</p>`;
-  for(const lv of ['A1','A2','B1','B2']){const E=EXAMS[lv],r=R[lv]||{};const passed=MODS.every(([k])=>(r[k]??-1)>=60);
-    h+=`<div class="card xlv"><div class="xlh"><span class="lvb">${lv}</span><div style="flex:1"><div style="font-weight:900">${esc(E.name)}</div><div class="small muted">${esc(E.info)}</div></div>${passed?'<span class="pass" data-cert="'+lv+'" style="cursor:pointer">🎓 Certifikat</span>':''}</div>`;
+  const R=S.exam||{};S.xsel=S.xsel||{};
+  let h=`<h2 class="t">Probni ispit</h2><p class="muted" style="margin-top:-6px;font-weight:600">Po formatu Goethe-Zertifikata: 4 modula, pravo vrijeme i bodovi. Za prolaz treba <b>60 %</b> u svakom modulu.</p>
+  <button class="xmod" data-tab="mistakes"><span class="xi">🧩</span><span class="xt"><b>Moje greške</b><br><span class="small muted">${(S.xmiss||[]).length} zadataka s ispita za ponavljanje</span></span><span class="xs">›</span></button>`;
+  for(const lv of ['A1','A2','B1','B2']){const sets=xsets(lv),si=Math.min(S.xsel[lv]||0,sets.length-1),E=sets[si],r=xsc(lv,si),rb=R[lv]||{};const passed=MODS.every(([k])=>(rb[k]??-1)>=60);
+    h+=`<div class="card xlv"><div class="xlh"><span class="lvb">${lv}</span><div style="flex:1"><div style="font-weight:900">${esc(EXAMS[lv].name)}</div><div class="small muted">${esc(EXAMS[lv].info)}</div></div>${passed?'<span class="pass" data-cert="'+lv+'" style="cursor:pointer">🎓 Certifikat</span>':''}</div>
+    ${sets.length>1?`<div class="seg" style="margin:4px 0 8px">${sets.map((_,i)=>`<button class="${i===si?'on':''}" data-xset="${lv}|${i}">Test ${i+1}</button>`).join('')}</div>`:''}`;
     for(const [k,ic,de,bs] of MODS){const M=E[k],sc=r[k];
-      h+=`<button class="xmod" data-exam="${lv}|${k}"><span class="xi">${ic}</span><span class="xt"><b>${de}</b> · ${bs}<br><span class="small muted">${M.min} min · ${esc(M.desc)}</span></span><span class="xs ${sc==null?'':sc>=60?'ok':'bad'}">${sc==null?'›':sc+' %'}</span></button>`;}
-    h+='</div>';}
+      h+=`<button class="xmod" data-exam="${lv}|${k}|${si}"><span class="xi">${ic}</span><span class="xt"><b>${de}</b> · ${bs}<br><span class="small muted">${M.min} min · ${esc(M.desc)}</span></span><span class="xs ${sc==null?'':sc>=60?'ok':'bad'}">${sc==null?'›':sc+' %'}</span></button>`;}
+    h+=`<button class="btn blue sm" data-sim="${lv}|${si}" style="margin-top:8px">🎯 Simulacija ispita (Test ${si+1}): sva 4 modula</button></div>`;}
   h+=`<div class="note" style="margin-top:16px">ℹ️ Ovo nije zvanični ispit i nije povezano s Goethe-Institutom. Zadaci su originalni i napravljeni po uzoru na format ispita: isti moduli, vrijeme, broj zadataka i vrste zadataka. „Goethe-Zertifikat" je zaštićeni naziv Goethe-Instituta e.V. Službeni probni testovi (Übungssätze) su besplatni na stranici <a href="https://www.goethe.de/de/spr/prf/ueb/pa1.html" target="_blank" rel="noopener">Goethe-Instituta</a>.</div>`;
   m.innerHTML=h;
 }
-function examSheet(lv,k){
-  const E=EXAMS[lv],M=E[k],sc=(S.exam?.[lv]||{})[k];
-  const how={lesen:'Odgovore biraš tapom. Možeš se vraćati i mijenjati odgovore dok ne predaš.',hoeren:'Svaki tekst smiješ pustiti onoliko puta koliko piše (1× ili 2×), kao na pravom ispitu. Najbolje slušaj sa slušalicama.',schreiben:'Pišeš na tastaturi. Nakon predaje dobiješ primjer rješenja i sam ocijeniš koje tačke si obradio.',sprechen:'Pročitaj zadatak, snimi se (🎙️) i preslušaj. Zatim uporedi s primjerom i ocijeni se.'}[k];
-  sheet(`<div class="sh-h" style="color:var(--blue)">${lv} · ${esc(E.name)}</div><h3>${MODN[k]}</h3><p class="muted" style="font-weight:600">${esc(M.intro)}</p><div class="note">⏱ ${M.min} minuta · ${esc(M.desc)}<br>✅ Prolaz: 60 %<br>${how}</div>${sc!=null?`<p class="small muted">Najbolji rezultat: <b>${sc} %</b></p>`:''}<button class="btn" id="xgo">Počni ispit</button><button class="btn ghost" id="xno">Nazad</button>`);
-  $('#xgo').onclick=()=>startExam(lv,k);$('#xno').onclick=closeSheet;
+function examSheet(lv,k,si){si=si||0;
+  const E=xset(lv,si),M=E[k],sc=xsc(lv,si)[k];
+  const how={lesen:'Odgovore biraš tapom. Možeš se vraćati i mijenjati odgovore dok ne predaš. Poslije predaje vidiš objašnjenje i mjesto u tekstu gdje je odgovor.',hoeren:'Svaki tekst smiješ pustiti onoliko puta koliko piše (1× ili 2×), kao na pravom ispitu. Poslije predaje dobiješ transkript i objašnjenja.',schreiben:'Pišeš na tastaturi. Dugme „📋 Šablon i fraze" ubacuje gotove fraze. Nakon predaje dobiješ primjer rješenja i provjeru tačaka.',sprechen:'Pročitaj zadatak, snimi se (🎙️) i preslušaj. Zatim uporedi s primjerom (🔊) i ocijeni se.'}[k];
+  const parts=(k==='lesen'||k==='hoeren')?M.parts:null;
+  sheet(`<div class="sh-h" style="color:var(--blue)">${lv} · Test ${si+1}</div><h3>${MODN[k]}</h3><p class="muted" style="font-weight:600">${esc(M.intro)}</p><div class="note">⏱ ${M.min} minuta · ${esc(M.desc)}<br>✅ Prolaz: 60 % (${GPTS[lv]===25?'≈ 15 od 25 bodova':'60 od 100 bodova'})<br>${how}</div>${sc!=null?`<p class="small muted">Najbolji rezultat: <b>${sc} %</b></p>`:''}<button class="btn" id="xgo">Počni cijeli modul</button>
+  ${parts?`<div class="small" style="font-weight:900;margin:12px 0 6px">🎯 Trening: samo jedan dio (bez bodovanja, sa savjetima)</div><div class="seg" style="flex-wrap:wrap">${parts.map((p,pi)=>`<button data-tp="${pi}">${esc(p.t)}</button>`).join('')}</div>`:''}
+  <button class="btn ghost" id="xno">Nazad</button>`);
+  $('#xgo').onclick=()=>startExam(lv,k,si);$('#xno').onclick=closeSheet;
+  document.querySelectorAll('[data-tp]').forEach(b=>b.onclick=()=>startExam(lv,k,si,{part:+b.dataset.tp}));
 }
 function prepItem(it,p){
   const o=it.o||p.opts||p.rf;let a=it.a;
@@ -3127,13 +3147,85 @@ function prepItem(it,p){
   if(it.o&&!p.keep&&it.o!==RF&&it.o!==YN&&!p.rf){const idx=shuf(opts.map((_,i)=>i));opts=idx.map(i=>o[i]);a=idx.indexOf(a);}
   return {...it,o:opts,a,shared:!it.o&&!!p.opts};
 }
-function startExam(lv,k){
-  closeSheet();try{speechSynthesis.cancel();}catch(e){}
-  const M=EXAMS[lv][k];
-  EX={lv,k,M,ans:{},plays:{},au:{},rec:{},rate:{},chk:{},t0:Date.now(),end:Date.now()+M.min*60000,done:false};
-  EX.parts=(M.parts||[]).map(p=>({...p,items:p.items.map(it=>prepItem(it,p))}));
+
+/* ============ PREGLED ISPITA: objašnjenja i dokaz u tekstu ============ */
+const STOPW=new Set('der die das den dem des ein eine einen einem einer eines und oder aber nicht ist sind war waren hat haben hatte sie er es ich du wir ihr man mit von zu im in am an auf für sein seine ihre ihr wird werden kann können soll sollen muss müssen nur auch noch schon sehr so wie was wer wo wann um bei aus nach vor als dass zum zur dann denn mich mir dich dir uns euch sich ihm ihn ihnen kein keine diese dieser dieses welche welcher alle viel viele mehr wenn weil ob gibt geht'.split(' '));
+const etoks=s=>(String(s).toLowerCase().match(/[a-zäöüß0-9]+/g)||[]).filter(w=>(w.length>2||/\d/.test(w))&&!STOPW.has(w)).map(w=>w.slice(0,5));
+const plainAu=a=>typeof a==='string'?a:a.map(l=>l[1]).join('\n');
+function esents(t){return String(t).split(/\n+/).flatMap(l=>l.split(/(?<=[.!?…])\s+(?=[A-ZÄÖÜ0-9„"])/)).map(x=>x.trim()).filter(x=>x.length>2);}
+function evSrc(p,pi,it,key){
+  if(it.text)return {t:it.text,id:'tx-i'+key};if(it.sign)return {t:it.sign,id:'tx-i'+key};
+  if(it.au)return {t:plainAu(it.au),id:'tr-i'+key,au:1};
+  if(p.list&&it.shared){const li=it.a;if(p.list[li])return {t:p.list[li][1],id:'tx-l'+pi+'-'+li,whole:1};}
+  if(p.text)return {t:p.text,id:'tx-p'+pi};if(p.au)return {t:plainAu(p.au),id:'tr-p'+pi,au:1};
+  return null;}
+function findEv(src,it){if(!src)return '';if(src.whole)return src.t;
+  const ans=it.o&&it.o[it.a]&&it.o!==RF&&it.o!==YN?it.o[it.a]:'';const q=etoks(it.q+' '+(it.shared?'':ans)),qs=new Set(q);
+  let best='',bs=0;esents(src.t).forEach(se=>{const ts=new Set(etoks(se));let sc=0;ts.forEach(w=>{if(qs.has(w))sc+=w.length>=5?1.3:1;});
+    const nums=(it.q+' '+ans).match(/\d+/g);if(nums&&nums.some(n=>se.includes(n)))sc+=1.5;if(sc>bs){bs=sc;best=se;}});
+  return bs>=1?best:'';}
+function explainItem(p,pi,it,key){
+  if(it.o===RF||it.o===YN||p.rf){}
+  const src=evSrc(p,pi,it,key);let ev=it.ev||findEv(src,it);EX.ev=EX.ev||{};
+  if(!src&&p.keep){return `<div class="xexp"><div>💡 Ovaj oglas odgovara situaciji:</div><blockquote>„${esc(it.o[it.a])}"</blockquote></div>`;}
+  if(ev&&src)EX.ev[key]={id:src.id,s:ev};
+  const yes=it.a===0,isRF=(it.o===RF||it.o===YN);
+  let why=it.x?esc(it.x):isRF?(EX.k==='lesen'&&p.t&&/Teil 4/.test(p.t)&&it.o===YN&&EX.lv==='B1'?'Pročitaj šta osoba misli u cjelini, ne samo jednu riječ.':(yes?'Rečenica kaže isto što i tekst (možda drugim riječima).':'Tekst kaže nešto drugo. Uporedi detalje: vrijeme, mjesto, broj, „nicht/kein".')):
+    (src&&src.whole?'Ovaj oglas odgovara jer:':'Odgovor je u ovom dijelu teksta:');
+  if(it.shared&&it.o[it.a]&&/^x$|^–|kein/i.test(it.o[it.a]))why='Nijedan oglas ne odgovara tačno svim željama ove osobe.';
+  return `<div class="xexp"><div>💡 ${why}</div>${ev?`<blockquote>„${esc(ev)}"</blockquote><button class="xev" data-ev="${key}">📍 Pokaži u tekstu</button>`:''}</div>`;}
+function markAllEv(){if(!EX||!EX.ev)return;const byId={};Object.entries(EX.ev).forEach(([k,v])=>{(byId[v.id]=byId[v.id]||[]).push([k,v.s]);});
+  Object.entries(byId).forEach(([id,arr])=>{let el=document.getElementById(id);if(!el)return;if(el.tagName==='DETAILS')el=el.querySelector('div');if(!el)return;let h=el.innerHTML;
+    arr.forEach(([k,se])=>{const e=esc(se),n=document.querySelector('#it-'+k+' .xn');const lab=n?n.textContent:'';if(h.includes(e))h=h.replace(e,`<mark class="evm" id="ev-${k}" data-n="${lab}">${e}</mark>`);});el.innerHTML=h;});}
+function showEv(k){const v=EX&&EX.ev&&EX.ev[k];if(!v)return;const d=document.getElementById(v.id);if(d&&d.tagName==='DETAILS')d.open=true;const m=document.getElementById('ev-'+k)||d;if(!m)return;
+  m.scrollIntoView({behavior:'smooth',block:'center'});m.classList.remove('flash');void m.offsetWidth;m.classList.add('flash');}
+
+/* ============ STRATEGIJE po dijelu ============ */
+const STRAT={
+'A1.lesen':['Prvo pročitaj rečenice (zadatke), pa tek onda tekst. Tako znaš šta tražiš.<br>Pazi na <b>nicht, kein, nur, sondern</b>: često mijenjaju značenje.','Ne moraš razumjeti cijeli oglas. Traži samo ono što osoba želi: <b>dan, vrijeme, cijenu, mjesto</b>.','Natpisi su kratki. Pazi na <b>radno vrijeme, dane i riječi kao geschlossen, verboten, nur</b>.'],
+'A1.hoeren':['Prije slušanja pročitaj pitanje i sve tri opcije. Često se u tekstu spomenu <b>sve tri</b>, ali samo jedna je tačna (npr. „normalno u 9, ali danas u 10:30").','Čuješ samo jednom! Prije slušanja podvuci ključnu riječ u rečenici (vrijeme, mjesto, broj).','Kod poruka pazi na <b>novi termin, broj telefona i ko šta treba uraditi</b>.'],
+'A2.lesen':['Pitanja idu redom kroz tekst. Kad nađeš odgovor na prvo pitanje, traži drugo malo dalje.','Kod table s spratovima traži <b>riječ iz iste grupe</b> (npr. „Fahrrad" → Sport, „Kissen" → Haushalt).','U e-mailu odgovor je rijetko ista riječ kao u zadatku. Traži <b>sinonim</b>: „nicht kommen können" = „absagen".','Prvo pročitaj sve oglase brzo. Za svaku osobu provjeri <b>sve</b> uslove (cijena, vrijeme, mjesto). Jedan uslov koji ne odgovara = taj oglas otpada.'],
+'A2.hoeren':['Pročitaj pitanje prije slušanja. Drugi put slušaj samo da potvrdiš odgovor.','Napravi u glavi tabelu dan → aktivnost. Pazi na promjene plana („doch nicht", „lieber").','Pazi na riječi kao <b>aber, doch, lieber, nicht mehr</b>: tu se često krije tačan odgovor.','Intervju: rečenice idu redom. Pazi na mišljenje osobe, ne samo na riječi.'],
+'B1.lesen':['Blog: tvrdnje idu redom kroz tekst. Pazi na detalje i negacije. „Falsch" je često kad tekst kaže <b>skoro</b> isto, ali jedan detalj nije tačan.','Prvo pročitaj naslov i prvu rečenicu svakog pasusa da shvatiš temu. Zatim traži odgovor za svako pitanje redom.','Za svaku osobu podvuci 2–3 ključna uslova. Jedan oglas se koristi samo jednom. Ako ništa ne odgovara, izaberi <b>x</b>: na ispitu je to skoro uvijek jedna osoba.','Ne gledaj pojedine riječi. Pitaj se: da li je osoba u cjelini <b>za</b> ili <b>protiv</b>? Riječi kao „zwar … aber", „trotzdem" mijenjaju smjer.','Pravila i propisi: traži tačno mjesto (§, pasus). Pazi na <b>müssen / dürfen nicht / nur wenn</b>.'],
+'B1.hoeren':['Svaki tekst ima dva zadatka. Prvo pročitaj oba, pa slušaj. Prvo slušanje = glavna ideja, drugo = detalji.','Čuješ jednom. Pitanja idu redom kao u tekstu, zato nikad ne čekaj predugo na jedno pitanje.','Pazi ko šta kaže. „Ich finde, du solltest…" je mišljenje jedne osobe, ne činjenica.','Zapamti imena i uloge osoba. Kad neko kaže „Da bin ich anderer Meinung", mišljenje se mijenja.'],
+'B2.lesen':['Pročitaj zadatke prvo, pa svaki tekst. Jedna osoba može odgovarati za više rečenica.','Pogledaj rečenicu prije i poslije praznine. Traži veze: <b>dies, deshalb, jedoch, dabei</b> i zamjenice (er, sie, das) koje upućuju na prethodnu rečenicu.','Odgovor je obično parafraziran. Pazi na stav autora: kritičan, neutralan ili pozitivan.','Prvo shvati glavnu poruku komentara (za/protiv/uslovno), pa traži rečenicu koja to sažima.','Propisi: tačno pročitaj uslove i izuzetke (<b>ausgenommen, sofern, spätestens</b>).'],
+'B2.hoeren':['Čuješ samo jednom. Prvo pročitaj zadatke i podvuci ključne riječi.','Intervju: pitanja idu redom. Pazi na razlog i stav, ne samo na činjenice.','Diskusija: zapiši imena. Prepoznaj ko se slaže, a ko ne slaže.','Predavanje: prati strukturu (erstens, außerdem, abschließend). Odgovori su često u zaključcima.']};
+const stratFor=(lv,k,pi)=>(STRAT[lv+'.'+k]||[])[pi]||'';
+
+/* ============ MOJE GREŠKE (ispit) ============ */
+function logMiss(p,it,good){if(!EX)return;S.xmiss=S.xmiss||[];const id=EX.lv+'|'+(EX.si||0)+'|'+EX.k+'|'+p._pi+'-'+it._oi;const i=S.xmiss.indexOf(id);if(good){if(i>=0)S.xmiss.splice(i,1);}else if(i<0)S.xmiss.push(id);}
+function vMistakes(m){const L=S.xmiss||[],g={};L.forEach(id=>{const [lv,si,k,pk]=id.split('|');const kk=lv+'|'+si+'|'+k;(g[kk]=g[kk]||[]).push(pk);});
+  const weak=Object.entries(S.words).filter(([_,r])=>r.bad>r.ok).length;
+  m.innerHTML=`<h2 class="t">🧩 Moje greške</h2><p class="muted" style="font-weight:600;margin-top:-6px">Ovdje se skupljaju zadaci s ispita i riječi u kojima griješiš. Kad zadatak riješiš tačno, nestaje s liste.</p>
+  <div class="sec"><h3>📝 Zadaci s ispita</h3>${Object.keys(g).length?Object.entries(g).map(([kk,arr])=>{const [lv,si,k]=kk.split('|');return `<button class="xmod" data-mis="${kk}"><span class="xi">${MODS.find(x=>x[0]===k)[1]}</span><span class="xt"><b>${lv} · ${MODN[k]}</b> · Test ${+si+1}<br><span class="small muted">${arr.length} ${arr.length===1?'zadatak':'zadataka'} za ponavljanje</span></span><span class="xs bad">${arr.length}</span></button>`;}).join(''):'<p class="muted">Nema grešaka s ispita. 💪</p>'}</div>
+  <div class="sec"><h3>📖 Riječi</h3><p class="muted" style="font-weight:600">${weak} riječi češće griješiš nego pogađaš.</p><button class="btn blue" data-tab="practice">Vježbaj slabe riječi</button></div>
+  <div class="sec"><h3>⚖️ Slične riječi</h3><p class="muted" style="font-weight:600">${Object.keys(S.confm||{}).length} parova u kojima si pogriješio.</p><button class="btn ghost" data-tab="conf">Otvori „Pazi na razliku"</button></div>
+  <button class="btn ghost" data-tab="exam">‹ Nazad na ispite</button>`;
+  m.querySelectorAll('[data-mis]').forEach(b=>b.onclick=()=>{const [lv,si,k]=b.dataset.mis.split('|');startExam(lv,k,+si,{only:g[b.dataset.mis]});});}
+
+/* ============ SIMULACIJA ============ */
+let SIM=null;
+function simStart(lv,si){sheet(`<h3>🎯 Simulacija ispita ${lv}</h3><p class="muted" style="font-weight:600">Radiš sva 4 modula zaredom, kao na pravom ispitu: Lesen → Hören → Schreiben → Sprechen. Bez savjeta i bez pauze između modula. Ako prekineš, simulacija se poništava.</p><div class="note">⏱ Ukupno oko ${MODS.reduce((a,[k])=>a+xset(lv,si)[k].min,0)} minuta</div><button class="btn" id="sgo">Počni simulaciju</button><button class="btn ghost" id="sno">Odustani</button>`);
+  $('#sgo').onclick=()=>{SIM={lv,si,i:0,res:{}};startExam(lv,MODS[0][0],si,{sim:true});};$('#sno').onclick=closeSheet;}
+function simNext(){if(!EX||!EX.sim||!SIM)return;const xs=$('#xs');const i=SIM.i+1;
+  if(i<MODS.length){xs.textContent='Sljedeći modul: '+MODS[i][2]+' ›';xs.onclick=()=>{if(EX&&EX.k==='schreiben'||EX&&EX.k==='sprechen')calcSelf();SIM.i=i;const lv=SIM.lv,si=SIM.si;clearInterval(EX.iv);$('#exam').remove();EX=null;startExam(lv,MODS[i][0],si,{sim:true});};}
+  else{xs.textContent='Završi simulaciju';xs.onclick=()=>{calcSelf();const R=SIM,lv=R.lv;endExam();SIM=null;simResult(R);};}}
+function simResult(R){const lv=R.lv,G=GPTS[lv],vals=MODS.map(([k])=>R.res[k]??0),all=vals.every(v=>v>=60);
+  const tot=G===25?Math.round(vals.reduce((a,v)=>a+v*0.25,0)):null;
+  sheet(`<div style="text-align:center">${mascot(80,all?'happy':'sad')}<h3>Rezultat simulacije ${lv}</h3></div>${MODS.map(([k,ic,de],i)=>`<div class="xsr"><span>${ic} ${de}</span><b class="${vals[i]>=60?'okc':'badc'}">${vals[i]} % · ${Math.round(vals[i]*G/100)}/${G}</b></div>`).join('')}
+  ${tot!=null?`<div class="note" style="margin-top:10px">Ukupno: <b>${tot} / 100 bodova</b> · ${tot>=60?'✓ položeno':'✗ nije položeno'} (${praed(tot)})</div>`:`<div class="note" style="margin-top:10px">${all?'✓ Svi moduli položeni!':'Moduli ispod 60 % nisu položeni. Na B1/B2 svaki modul se polaže zasebno.'}</div>`}
+  <button class="btn" id="scl">Zatvori</button>`);$('#scl').onclick=()=>{closeSheet();render();};}
+
+function startExam(lv,k,si,opt){
+  closeSheet();try{speechSynthesis.cancel();}catch(e){}si=si||0;opt=opt||{};
+  const M=xset(lv,si)[k];
+  EX={lv,k,si,M,ans:{},plays:{},au:{},rec:{},rate:{},chk:{},t0:Date.now(),end:Date.now()+M.min*60000,done:false,sim:!!opt.sim,train:opt.part!=null||!!opt.only};
+  EX.parts=(M.parts||[]).map((p,pi)=>({...p,_pi:pi,items:p.items.map((it,ii)=>({...prepItem(it,p),_oi:ii}))}));
+  if(opt.part!=null)EX.parts=[EX.parts[opt.part]];
+  if(opt.only){EX.parts=EX.parts.map(p=>({...p,items:p.items.filter(it=>opt.only.includes(p._pi+'-'+it._oi))})).filter(p=>p.items.length);}
+  if(EX.train&&EX.parts.length){const tot=(M.parts||[]).reduce((a,p)=>a+p.items.length,0),n=EX.parts.reduce((a,p)=>a+p.items.length,0);EX.end=Date.now()+Math.max(3,Math.ceil(M.min*n/tot))*60000;}
   const d=document.createElement('div');d.className='lesson';d.id='exam';
-  d.innerHTML=`<div class="lhead"><button class="xbtn" id="xx">✕</button><div style="flex:1;font-weight:900;font-size:17px">${lv} · ${MODN[k]}</div><div class="timer" id="tm"></div></div><div class="lbody" id="xb"></div><div class="lfoot" id="xfo"><div class="fin"><div id="xf" class="small muted" style="margin-bottom:2px"></div><button class="btn" id="xs">${k==='sprechen'?'Završi i ocijeni':'Predaj'}</button></div></div>`;
+  d.innerHTML=`<div class="lhead"><button class="xbtn" id="xx">✕</button><div style="flex:1;font-weight:900;font-size:17px">${lv} · ${MODN[k]}${EX.sim?' · 🎯':EX.train?' · trening':''}</div><div class="timer" id="tm"></div></div><div class="lbody" id="xb"></div><div class="lfoot" id="xfo"><div class="fin"><div id="xf" class="small muted" style="margin-bottom:2px"></div><button class="btn" id="xs">${k==='sprechen'?'Završi i ocijeni':'Predaj'}</button></div></div>`;
   document.body.appendChild(d);
   $('#xx').onclick=()=>{if(EX.done)return endExam();sheet(`<div style="text-align:center">${mascot(80,'sad')}<h3>Prekinuti ispit?</h3><p class="muted">Rezultat se neće sačuvati.</p><button class="btn" id="qk">Nastavi ispit</button><button class="btn ghost" id="qq" style="color:var(--red)">Prekini</button></div>`);$('#qk').onclick=closeSheet;$('#qq').onclick=()=>{closeSheet();endExam();};};
   $('#xs').onclick=submitExam;
@@ -3141,7 +3233,7 @@ function startExam(lv,k){
   if(k==='lesen'||k==='hoeren')renderObj();else if(k==='schreiben')renderWrite();else renderSpeak();
   tick();EX.iv=setInterval(tick,1000);
 }
-function endExam(){if(EX){clearInterval(EX.iv);try{speechSynthesis.cancel();}catch(e){}if(EX.mr)try{EX.mr.stop();}catch(e){}}const d=$('#exam');if(d)d.remove();EX=null;render();}
+function endExam(){if(EX&&EX.sim&&!EX.done)SIM=null;if(EX){clearInterval(EX.iv);try{speechSynthesis.cancel();}catch(e){}if(EX.mr)try{EX.mr.stop();}catch(e){}}const d=$('#exam');if(d)d.remove();EX=null;render();}
 function tick(){
   if(!EX)return;const tm=$('#tm');if(!tm)return;
   if(EX.done||EX.k==='sprechen'){const s=Math.round((Date.now()-EX.t0)/1000);if(!EX.done)tm.textContent='⏱ '+Math.floor(s/60)+':'+String(s%60).padStart(2,'0');return;}
@@ -3161,15 +3253,16 @@ function playScript(script){
 function renderObj(){
   let h=`<div class="note" style="margin-bottom:14px">${esc(EX.M.intro)}</div>`,n=0;
   EX.parts.forEach((p,pi)=>{
-    h+=`<section class="xm-part"><div class="xm-pt">${esc(p.t)}</div><div class="xm-ins">${esc(p.i)}</div><div class="xm-de">${esc(p.d)}</div>`;
+    const tip=!EX.sim&&stratFor(EX.lv,EX.k,p._pi);
+    h+=`<section class="xm-part"><div class="xm-pt">${esc(p.t)}</div><div class="xm-ins">${esc(p.i)}</div><div class="xm-de">${esc(p.d)}</div>${tip?`<details class="xtip"${EX.train?' open':''}><summary>💡 Strategija za ovaj dio</summary><div>${tip}</div></details>`:''}`;
     if(p.au)h+=playBtn('p'+pi,p.plays,p.au);
-    if(p.text)h+=`<div class="xm-text">${fmtT(p.text)}</div>`;
-    if(p.list)h+=`<div class="xm-ads">${p.list.map(([l,t])=>`<div><b>${esc(l)}</b> ${esc(t)}</div>`).join('')}</div>`;
+    if(p.text)h+=`<div class="xm-text" id="tx-p${pi}">${fmtT(p.text)}</div>`;
+    if(p.list)h+=`<div class="xm-ads">${p.list.map(([l,t],li)=>`<div id="tx-l${pi}-${li}"><b>${esc(l)}</b> ${esc(t)}</div>`).join('')}</div>`;
     p.items.forEach((it,ii)=>{const key=pi+'-'+ii;n++;
       h+=`<div class="xm-item" id="it-${key}"><div class="xm-q"><span class="xn">${n}</span><div style="flex:1">`;
       if(it.au)h+=playBtn('i'+key,p.plays,it.au);
-      if(it.text)h+=`<div class="xm-text sm">${fmtT(it.text)}</div>`;
-      if(it.sign)h+=`<div class="xm-sign">${fmtT(it.sign)}</div>`;
+      if(it.text)h+=`<div class="xm-text sm" id="tx-i${key}">${fmtT(it.text)}</div>`;
+      if(it.sign)h+=`<div class="xm-sign" id="tx-i${key}">${fmtT(it.sign)}</div>`;
       h+=`<div class="xm-qt">${esc(it.q)}</div></div></div><div class="xm-opts ${it.shared?'chips':''} ${it.o.length===2&&!it.shared&&it.o[0].length<12?'two':''}">${it.o.map((o,oi)=>`<button class="xo" data-k="${key}" data-o="${oi}">${it.shared||it.o===RF||it.o.length===2&&o.length<12?'':`<span class="xl">${LET[oi]}</span>`}<span>${esc(o)}</span></button>`).join('')}</div><div class="xm-fb" id="fb-${key}"></div></div>`;});
     h+='</section>';});
   $('#xb').innerHTML=h;updCount();
@@ -3180,6 +3273,7 @@ function examClick(e){
   if(b.dataset.au){const id=b.dataset.au,max=+b.dataset.max;if(max&&(EX.plays[id]||0)>=max&&!EX.done)return;EX.plays[id]=(EX.plays[id]||0)+1;playScript(EX.au[id]);
     if(max&&!EX.done){const left=max-EX.plays[id];const pl=b.querySelector('.pl');if(pl)pl.textContent=left+'×';if(left<=0)setTimeout(()=>{b.disabled=true;},300);}return;}
   if(b.dataset.tr){const t=$('#tr-'+b.dataset.tr);if(t)t.hidden=!t.hidden;return;}
+  if(b.dataset.ev){showEv(b.dataset.ev);return;}
   if(b.dataset.k&&!EX.done){const k=b.dataset.k;EX.ans[k]=+b.dataset.o;b.parentNode.querySelectorAll('.xo').forEach(x=>x.classList.toggle('sel',x===b));updCount();return;}
   if(b.dataset.rec!==undefined){recToggle(b,+b.dataset.rec);return;}
   if(b.dataset.show!==undefined){const el=$('#sh-'+b.dataset.show);if(el){el.hidden=!el.hidden;b.textContent=el.hidden?'💡 Prikaži primjer i fraze':'🙈 Sakrij primjer';}return;}
@@ -3226,7 +3320,8 @@ function submitExam(){
     if(miss>0){sheet(`<h3>Predati ispit?</h3><p class="muted">Nisi odgovorio na <b>${miss}</b> ${miss===1?'zadatak':'zadataka'}. Neodgovoreni zadaci nose 0 bodova.</p><button class="btn" id="qy">Predaj</button><button class="btn ghost" id="qn">Nastavi</button>`);$('#qy').onclick=()=>{closeSheet();finishExam(false);};$('#qn').onclick=closeSheet;return;}}
   finishExam(false);
 }
-function saveScore(pct){S.exam=S.exam||{};S.exam[EX.lv]=S.exam[EX.lv]||{};const prev=S.exam[EX.lv][EX.k];if(prev==null||pct>prev)S.exam[EX.lv][EX.k]=pct;
+function saveScore(pct){if(EX.train)return;S.exam=S.exam||{};S.exam[EX.lv]=S.exam[EX.lv]||{};const prev=S.exam[EX.lv][EX.k];if(prev==null||pct>prev)S.exam[EX.lv][EX.k]=pct;
+  S.exset=S.exset||{};const sk=EX.lv+'#'+(EX.si||0),so=S.exset[sk]=S.exset[sk]||{};if(so[EX.k]==null||pct>so[EX.k])so[EX.k]=pct;if(EX.sim&&SIM)SIM.res[EX.k]=pct;
   const today=dk();if(!EX.xp){EX.xp=true;const xp=EX.k==='lesen'||EX.k==='hoeren'?25:15;S.xp+=xp;S.daily[today]=(S.daily[today]||0)+xp;if(S.last!==today){S.streak=(S.last===dk(dayOff(-1)))?S.streak+1:1;S.last=today;}}save();certCheck();lbPublish();}
 function finishExam(timeUp){
   if(!EX||EX.done)return;EX.done=true;clearInterval(EX.iv);try{speechSynthesis.cancel();}catch(e){}
@@ -3236,11 +3331,14 @@ function finishExam(timeUp){
     let ok=0,tot=0;
     EX.parts.forEach((p,pi)=>p.items.forEach((it,ii)=>{tot++;const key=pi+'-'+ii,a=EX.ans[key],good=a===it.a;if(good)ok++;
       document.querySelectorAll(`[data-k="${key}"]`).forEach(b=>{const o=+b.dataset.o;b.classList.remove('sel');if(o===it.a)b.classList.add('right');else if(o===a)b.classList.add('wrong');});
-      const fb=$('#fb-'+key);if(fb)fb.innerHTML=good?'<span class="okc">✓ Tačno</span>':`<span class="badc">✗ ${a==null?'Bez odgovora':'Netačno'}</span> · Tačno: <b>${esc(it.o[it.a])}</b>`;}));
-    if(EX.k==='hoeren'){document.querySelectorAll('.xplay').forEach(b=>{b.disabled=!TTS;const pl=b.querySelector('.pl');if(pl)pl.remove();const id=b.dataset.au;if(!$('#tr-'+id))b.insertAdjacentHTML('afterend',`<details class="xtrans"><summary>📄 Transkript</summary><div>${scriptTxt(EX.au[id])}</div></details>`);});}
-    const pct=Math.round(100*ok/tot);saveScore(pct);
-    xb.insertAdjacentHTML('afterbegin',resultCard(pct,`${ok} / ${tot} tačnih${timeUp?' · ⏰ Vrijeme je isteklo':''}`));
-    xb.scrollTop=0;xs.textContent='Zatvori';$('#xf').textContent='';beep(pct>=60?'win':'bad');if(pct>=60)confetti();
+      const it2=document.getElementById('it-'+key);if(it2)it2.classList.add(good?'okit':'badit');logMiss(p,it,good);
+      const fb=$('#fb-'+key);if(fb)fb.innerHTML=(good?'<span class="okc">✓ Tačno</span>':`<span class="badc">✗ ${a==null?'Bez odgovora':'Netačno'}</span> · Tačno: <b>${esc(it.o[it.a])}</b>`)+explainItem(p,pi,it,key);}));
+    if(EX.k==='hoeren'){document.querySelectorAll('.xplay').forEach(b=>{b.disabled=!TTS;const pl=b.querySelector('.pl');if(pl)pl.remove();const id=b.dataset.au;if(!$('#tr-'+id))b.insertAdjacentHTML('afterend',`<details class="xtrans" id="tr-${id}"><summary>📄 Transkript</summary><div>${scriptTxt(EX.au[id])}</div></details>`);else{const t=$('#tr-'+id);t.hidden=false;}});}
+    markAllEv();
+    const pct=Math.round(100*ok/tot);if(!EX.train)saveScore(pct);else save();
+    xb.insertAdjacentHTML('afterbegin',resultCard(pct,`${ok} / ${tot} tačnih${timeUp?' · ⏰ Vrijeme je isteklo':''}${EX.train?' · trening (ne računa se u rezultat)':''}`)+(ok<tot?`<button class="btn ghost sm" id="xonly" style="margin-bottom:8px">🔎 Prikaži samo greške</button>`:''));
+    const xo=$('#xonly');if(xo)xo.onclick=()=>{const on=xb.classList.toggle('onlybad');xo.textContent=on?'📋 Prikaži sve zadatke':'🔎 Prikaži samo greške';};
+    xb.scrollTop=0;xs.textContent='Zatvori';$('#xf').textContent='';beep(pct>=60?'win':'bad');if(pct>=60)confetti();simNext();
   }else if(EX.k==='schreiben'){
     EX.M.tasks.forEach((T,ti)=>{const rv=$('#rv-'+ti);
       if(T.type==='form'){let h='<div class="xrv">';T.fields.forEach((f,fi)=>{if(typeof f[1]==='string')return;const inp=document.querySelector(`[data-ff="${ti}-${fi}"]`),v=norm(inp.value),good=f[1].some(x=>norm(x)===v||(v.length>2&&v.includes(norm(x))));EX.chk[`f${ti}-${fi}`]=good;inp.disabled=true;inp.classList.add(good?'okb':'badb');if(!good)h+=`<div class="small"><span class="badc">✗</span> ${esc(f[0])}: <b>${esc(f[1][0])}</b></div>`;});rv.innerHTML=h+'</div>';}
@@ -3252,8 +3350,8 @@ function finishExam(timeUp){
           <div class="small" style="font-weight:900;margin:12px 0 6px">Označi koje tačke si obradio:</div>${T.pts.map((p,pi)=>`<label class="xck"><input type="checkbox" data-ck="t${ti}-${pi}"> ${esc(p)}</label>`).join('')}
           <details class="xtrans" open><summary>💡 Primjer rješenja</summary><div>${fmtT(T.model)}</div></details></div>`;}
     });
-    xb.insertAdjacentHTML('afterbegin',`<div id="res"></div>`);calcSelf();xb.scrollTop=0;xs.textContent='Zatvori';$('#xf').textContent='';
-  }else{xb.insertAdjacentHTML('afterbegin',`<div id="res"></div>`);EX.done=true;calcSelf();xb.scrollTop=0;xs.textContent='Zatvori';$('#xf').textContent='';}
+    xb.insertAdjacentHTML('afterbegin',`<div id="res"></div>`);calcSelf();xb.scrollTop=0;xs.textContent='Zatvori';$('#xf').textContent='';simNext();
+  }else{xb.insertAdjacentHTML('afterbegin',`<div id="res"></div>`);EX.done=true;calcSelf();xb.scrollTop=0;xs.textContent='Zatvori';$('#xf').textContent='';simNext();}
 }
 function calcSelf(){
   if(!EX)return;let pct;
@@ -3264,7 +3362,7 @@ function calcSelf(){
   const r=$('#res');if(r){r.innerHTML=resultCard(pct,EX.k==='schreiben'?'Procjena: označi tačke koje si obradio, a rezultat se odmah ažurira.':'Samoprocjena: ocijeni svaki zadatak, a rezultat se odmah ažurira.');}
   saveScore(pct);
 }
-function resultCard(pct,sub){const pass=pct>=60;return `<div class="xres ${pass?'ok':'bad'}">${mascot(70,pass?'happy':'sad')}<div><div class="xr-p">${pct} %</div><div class="xr-s">${pass?'✓ Položeno':'✗ Nije položeno'} <span class="small">(prolaz 60 %)</span></div><div class="small" style="margin-top:4px">${sub}</div></div></div>`;}
+function resultCard(pct,sub){const pass=pct>=60,G=GPTS[EX&&EX.lv]||100,pts=Math.round(pct*G/100);return `<div class="xres ${pass?'ok':'bad'}">${mascot(70,pass?'happy':'sad')}<div><div class="xr-p">${pct} %</div><div class="xr-s">${pass?'✓ Položeno':'✗ Nije položeno'} <span class="small">(prolaz 60 %)</span></div><div class="small" style="margin-top:4px;font-weight:800">≈ ${pts} / ${G} bodova${G===100?' · '+praed(pct):''}</div><div class="small" style="margin-top:4px">${sub}</div></div></div>`;}
 
 
 
@@ -3671,11 +3769,13 @@ function regCSV(){const rows=[['Nadimak (registracija)','Email','Nadimak (rang l
 /* ============ EVENTS ============ */
 document.addEventListener('click',e=>{
   const ce=e.target.closest('[data-cert]');if(ce){certSheet(ce.dataset.cert);return;}
-  const t=e.target.closest('[data-voc],[data-exam],[data-say],[data-tab],[data-node],[data-start],[data-jump],[data-tip],[data-goal],[data-snd],[data-rate],[data-info]');if(!t)return;
+  const t=e.target.closest('[data-voc],[data-exam],[data-xset],[data-sim],[data-say],[data-tab],[data-node],[data-start],[data-jump],[data-tip],[data-goal],[data-snd],[data-rate],[data-info]');if(!t)return;
   const d=t.dataset;
   if(d.say!==undefined){speak(d.say,d.slow==='1');return;}
   if(d.voc){const [lv,c]=d.voc.split('|');VSEL={lv,cat:c==null?null:+c};startLesson(0,0,'vocab');return;}
-  if(d.exam){const [lv,k]=d.exam.split('|');examSheet(lv,k);return;}
+  if(d.exam){const [lv,k,si]=d.exam.split('|');examSheet(lv,k,+si||0);return;}
+  if(d.xset){const [lv,i]=d.xset.split('|');S.xsel=S.xsel||{};S.xsel[lv]=+i;save();render();return;}
+  if(d.sim){const [lv,i]=d.sim.split('|');simStart(lv,+i);return;}
   if(d.tab){closeSheet();tab=d.tab;render();scrollTo(0,0);}
   else if(d.node)nodeSheet(+d.node);
   else if(d.start){const i=+d.start;startLesson(i>>2,i&3,'lesson');}
