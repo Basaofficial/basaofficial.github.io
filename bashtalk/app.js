@@ -9,23 +9,29 @@ const b64 = u8 => { let s = ''; for (let i = 0; i < u8.length; i += 0x8000) s +=
 const unb64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
 const hex = buf => [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2,'0')).join('');
 function toast(t){ const e = $('#toast'); e.textContent = t; e.classList.add('show'); clearTimeout(toast.t); toast.t = setTimeout(() => e.classList.remove('show'), 2400); }
-function post(o){ try { if (window.parent !== window) window.parent.postMessage(Object.assign({bt:1}, o), '*'); } catch(e){} }
+/* Most prema Android aplikaciji: ona ovu stranicu otvara kao iframe iz file:///android_asset/index.html.
+   Poruke primamo i šaljemo SAMO tom roditelju; svaki drugi sajt (iframe, popup, opener) se ignoriše. */
+const APP_ORIGINS = ['file://', 'null'];
+const FRAMED = window.parent !== window;
+const PARENT_ORIGIN = FRAMED && location.ancestorOrigins && location.ancestorOrigins.length ? location.ancestorOrigins[0] : '';
+const TRUSTED_PARENT = FRAMED && APP_ORIGINS.includes(PARENT_ORIGIN);
+function post(o){ if (!TRUSTED_PARENT) return; try { window.parent.postMessage(Object.assign({bt:1}, o), '*'); } catch(e){} }
 
 const BROKERS = ['wss://broker.emqx.io:8084/mqtt', 'wss://broker.hivemq.com:8884/mqtt'];
 const BASE = 'bashtalk/v1/';
 const hash = new URLSearchParams(location.hash.slice(1));
-const INAPP = hash.get('app') === '1' || hash.get('app') === '2';
-const HEADLESS = hash.get('app') === '2';   // skriveni most za aplikaciju (jedan chat)
+const INAPP = TRUSTED_PARENT && (hash.get('app') === '1' || hash.get('app') === '2');
+const HEADLESS = TRUSTED_PARENT && hash.get('app') === '2';   // skriveni most za aplikaciju (jedan chat)
 let myNet = HEADLESS ? '' : 'web';
 if (INAPP) document.body.classList.add('inapp');
 
 const S = k => { try { return localStorage.getItem('bto_' + k); } catch(e) { return null; } };
 const W = (k, v) => { try { localStorage.setItem('bto_' + k, v); } catch(e) {} };
 
-let myId = hash.get('id') || S('id');
+let myId = (INAPP && hash.get('id')) || S('id');
 if (!myId) myId = hex(crypto.getRandomValues(new Uint8Array(8)));
 W('id', myId);
-let myName = hash.get('name') || S('name') || '';
+let myName = (INAPP && hash.get('name')) || S('name') || '';
 let room = hash.get('r') || S('room') || 'javna';
 let pass = S('pass_' + room) || '';
 let client = null, rid = '', roomKey = null, ecdh = null, myPub = '';
@@ -362,8 +368,9 @@ $('#inviteBtn').onclick = async () => {
 
 /* ---------------- start ---------------- */
 window.addEventListener('message', async e => {
-  const d = e.data || {};
-  if (d.btName) { myName = d.btName; W('name', myName); presence(true); }
+  if (!TRUSTED_PARENT || e.source !== window.parent || !APP_ORIGINS.includes(e.origin)) return;
+  const d = e.data && typeof e.data === 'object' ? e.data : {};
+  if (typeof d.btName === 'string' && d.btName.length <= 80) { myName = d.btName; W('name', myName); presence(true); }
   if (!HEADLESS || !d.cmd) return;
   if (d.net !== undefined) myNet = d.net;
   if (d.cmd === 'join') {
