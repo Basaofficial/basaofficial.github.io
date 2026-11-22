@@ -6,7 +6,6 @@
 <title>Bash Deutsch – njemački A1–B2</title>
 <meta name="description" content="Uči njemački od A1 do B2: lekcije, slušanje, slaganje rečenica, der/die/das, video izvori. Besplatno.">
 <link rel="icon" href="../assets/icons/icon-192.png">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
 <meta name="theme-color" content="#000000">
 <style>
 :root{--green:#58cc02;--green-d:#46a302;--blue:#1cb0f6;--blue-d:#1899d6;--red:#ff4b4b;--red-d:#ea2b2b;--yellow:#ffc800;--orange:#ff9600;
@@ -244,7 +243,7 @@ canvas#cf{position:fixed;inset:0;pointer-events:none;z-index:60}
 --green:#7cff01;--green-d:#4a9c00;--blue:#2fd6ff;--blue-d:#0aa3c7;--red:#ff4d6d;--red-d:#c9304f;--yellow:#ffd60a;--orange:#ff9f1c;
 --okbg:rgba(124,255,1,.12);--okfg:#a6ff4d;--badbg:rgba(255,77,109,.14);--badfg:#ff8aa0;
 --gb:rgba(255,255,255,.12);--gb2:rgba(255,255,255,.22);--blur:blur(22px) saturate(170%);--sh:0 24px 60px -28px rgba(0,0,0,.9),inset 0 1px 0 rgba(255,255,255,.1)}
-html,body{background:#000;color:var(--text);font-family:"Inter",Nunito,system-ui,sans-serif}
+html,body{background:#000;color:var(--text);font-family:-apple-system,"Segoe UI",Roboto,Inter,system-ui,sans-serif}
 .blobs{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;filter:blur(60px)}
 .blobs i{position:absolute;border-radius:50%;opacity:.45;animation:blob 26s ease-in-out infinite alternate}
 .blobs i:nth-child(1){width:46vmax;height:46vmax;left:-16vmax;top:-14vmax;background:radial-gradient(circle,rgba(124,255,1,.42),transparent 62%)}
@@ -2108,7 +2107,7 @@ function vProfile(m){
   </div>
   <div class="sec"><a class="card res" href="../"><span class="e">🧪</span><span><div class="tt">bashlab</div><div class="ds">Sve moje aplikacije · @basa.gtm</div></span></a></div>
   ${myDataSection()}${(isStaff()||admHasKey()||modHasKey())?'<div class="sec"><button class="btn" data-tab="admin" style="background:#ffc800;box-shadow:0 4px 0 #e0a800;color:#3c3c3c">👑 Admin / moderator panel</button></div>':''}
-  <div class="sec"><div class="note">💾 Napredak se čuva u ovom pregledniku na ovom uređaju.</div><button class="btn ghost" id="rst" style="color:var(--red)">Resetuj napredak</button></div>`;
+  <div class="sec"><div class="note">💾 Napredak se čuva u ovom pregledniku na ovom uređaju.</div><button class="btn ghost" id="rst" style="color:var(--red)">Resetuj napredak</button><p class="small" style="text-align:center;margin-top:18px"><a href="datenschutz.html" target="_blank" rel="noopener">Datenschutz · Izjava o privatnosti</a></p></div>`;
   const vs=$('#vs');if(vs)vs.onchange=()=>{S.voice=vs.value;save();};
   bindMyData();
   $('#rst').onclick=()=>{sheet(`<div style="text-align:center">${mascot(80,'sad')}<h3>Obrisati sav napredak?</h3><p class="muted">XP, niz i završene lekcije biće izbrisani.</p><button class="btn red" id="ry">Da, obriši</button><button class="btn ghost" id="rn">Odustani</button></div>`);$('#ry').onclick=()=>{S=def();save();closeSheet();render();};$('#rn').onclick=closeSheet;};
@@ -2554,6 +2553,48 @@ function calcSelf(){
 function resultCard(pct,sub){const pass=pct>=60;return `<div class="xres ${pass?'ok':'bad'}">${mascot(70,pass?'happy':'sad')}<div><div class="xr-p">${pct} %</div><div class="xr-s">${pass?'✓ Položeno':'✗ Nije položeno'} <span class="small">(prolaz 60 %)</span></div><div class="small" style="margin-top:4px">${sub}</div></div></div>`;}
 
 
+
+/* ============ mini MQTT 3.1.1 klijent preko WebSocketa (bez vanjskih biblioteka/CDN-a) ============ */
+(function(){
+const te=new TextEncoder(),td=new TextDecoder();
+const cat=(...a)=>{let n=0;a.forEach(x=>n+=x.length);const o=new Uint8Array(n);let p=0;a.forEach(x=>{o.set(x,p);p+=x.length;});return o;};
+const str=s=>{const b=te.encode(s);return cat(Uint8Array.of(b.length>>8,b.length&255),b);};
+const pkt=(h,body)=>{const l=[];let x=body.length;do{let d=x%128;x=Math.floor(x/128);if(x>0)d|=128;l.push(d);}while(x>0);return cat(Uint8Array.of(h,...l),body);};
+class Client{
+  constructor(url,o){this.url=url;this.o=o||{};this.h={};this.subs=new Set();this.q=[];this.connected=false;this.pid=0;this.buf=new Uint8Array(0);this.tries=0;this.ended=false;this._open();}
+  on(e,f){(this.h[e]=this.h[e]||[]).push(f);return this;}
+  _emit(e,...a){(this.h[e]||[]).forEach(f=>{try{f(...a);}catch(x){}});}
+  _open(){if(this.ended)return;let ws;try{ws=new WebSocket(this.url,['mqtt']);}catch(e){this._retry();return;}
+    ws.binaryType='arraybuffer';this.ws=ws;this.buf=new Uint8Array(0);
+    const to=setTimeout(()=>{if(this.ws===ws&&!this.connected)try{ws.close();}catch(e){}},this.o.connectTimeout||8000);
+    ws.onopen=()=>{ws.send(pkt(0x10,cat(str('MQTT'),Uint8Array.of(4,2,0,this.o.keepalive||30),str(this.o.clientId||('c'+Math.random().toString(36).slice(2,10))))));};
+    ws.onmessage=e=>{if(this.ws===ws)this._data(new Uint8Array(e.data));};
+    const down=()=>{clearTimeout(to);if(this.ws!==ws)return;this.ws=null;this.connected=false;clearInterval(this.pi);this._emit('close');this._retry();};
+    ws.onclose=down;ws.onerror=()=>{this._emit('error');down();};}
+  _retry(){if(this.ended)return;clearTimeout(this.rt);this.tries++;this.rt=setTimeout(()=>this._open(),Math.min(30000,(this.o.reconnectPeriod||6000)*Math.min(this.tries,4)));}
+  _data(chunk){let b=cat(this.buf,chunk);
+    for(;;){if(b.length<2)break;let mul=1,len=0,i=1,c,ok=true;do{if(i>=b.length){ok=false;break;}c=b[i++];len+=(c&127)*mul;mul*=128;}while(c&128);
+      if(!ok||b.length<i+len)break;const t=b[0]>>4,f=b[0]&15,body=b.subarray(i,i+len);b=b.slice(i+len);this._handle(t,f,body);}
+    this.buf=b;}
+  _handle(t,f,body){
+    if(t===2){if(body[1]===0){this.connected=true;this.tries=0;clearInterval(this.pi);this.pi=setInterval(()=>{try{this.ws&&this.ws.send(Uint8Array.of(0xC0,0));}catch(e){}},((this.o.keepalive||30)*1000)*0.8);
+        if(this.subs.size)this._sub([...this.subs]);this._emit('connect');const q=this.q.splice(0);q.forEach(a=>this.publish(...a));}
+      else try{this.ws.close();}catch(e){}}
+    else if(t===3){const tl=(body[0]<<8)|body[1],topic=td.decode(body.subarray(2,2+tl));let p=2+tl;const qos=(f>>1)&3;
+      if(qos){const id=(body[p]<<8)|body[p+1];p+=2;try{this.ws.send(Uint8Array.of(0x40,2,id>>8,id&255));}catch(e){}}
+      this._emit('message',topic,{toString:()=>td.decode(body.subarray(p))});}
+  }
+  _id(){this.pid=this.pid%60000+1;return Uint8Array.of(this.pid>>8,this.pid&255);}
+  _sub(list){if(!this.ws||!this.connected)return;try{this.ws.send(pkt(0x82,cat(this._id(),...list.map(t=>cat(str(t),Uint8Array.of(0))))));}catch(e){}}
+  subscribe(t){const list=Array.isArray(t)?t:[t];list.forEach(x=>this.subs.add(x));this._sub(list);}
+  publish(topic,msg,o){o=o||{};if(!this.connected||!this.ws){if(this.q.length<200)this.q.push([topic,msg,o]);return;}
+    const qos=o.qos?1:0,h=0x30|(qos<<1)|(o.retain?1:0);
+    try{this.ws.send(pkt(h,cat(str(topic),qos?this._id():new Uint8Array(0),te.encode(String(msg)))));}catch(e){this.q.push([topic,msg,o]);}}
+  end(){this.ended=true;clearTimeout(this.rt);clearInterval(this.pi);this.connected=false;try{this.ws&&this.ws.send(Uint8Array.of(0xE0,0));this.ws&&this.ws.close();}catch(e){}}
+}
+if(!window.mqtt)window.mqtt={connect:(url,o)=>new Client(url,o)};
+})();
+
 /* ============ RANG LISTA + ADMIN + MODERATORI (javni MQTT, potpisano ECDSA ključevima) ============ */
 const ADMIN_PUB='BMsKXc4ygpnAfmVR_v_WuFxY_dJv8sO0vYc5KRfvsNEf2i1gjAQqHdriekbIpvt13yxwEW3vndoBac5u0bi_7nc';
 const NS='bashdeutsch/v1/',LB_T=NS+'lb/',CTL=NS+'ctl/',PING=NS+'ping/',LB_B=['wss://broker.emqx.io:8084/mqtt','wss://broker.hivemq.com:8884/mqtt'];
@@ -2597,7 +2638,7 @@ function weekXP(){const d=new Date(),day=(d.getDay()+6)%7;let s=0;for(let i=0;i<
 function myLevel(){const R=S.exam||{};let lv='';for(const l of ['A1','A2','B1','B2'])if(MODS.every(([k])=>((R[l]||{})[k]??-1)>=60))lv=l+' ✓';return lv||UNITS[curIdx()<0?UNITS.length-1:curIdx()>>2].lvl;}
 const lbCanon=e=>[e.id,e.n,e.xp,e.wk,e.wid,e.st,e.lv,e.w,e.ts].join('|');
 async function myEntry(){const e={v:1,id:S.uid,n:S.nick,xp:S.xp,wk:weekXP(),wid:isoWeek(),st:streakNow(),lv:myLevel(),w:Object.values(S.words).filter(r=>r.ok>r.bad).length+Object.values(S.vocab||{}).filter(r=>r.b>=3).length,ts:Date.now()};if(isStaff())try{Object.assign(e,await actSign(lbCanon(e)));}catch(x){}return e;}
-function lbLib(){return new Promise(res=>{if(window.mqtt)return res(true);const add=(src,fb)=>{const s=document.createElement('script');s.src=src;s.onload=()=>res(!!window.mqtt);s.onerror=fb;document.head.appendChild(s);};add('https://unpkg.com/mqtt@5/dist/mqtt.min.js',()=>add('https://cdn.jsdelivr.net/npm/mqtt@5/dist/mqtt.min.js',()=>res(false)));});}
+function lbLib(){return Promise.resolve(!!window.mqtt);}
 async function lbConnect(){
   if(LB.clients.length)return;LB.status='wait';
   if(!await lbLib()){LB.status='err';lbDraw();return;}
@@ -2610,7 +2651,7 @@ function pub(c,topic,obj){try{c.publish(topic,obj===''?'':JSON.stringify(obj),{q
 function pubAll(topic,obj){LB.clients.forEach(c=>pub(c,topic,obj));}
 async function sendAll(c){
   if(!S.first){S.first=Date.now();save();}
-  const p={ts:Date.now(),f:S.first,lv:myLevel(),wk:weekXP(),wid:isoWeek()};(c?[c]:LB.clients).forEach(x=>pub(x,PING+S.uid,p));regSend(c);
+  if(!S.pingGone){(c?[c]:LB.clients).forEach(x=>pub(x,PING+S.uid,''));S.pingGone=true;save();}regSend(c);
   if(S.nick&&!S.lbOff){const e=await myEntry();LB.data[S.uid]={...LB.data[S.uid],...e,adm:ADM.is,mod:MODIS()?LB.roles[MOD.pub].n:null};(c?[c]:LB.clients).forEach(x=>pub(x,LB_T+S.uid,e));}
 }
 function lbPublish(){if(!LB.clients.length){lbConnect();return;}sendAll();}
@@ -2683,7 +2724,7 @@ function vRank(m){
     $('#nkn').onclick=()=>{S.lbOff=true;save();render();};return;}
   const forced=LB.nicks[S.uid];
   m.innerHTML=`<h2 class="t">🏆 Rang lista</h2><div class="seg">${[['week','Ova sedmica'],['all','Ukupno XP'],['streak','Niz 🔥']].map(([k,n])=>`<button data-lbv="${k}" class="${LB.view===k?'on':''}">${n}</button>`).join('')}</div><div id="lbl" style="margin-top:12px"></div>
-  <div class="sec"><div class="note">🌐 Rezultati idu preko istih javnih servera kao #Bash igre i osvježavaju se kad neko završi lekciju. Vidi se samo nadimak. Aplikacija šalje i anonimni signal bez imena (nivo i datum aktivnosti) za osnovnu statistiku.</div>
+  <div class="sec"><div class="note">🌐 Rezultati idu preko istih javnih servera kao #Bash igre i osvježavaju se kad neko završi lekciju. Javno se vidi samo nadimak, pa ne koristi pravo ime. <a href="datenschutz.html#bs" target="_blank" rel="noopener">Privatnost</a></div>
   ${S.lbOff?`<button class="btn" id="lbon">Pridruži se rang listi</button>`:`<div class="small muted" style="margin-top:10px">Tvoj nadimak: <b>${esc(S.nick)}</b>${ADM.is?' 👑':MODIS()?' 🛡️':''}${forced?' · promijenio ga je moderator':''}</div>${forced?'':'<button class="btn ghost" id="lbn">Promijeni nadimak</button>'}<button class="btn ghost" id="lbx" style="color:var(--red)">Ukloni me s liste</button>`}</div>`;
   m.querySelectorAll('[data-lbv]').forEach(b=>b.onclick=()=>{LB.view=b.dataset.lbv;m.querySelectorAll('[data-lbv]').forEach(x=>x.classList.toggle('on',x===b));lbDraw();});
   const on=$('#lbon');if(on)on.onclick=()=>{S.lbOff=false;S.nick=null;save();render();};
@@ -2723,7 +2764,7 @@ function userSheet(id){
   if(!isStaff())return;const r=LB.data[id],p=LB.pings[id],bl=LB.block[id],name=r?dispNick(r):('Uređaj '+id.slice(0,6)),q=s=>document.querySelector(s);
   const protectedU=r&&r.adm;
   sheet(`<div class="sh-h" style="color:var(--blue)">${ADM.is?'👑 ADMIN':'🛡️ MODERATOR'}</div><h3>${esc(name)}${r&&r.mod?' 🛡️':''}</h3>
-  <p class="small muted" style="font-weight:600">${r?`${esc(r.lv)} · ⚡ ${r.xp} XP · ${r.w} riječi`:''}${p?` · zadnji put aktivan ${fmtD(p.ts)}`:''}</p>
+  <p class="small muted" style="font-weight:600">${r?`${esc(r.lv)} · ⚡ ${r.xp} XP · ${r.w} riječi`:''}${LB.reg[id]?` · zadnji put aktivan ${fmtD(LB.reg[id].last||LB.reg[id].ts)}`:''}</p>
   ${ADM.is?regRow(id):''}
   ${protectedU?'<div class="note">👑 Ovo je admin. Njega niko ne može ukloniti.</div>':''}
   ${can('ban')&&!protectedU?(isBlockedRec(bl)?`<div class="note">⛔ Uklonjen s kursa ${bl.u?'do '+fmtD(bl.u):'trajno'}${bl.r?` · ${esc(bl.r)}`:''}</div><button class="btn" id="ubr">↩️ Vrati na kurs</button>`:`
@@ -2783,12 +2824,12 @@ function vAdmin(m){
 }
 function admDraw(){
   const el=$('#ast');if(!el||!isStaff())return;
-  const now=Date.now(),P=Object.values(LB.pings),wid=isoWeek();
+  const now=Date.now(),wid=isoWeek(),P=ADM.is?Object.values(LB.reg).map(g=>({ts:g.last||g.ts,f:g.first||g.ts,lv:g.lv})):Object.values(LB.data).map(r=>({ts:r.ts,f:r.ts,lv:r.lv}));
   const d1=P.filter(p=>now-p.ts<864e5).length,d7=P.filter(p=>now-p.ts<7*864e5).length,nw=P.filter(p=>now-p.f<7*864e5).length;
   const lv={};P.forEach(p=>{const k=(p.lv||'?').slice(0,2);lv[k]=(lv[k]||0)+1;});
   const L=Object.values(LB.data),wx=L.filter(r=>r.wid===wid).reduce((s,r)=>s+r.wk,0);
   el.innerHTML=`${LB.status!=='ok'?'<p class="muted">Povezujem se…</p>':''}<div class="grid2">
-  <div class="sbox"><span style="font-size:24px">👥</span><div><div class="n">${P.length}</div><div class="l">korisnika (60 dana)</div></div></div>
+  <div class="sbox"><span style="font-size:24px">👥</span><div><div class="n">${P.length}</div><div class="l">${ADM.is?'registrovanih':'na listi'}</div></div></div>
   <div class="sbox"><span style="font-size:24px">🟢</span><div><div class="n">${d1}</div><div class="l">aktivno danas</div></div></div>
   <div class="sbox"><span style="font-size:24px">📅</span><div><div class="n">${d7}</div><div class="l">aktivno 7 dana</div></div></div>
   <div class="sbox"><span style="font-size:24px">✨</span><div><div class="n">${nw}</div><div class="l">novih ove sedmice</div></div></div>
@@ -2800,8 +2841,8 @@ function admDraw(){
   const ab=$('#abn');if(ab)ab.innerHTML=LB.ban.size?[...LB.ban].map(id=>{const r=LB.data[id];return `<div class="lbr"><span class="lbn"><span>${r?esc(dispNick(r)):'Uređaj '+id.slice(0,6)}</span></span><button class="banb" data-ban="${id}">↩️ Vrati</button></div>`;}).join(''):'<p class="muted">Niko nije skriven.</p>';
   const bl=$('#abl');if(bl){const ids=Object.keys(LB.block).filter(id=>isBlockedRec(LB.block[id]));bl.innerHTML=ids.length?ids.map(id=>{const r=LB.data[id],b=LB.block[id];return `<div class="lbr"><span class="lbn"><span>${r?esc(dispNick(r)):'Uređaj '+id.slice(0,6)}</span><small>${b.u?'do '+fmtD(b.u):'trajno'}${b.r?' · '+esc(b.r):''}</small></span><button class="banb" data-usr="${id}">⚙️</button></div>`;}).join(''):'<p class="muted">Niko nije uklonjen.</p>';}
   const rn=$('#aregn');if(rn)rn.textContent=Object.keys(LB.reg).length+' registrovanih polaznika';
-  const us=$('#ausr');if(us){const all=new Set([...Object.keys(LB.pings),...Object.keys(LB.data),...Object.keys(LB.reg)]);const list=[...all].filter(id=>id!==S.uid).map(id=>({id,r:LB.data[id],p:LB.pings[id]})).sort((a,b)=>((b.p||b.r||{ts:0}).ts)-((a.p||a.r||{ts:0}).ts)).slice(0,100);
-    us.innerHTML=list.length?list.map(({id,r,p})=>`<div class="lbr ${isBlockedRec(LB.block[id])?'ban':''}"><span class="lbav" style="background:${PAL[id.charCodeAt(0)%PAL.length][0]}">${r?esc(dispNick(r)[0]).toUpperCase():'?'}</span><span class="lbn"><span>${r?esc(dispNick(r)):'Uređaj '+id.slice(0,6)}${r&&r.mod?' 🛡️':''}</span><small>${esc((p&&p.lv)||(r&&r.lv)||'')}${p||r?' · aktivan '+fmtD((p||r).ts):''}${isBlockedRec(LB.block[id])?' · ⛔':''}</small>${ADM.is?regRow(id):''}</span><button class="banb" data-usr="${id}">⚙️</button></div>`).join(''):'<p class="muted">Još nema drugih korisnika.</p>';}
+  const us=$('#ausr');if(us){const all=new Set([...Object.keys(LB.pings),...Object.keys(LB.data),...Object.keys(LB.reg)]);const act=id=>{const g=LB.reg[id],r=LB.data[id];return g?(g.last||g.ts):r?r.ts:0;};const list=[...all].filter(id=>id!==S.uid).map(id=>({id,r:LB.data[id],p:null})).sort((a,b)=>act(b.id)-act(a.id)).slice(0,100);
+    us.innerHTML=list.length?list.map(({id,r,p})=>`<div class="lbr ${isBlockedRec(LB.block[id])?'ban':''}"><span class="lbav" style="background:${PAL[id.charCodeAt(0)%PAL.length][0]}">${r?esc(dispNick(r)[0]).toUpperCase():'?'}</span><span class="lbn"><span>${r?esc(dispNick(r)):'Uređaj '+id.slice(0,6)}${r&&r.mod?' 🛡️':''}</span><small>${esc((LB.reg[id]&&LB.reg[id].lv)||(r&&r.lv)||'')}${LB.reg[id]?' · aktivan '+fmtD(LB.reg[id].last||LB.reg[id].ts):r?' · aktivan '+fmtD(r.ts):''}${isBlockedRec(LB.block[id])?' · ⛔':''}</small>${ADM.is?regRow(id):''}</span><button class="banb" data-usr="${id}">⚙️</button></div>`).join(''):'<p class="muted">Još nema drugih korisnika.</p>';}
 }
 
 
@@ -2823,9 +2864,9 @@ async function decForAdmin(e){
   const key=await crypto.subtle.deriveKey({name:'ECDH',public:epk},ADH,{name:'AES-GCM',length:256},false,['decrypt']);
   return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:b64d(e.iv)},key,b64d(e.ct))));
 }
-async function regSend(c){if(!S.reg||!ADMIN_PUB)return;if('age' in S.reg){delete S.reg.age;save();}try{const e=await encForAdmin({...S.reg,uid:S.uid});(c?[c]:LB.clients).forEach(x=>pub(x,REG+S.uid,e));}catch(x){}}
+async function regSend(c){if(!S.reg||!ADMIN_PUB)return;S.reg.last=Date.now();S.reg.lv=myLevel();S.reg.first=S.first||S.reg.ts;if('age' in S.reg){delete S.reg.age;save();}try{const e=await encForAdmin({...S.reg,uid:S.uid});(c?[c]:LB.clients).forEach(x=>pub(x,REG+S.uid,e));}catch(x){}}
 async function regMsg(t,s){if(!ADM.is)return;const id=t.slice(REG.length);if(!s){delete LB.reg[id];admDrawSoon();return;}
-  try{const d=await decForAdmin(JSON.parse(s));LB.reg[id]={fn:String(d.fn||'').slice(0,40),ln:String(d.ln||'').slice(0,40),mail:String(d.mail||'').slice(0,80),from:String(d.from||'').slice(0,60),ts:+d.ts||0};admDrawSoon();}catch(x){}}
+  try{const d=await decForAdmin(JSON.parse(s));LB.reg[id]={fn:String(d.fn||'').slice(0,40),ln:String(d.ln||'').slice(0,40),mail:String(d.mail||'').slice(0,80),from:String(d.from||'').slice(0,60),ts:+d.ts||0,last:+d.last||+d.ts||0,lv:String(d.lv||'').slice(0,5),first:+d.first||+d.ts||0};admDrawSoon();}catch(x){}}
 const needReg=()=>!S.reg&&!isStaff()&&!admHasKey()&&!modHasKey()&&tab!=='admin'&&tab!=='mod';
 function vRegister(app){
   const r=S.regDraft||{};
@@ -2835,17 +2876,18 @@ function vRegister(app){
    <div class="grid2"><input class="search" id="rfn" maxlength="40" placeholder="Ime" value="${esc(r.fn||'')}" autocomplete="given-name"><input class="search" id="rln" maxlength="40" placeholder="Prezime" value="${esc(r.ln||'')}" autocomplete="family-name"></div>
    <input class="search" id="rmail" type="email" maxlength="80" placeholder="Email" value="${esc(r.mail||'')}" autocomplete="email">
    <input class="search" id="rfrom" maxlength="60" placeholder="Odakle si (grad, država)" value="${esc(r.from||'')}">
-   <label class="xck" style="font-size:13px;font-weight:600"><input type="checkbox" id="rok"> <span>Pristajem da se ovi podaci <b>šifrovano</b> pošalju adminu kursa i koriste samo za vođenje kursa. Ne prikazuju se drugim korisnicima. Mogu ih obrisati u Profilu. <a href="#" id="rpriv">Više o privatnosti</a></span></label>
+   <label class="xck" style="font-size:13px;font-weight:600"><input type="checkbox" id="r16"> <span>Imam 16 ili više godina (ili imam saglasnost roditelja).</span></label>
+   <label class="xck" style="font-size:13px;font-weight:600"><input type="checkbox" id="rok"> <span>Pristajem da se ovi podaci <b>šifrovano</b> pošalju adminu kursa i koriste samo za vođenje kursa. Ne prikazuju se drugim korisnicima. Saglasnost mogu povući i podatke obrisati u Profilu. <a href="datenschutz.html#bs" target="_blank" rel="noopener">Izjava o privatnosti</a></span></label>
    <div class="small" id="rerr"></div>
    <button class="btn" id="rgo">Započni kurs</button></div></div>`;
   const q=id=>document.getElementById(id),val=id=>q(id).value.trim();
-  q('rpriv').onclick=e=>{e.preventDefault();privSheet();};
   q('rgo').onclick=()=>{
     const d={fn:val('rfn'),ln:val('rln'),mail:val('rmail'),from:val('rfrom')};S.regDraft=d;
     const err=m=>{q('rerr').innerHTML=`<span class="badc">${m}</span>`;};
     if(d.fn.length<2||d.ln.length<2)return err('Upiši ime i prezime.');
     if(!MAIL_RE.test(d.mail))return err('Email nije ispravan.');
     if(d.from.length<2)return err('Upiši odakle si.');
+    if(!q('r16').checked)return err('Kurs je za osobe od 16 godina ili uz saglasnost roditelja.');
     if(!q('rok').checked)return err('Potrebna je saglasnost za obradu podataka.');
     S.reg={...d,ts:Date.now()};delete S.regDraft;save();regSend();lbPublish();render();
   };
@@ -2858,7 +2900,7 @@ function privSheet(){sheet(`<h3>🔒 Privatnost</h3><div class="tip" style="font
   <p><b>Kontakt:</b> Instagram @basa.gtm</p></div><button class="btn" onclick="closeSheet()">U redu</button>`);}
 function myDataSection(){if(!S.reg)return '';const r=S.reg;
   return `<div class="sec"><h3>🪪 Moji podaci</h3><div class="card small" style="font-weight:700;line-height:1.7">${esc(r.fn)} ${esc(r.ln)}<br>${esc(r.mail)}<br>${esc(r.from)}</div>
-  <button class="btn ghost" id="redit">Izmijeni podatke</button><button class="btn ghost" id="rdel" style="color:var(--red)">Obriši moje podatke</button><button class="btn ghost" onclick="privSheet()">🔒 Privatnost</button></div>`;}
+  <button class="btn ghost" id="redit">Izmijeni podatke</button><button class="btn ghost" id="rdel" style="color:var(--red)">Obriši moje podatke</button><a class="btn ghost" href="datenschutz.html#bs" target="_blank" rel="noopener" style="text-align:center;text-decoration:none">🔒 Izjava o privatnosti</a></div>`;}
 function bindMyData(){const e=$('#redit'),d=$('#rdel');
   if(e)e.onclick=()=>{S.regDraft=S.reg;S.reg=null;save();render();};
   if(d)d.onclick=()=>{sheet(`<h3>Obrisati tvoje podatke?</h3><p class="muted" style="font-weight:600">Podaci se brišu sa servera. Za nastavak kursa morat ćeš ih ponovo upisati.</p><button class="btn red" id="rdy">Obriši</button><button class="btn ghost" id="rdn">Odustani</button>`);

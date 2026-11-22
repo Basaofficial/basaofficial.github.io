@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Datenschutz · Bash Deutsch</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#000000">
+<style>
+:root{--g:#7cff01;--t:#f2f5f3;--m:#9aa3a9;--gb:rgba(255,255,255,.12)}
+*{box-sizing:border-box}
+body{margin:0;background:#000;color:var(--t);font-family:-apple-system,"Segoe UI",Roboto,Inter,system-ui,sans-serif;line-height:1.6;font-size:15px}
+main{max-width:760px;margin:0 auto;padding:28px 18px 60px}
+h1{font-size:28px;margin:0 0 4px;letter-spacing:-.02em}
+h2{font-size:19px;margin:28px 0 6px;color:var(--g)}
+h3{font-size:16px;margin:18px 0 4px}
+p,li{color:#dfe5e1}
+.card{background:rgba(255,255,255,.055);border:1px solid var(--gb);border-radius:18px;padding:16px 18px;margin:14px 0}
+.lang{display:flex;gap:8px;margin:14px 0}
+.lang a,.back{display:inline-block;border:1px solid var(--gb);border-radius:12px;padding:7px 14px;color:var(--t);text-decoration:none;font-weight:700;background:rgba(255,255,255,.05)}
+a{color:#2fd6ff}
+small{color:var(--m)}
+</style>
+</head>
+<body>
+<main>
+<a class="back" href="./">← Bash Deutsch</a>
+<h1>Datenschutzerklärung</h1>
+<small>Stand: 22.11.2026 · gilt für die Web-App „Bash Deutsch" unter basaofficial.github.io/deutsch</small>
+<div class="lang"><a href="#de">🇩🇪 Deutsch</a><a href="#bs">🇧🇦 Bosanski</a></div>
+
+<section id="de">
+<div class="card"><b>Kurz gesagt:</b> Dein Lernfortschritt bleibt auf deinem Gerät. Deine Anmeldedaten (Name, E-Mail, Ort) werden auf deinem Gerät verschlüsselt und können nur vom Kursleiter gelesen werden. Es gibt keine Werbung, keine Cookies und kein Tracking. Du kannst deine Daten jederzeit löschen.</div>
+
+<h2>1. Verantwortlicher</h2>
+<p>Anel (basaofficial), privat und nicht kommerziell<br>E-Mail: <a href="mailto:basagtm@gmail.com">basagtm@gmail.com</a> · Instagram: @basa.gtm</p>
+
+<h2>2. Hosting (GitHub Pages)</h2>
+<p>Die App wird über GitHub Pages der GitHub Inc. (USA) bereitgestellt. Beim Aufruf verarbeitet GitHub technisch notwendige Daten wie deine IP-Adresse, Datum, Uhrzeit und Browser-Informationen in Server-Logs. Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO (sicherer und stabiler Betrieb). Eine Übermittlung in die USA ist möglich; GitHub stützt sich dafür auf geeignete Garantien (z. B. EU-US Data Privacy Framework bzw. Standardvertragsklauseln). Mehr: <a href="https://docs.github.com/de/site-policy/privacy-policies/github-general-privacy-statement" target="_blank" rel="noopener">Datenschutzerklärung von GitHub</a>.</p>
+<p>Die App lädt keine Schriftarten, Skripte oder Bibliotheken von Drittanbietern (kein Google Fonts, kein CDN).</p>
+
+<h2>3. Speicherung auf deinem Gerät</h2>
+<p>Lernfortschritt, XP, Einstellungen und eine zufällige Geräte-ID werden im lokalen Speicher deines Browsers (localStorage) gespeichert. Es werden keine Cookies verwendet. Du kannst diese Daten jederzeit über „Profil → Fortschritt zurücksetzen" oder die Browser-Einstellungen löschen.</p>
+
+<h2>4. Anmeldung zum Kurs</h2>
+<p>Für die Teilnahme gibst du Vorname, Nachname, E-Mail-Adresse und Wohnort an. Zusätzlich werden das Datum der letzten Nutzung und dein Kursniveau übermittelt. Diese Daten werden <b>auf deinem Gerät mit dem öffentlichen Schlüssel des Kursleiters verschlüsselt</b> (ECDH P-256 + AES-GCM) und erst dann über die unter Nr. 6 genannten Server übertragen. Lesen kann sie nur der Kursleiter; Server, Moderatoren und andere Nutzer sehen nur verschlüsselte Daten.</p>
+<p>Zweck: Organisation des Kurses und Kontakt mit Teilnehmenden. Rechtsgrundlage: deine Einwilligung, Art. 6 Abs. 1 lit. a DSGVO. Die Teilnahme ist ab 16 Jahren möglich; Jüngere benötigen die Zustimmung der Eltern (Art. 8 DSGVO).</p>
+<p>Speicherdauer: bis du die Daten in der App löschst („Profil → Meine Daten → Löschen"), deine Einwilligung widerrufst oder per E-Mail die Löschung verlangst. Der Kursleiter löscht dann auch eventuell exportierte Kopien.</p>
+
+<h2>5. Rangliste (freiwillig)</h2>
+<p>Wenn du der Rangliste beitrittst, werden dein selbst gewählter Spitzname, XP, Lernserie, Niveau und Anzahl gelernter Wörter <b>öffentlich</b> für alle Nutzer angezeigt und dafür unverschlüsselt über die Server unter Nr. 6 übertragen. Verwende keinen echten Namen. Rechtsgrundlage: Einwilligung, Art. 6 Abs. 1 lit. a DSGVO. Du kannst dich jederzeit unter „Rangliste → Von der Liste entfernen" löschen.</p>
+<p>Der Kursleiter und von ihm benannte Moderatoren können Spitznamen ändern, Einträge ausblenden, Abzeichen vergeben und Nutzer bei Verstößen vom Kurs ausschließen.</p>
+
+<h2>6. Übertragung über MQTT-Server</h2>
+<p>Für Rangliste, Mitteilungen und die verschlüsselten Anmeldedaten nutzt die App öffentliche MQTT-Server von EMQ Technologies (broker.emqx.io) und HiveMQ GmbH (broker.hivemq.com). Dabei sehen die Betreiber deine IP-Adresse. Die Serverstandorte können außerhalb der EU liegen. Es handelt sich um öffentliche Testserver ohne Garantie auf dauerhafte Speicherung. Rechtsgrundlage: deine Einwilligung (Nr. 4 und 5) bzw. Art. 6 Abs. 1 lit. f DSGVO für den technischen Verbindungsaufbau.</p>
+
+<h2>7. Sprachausgabe und Mikrofon</h2>
+<p>Die Aussprache nutzt die Sprachausgabe deines Browsers bzw. Betriebssystems. Je nach Gerät kann dessen Anbieter (z. B. Google oder Apple) die vorgelesenen Wörter verarbeiten. Mikrofonaufnahmen in der Sprechprüfung bleiben ausschließlich auf deinem Gerät und werden nicht übertragen.</p>
+
+<h2>8. Externe Links</h2>
+<p>Links zu YouTube, Goethe-Institut, DW und anderen Seiten öffnen sich erst, wenn du darauf tippst. Dann gelten die Datenschutzbestimmungen der jeweiligen Anbieter.</p>
+
+<h2>9. Deine Rechte</h2>
+<p>Du hast das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit und Widerspruch (Art. 15–21 DSGVO) sowie auf Widerruf einer Einwilligung mit Wirkung für die Zukunft. Schreib dafür an <a href="mailto:basagtm@gmail.com">basagtm@gmail.com</a>. Außerdem kannst du dich bei einer Datenschutz-Aufsichtsbehörde beschweren, z. B. der Behörde deines Bundeslandes.</p>
+</section>
+
+<section id="bs">
+<h1 style="margin-top:46px">Izjava o privatnosti</h1>
+<div class="card"><b>Ukratko:</b> tvoj napredak ostaje na tvom uređaju. Podaci iz registracije (ime, email, mjesto) šifruju se na tvom uređaju i može ih pročitati samo admin kursa. Nema reklama, kolačića ni praćenja. Podatke možeš obrisati kad god hoćeš.</div>
+<h2>1. Odgovorna osoba</h2><p>Anel (basaofficial), privatno i nekomercijalno · email: <a href="mailto:basagtm@gmail.com">basagtm@gmail.com</a> · Instagram: @basa.gtm</p>
+<h2>2. Hosting</h2><p>Aplikacija je na GitHub Pages (GitHub Inc., SAD). GitHub u logovima servera bilježi tehničke podatke poput IP adrese, vremena i preglednika. Aplikacija ne učitava fontove ni biblioteke s drugih servisa (bez Google Fonts i CDN-a).</p>
+<h2>3. Na tvom uređaju</h2><p>Napredak, XP, postavke i nasumični kod uređaja čuvaju se u pregledniku (localStorage). Kolačići se ne koriste.</p>
+<h2>4. Registracija</h2><p>Ime, prezime, email i mjesto, uz datum zadnje aktivnosti i nivo, šifruju se na tvom uređaju ključem admina i tek onda šalju. Samo admin ih može pročitati. Svrha: vođenje kursa i kontakt. Osnov: tvoja saglasnost. Uslov je da imaš 16 ili više godina ili saglasnost roditelja. Brisanje: Profil → Moji podaci → Obriši, ili zahtjev na email.</p>
+<h2>5. Rang lista (dobrovoljno)</h2><p>Ako se pridružiš, nadimak, XP, niz, nivo i broj riječi su javno vidljivi svima. Ne koristi pravo ime. Uklanjaš se u svakom trenutku na rang listi. Admin i moderatori mogu mijenjati nadimke, sakrivati unose, dijeliti bedževe i ukloniti korisnika s kursa zbog kršenja pravila.</p>
+<h2>6. MQTT serveri</h2><p>Rang lista, obavještenja i šifrovani podaci registracije idu preko javnih servera EMQX (broker.emqx.io) i HiveMQ (broker.hivemq.com). Oni vide tvoju IP adresu, a mogu biti i izvan EU.</p>
+<h2>7. Izgovor i mikrofon</h2><p>Izgovor koristi govornu funkciju tvog preglednika ili telefona. Zavisno od uređaja, tekst može obraditi proizvođač (npr. Google ili Apple). Snimci govora ostaju samo na tvom uređaju.</p>
+<h2>8. Tvoja prava</h2><p>Imaš pravo na uvid, ispravku, brisanje, ograničenje obrade, prenos podataka, prigovor i povlačenje saglasnosti. Piši na <a href="mailto:basagtm@gmail.com">basagtm@gmail.com</a>. Možeš se žaliti i nadležnom organu za zaštitu podataka.</p>
+</section>
+</main>
+</body>
+</html>
