@@ -2490,7 +2490,7 @@ function resultCard(pct,sub){const pass=pct>=60;return `<div class="xres ${pass?
 
 
 /* ============ RANG LISTA + ADMIN (javni MQTT, potpisano ECDSA ključem) ============ */
-const ADMIN_PUB=null; /* javni admin ključ (base64url, P-256 raw) – upisuje se nakon pravljenja ključa na adminovom telefonu */
+const ADMIN_PUB='BMsKXc4ygpnAfmVR_v_WuFxY_dJv8sO0vYc5KRfvsNEf2i1gjAQqHdriekbIpvt13yxwEW3vndoBac5u0bi_7nc'; /* javni admin ključ (base64url, P-256 raw) – upisuje se nakon pravljenja ključa na adminovom telefonu */
 const NS='bashdeutsch/v1/',LB_T=NS+'lb/',CTL=NS+'ctl/',PING=NS+'ping/',LB_B=['wss://broker.emqx.io:8084/mqtt','wss://broker.hivemq.com:8884/mqtt'];
 const LB={clients:[],data:{},pings:{},ban:new Set(),banTs:0,news:null,status:'off',view:'week'};
 const NICK_RE=/^[\p{L}\p{N}_. -]{3,16}$/u;
