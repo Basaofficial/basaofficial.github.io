@@ -22,7 +22,7 @@ const UI = {
     fH:'Prijedlozi i greške', fP:'Imaš ideju šta da dodam, našao si grešku ili imaš pitanje o nekoj od mojih aplikacija? Napiši mi.',
     fName:'Ime', fContact:'Mail ili Instagram', fContactPh:'tvoj@mail.com ili @instagram', fType:'O čemu se radi?',
     fTypes:['Prijedlog','Greška','Pitanje','Nešto drugo'], fAbout:'Odnosi se na', fNew:'Nova ideja',
-    fMsg:'Poruka', fMsgPh:'Npr. u aplikaciji … bi bilo super da … / Greška se desi kad …', fSend:'Pošalji', fSending:'Šaljem…',
+    fMsg:'Poruka', fMsgPh:'Npr. u aplikaciji … bi bilo super da … / Greška se desi kad …', fSend:'Pošalji', fSending:'Šaljem…', fPriv:'Poruka se šalje na moj email preko servisa FormSubmit. Više u izjavi o privatnosti.',
     fOk:'✓ Poslano! Hvala.', fErr:'Nije uspjelo slanje. Pošalji mi direktno na mail:', fReq:'Upiši kontakt i poruku.', fAsk:'Prijedlog / greška',
     contactH:'Javi <span>se</span>', contactP:'Prijedlog, greška ili pitanje o nekoj aplikaciji? Piši mi na Instagram ili mail.',
     mailCopied:'✓ Mail kopiran: ', palhint:'↑↓ biraj · Enter otvori · Esc zatvori', palPh:'upiši projekat ili komandu…',
@@ -42,7 +42,7 @@ const UI = {
     fH:'Vorschläge und Fehler', fP:'Du hast eine Idee, was ich hinzufügen soll, einen Fehler gefunden oder eine Frage zu einer meiner Apps? Schreib mir.',
     fName:'Name', fContact:'Mail oder Instagram', fContactPh:'deine@mail.de oder @instagram', fType:'Worum geht es?',
     fTypes:['Vorschlag','Fehler','Frage','Etwas anderes'], fAbout:'Bezieht sich auf', fNew:'Neue Idee',
-    fMsg:'Nachricht', fMsgPh:'Z. B. in der App … wäre es super, wenn … / Der Fehler passiert, wenn …', fSend:'Senden', fSending:'Sende…',
+    fMsg:'Nachricht', fMsgPh:'Z. B. in der App … wäre es super, wenn … / Der Fehler passiert, wenn …', fSend:'Senden', fSending:'Sende…', fPriv:'Die Nachricht wird über den Dienst FormSubmit per E-Mail an mich gesendet. Mehr in der Datenschutzerklärung.',
     fOk:'✓ Gesendet! Danke.', fErr:'Senden fehlgeschlagen. Schreib mir direkt per Mail:', fReq:'Bitte Kontakt und Nachricht angeben.', fAsk:'Vorschlag / Fehler',
     contactH:'Schreib <span>mir</span>', contactP:'Vorschlag, Fehler oder Frage zu einer App? Schreib mir auf Instagram oder per Mail.',
     mailCopied:'✓ Mail kopiert: ', palhint:'↑↓ wählen · Enter öffnen · Esc schließen', palPh:'Projekt oder Befehl eingeben…',
@@ -62,7 +62,7 @@ const UI = {
     fH:'Suggestions and bugs', fP:'Got an idea for something I should add, found a bug or have a question about one of my apps? Let me know.',
     fName:'Name', fContact:'Email or Instagram', fContactPh:'you@mail.com or @instagram', fType:'What is it about?',
     fTypes:['Suggestion','Bug','Question','Something else'], fAbout:'About', fNew:'New idea',
-    fMsg:'Message', fMsgPh:'E.g. in the app … it would be great if … / The bug happens when …', fSend:'Send', fSending:'Sending…',
+    fMsg:'Message', fMsgPh:'E.g. in the app … it would be great if … / The bug happens when …', fSend:'Send', fSending:'Sending…', fPriv:'Your message is sent to my email via FormSubmit. See the privacy policy for details.',
     fOk:'✓ Sent! Thanks.', fErr:'Sending failed. Email me directly:', fReq:'Please add your contact and a message.', fAsk:'Suggestion / bug',
     contactH:'Get in <span>touch</span>', contactP:'Suggestion, bug or question about an app? Message me on Instagram or by mail.',
     mailCopied:'✓ Mail copied: ', palhint:'↑↓ choose · Enter open · Esc close', palPh:'type a project or command…',
@@ -289,6 +289,7 @@ function contactHtml(){
       <label><span>${esc(t('fMsg'))} *</span><textarea name="poruka" required rows="5" maxlength="3000" placeholder="${esc(t('fMsgPh'))}"></textarea></label>
       <input type="text" name="_honey" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
       <button class="btn pri req-send" type="submit">${I_MAIL}<span>${esc(t('fSend'))}</span></button>
+      <p style="font-size:12px;opacity:.7;margin-top:8px">${esc(t('fPriv'))} <a href="datenschutz.html" style="text-decoration:underline">Datenschutz</a></p>
       <div class="req-st" role="status" aria-live="polite"></div>
     </form></div></section>`;
 }
