@@ -224,6 +224,10 @@ select{width:100%;font:inherit;padding:12px;border:2px solid var(--line);border-
 .lbav{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:900;flex:none}
 .lbn{flex:1;font-weight:900;display:flex;flex-direction:column;min-width:0;overflow:hidden;text-overflow:ellipsis}.lbn small{color:var(--muted);font-weight:700;font-size:12px}
 .lbv{font-weight:900;color:#e5a800;white-space:nowrap}
+.newsb{display:flex;gap:12px;align-items:flex-start;background:linear-gradient(135deg,rgba(255,200,0,.18),rgba(255,150,0,.12));border:2px solid rgba(255,200,0,.5);border-radius:16px;padding:12px 14px;margin-bottom:14px;font-weight:700;line-height:1.45}
+.admb{background:#ffc800;color:#3c3c3c;border-radius:6px;padding:1px 6px;font-size:10px;font-weight:900;vertical-align:middle}
+.banb{background:none;border:2px solid var(--line);border-radius:10px;padding:5px 8px;cursor:pointer;font-size:14px;color:var(--text);font-weight:800}
+.lbr.ban{opacity:.5}
 canvas#cf{position:fixed;inset:0;pointer-events:none;z-index:60}
 .shake{animation:shake .35s}
 @keyframes shake{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
@@ -1936,18 +1940,19 @@ const cols=['#58cc02','#1cb0f6','#ff4b4b','#ffc800','#ce82ff','#ff9600'];const P
 let t=0;(function f(){x.clearRect(0,0,c.width,c.height);P.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.04;p.r+=p.w;x.save();x.translate(p.x,p.y);x.rotate(p.r);x.fillStyle=p.c;x.fillRect(-p.s/2,-p.s/4,p.s,p.s/2);x.restore();});if(++t<170)requestAnimationFrame(f);else c.remove();})();}
 
 /* ============ VIEWS ============ */
-let tab='learn';
+let tab=location.hash==='#admin'?'admin':'learn';
 const TABS=[['learn','🏠','Učenje'],['practice','💪','Vježba'],['exam','📝','Ispit'],['rank','🏆','Rang'],['words','📖','Riječi'],['video','🎬','Video'],['profile','👤','Profil']];
 function render(){
   regen();
   const app=$('#app');
   app.innerHTML=`<header class="top"><span class="flag">🇩🇪</span><button class="stat fire" data-info="streak">🔥 ${streakNow()}</button><button class="stat xp" data-info="xp">⚡ ${S.xp}</button><button class="stat heart" data-info="hearts">❤️ ${S.hearts}</button></header><main id="main"></main><nav class="bottom"><div class="in">${TABS.map(([k,i,n])=>`<button data-tab="${k}" class="${tab===k?'on':''}"><span class="ic">${i}</span>${n}</button>`).join('')}</div></nav>`;
   const m=$('#main');
-  ({learn:vLearn,exam:vExam,rank:vRank,practice:vPractice,words:vWords,video:vVideo,profile:vProfile})[tab](m);
+  ({learn:vLearn,exam:vExam,rank:vRank,admin:vAdmin,practice:vPractice,words:vWords,video:vVideo,profile:vProfile})[tab](m);
+  newsDraw();
 }
 function vLearn(m){
   const today=S.daily[dk()]||0,g=S.goal,cur=curIdx();
-  let h=`<div class="card goal">${mascot(62)}<div class="gtxt"><div style="font-weight:900">${today>=g?'Dnevni cilj ispunjen! 🎉':cur===0&&!S.lessons?'Willkommen! Hajde da počnemo.':'Još '+(g-today)+' XP do dnevnog cilja'}</div><div class="gbar"><i style="width:${Math.min(100,today/g*100)}%"></i></div><div class="small muted">${today} / ${g} XP danas</div></div></div>`;
+  let h=`<div id="news"></div><div class="card goal">${mascot(62)}<div class="gtxt"><div style="font-weight:900">${today>=g?'Dnevni cilj ispunjen! 🎉':cur===0&&!S.lessons?'Willkommen! Hajde da počnemo.':'Još '+(g-today)+' XP do dnevnog cilja'}</div><div class="gbar"><i style="width:${Math.min(100,today/g*100)}%"></i></div><div class="small muted">${today} / ${g} XP danas</div></div></div>`;
   if(!TTS)h+=`<div class="note" style="margin-top:12px">🔇 Ovaj preglednik ne podržava izgovor. Otvori aplikaciju u <b>Chrome-u</b> da čuješ njemački.</div>`;
   UNITS.forEach((U,u)=>{
     if(!u||UNITS[u-1].lvl!==U.lvl)h+=`<div class="lvl"><span>${U.lvl}</span>${LVL[U.lvl]}</div>`;
@@ -2038,6 +2043,7 @@ function vProfile(m){
   ${TTS?(voices.length?`<div style="margin-top:10px"><select id="vs">${voices.map(v=>`<option value="${esc(v.name)}" ${S.voice===v.name?'selected':''}>${esc(v.name)} (${esc(v.lang)})</option>`).join('')}</select></div><button class="btn ghost" data-say="Hallo! Ich lerne Deutsch.">🔊 Probaj glas</button>`:`<div class="note" style="margin-top:10px">Nema njemačkog glasa na uređaju. Na Androidu: Postavke → Pretvaranje teksta u govor → instaliraj njemački jezik, ili otvori aplikaciju u Chrome-u.</div>`):`<div class="note" style="margin-top:10px">🔇 Izgovor nije podržan ovdje. Otvori aplikaciju u Chrome-u.</div>`}
   </div>
   <div class="sec"><a class="card res" href="../"><span class="e">🧪</span><span><div class="tt">bashlab</div><div class="ds">Sve moje aplikacije · @basa.gtm</div></span></a></div>
+  ${(ADM.is||admHasKey())?'<div class="sec"><button class="btn" data-tab="admin" style="background:#ffc800;box-shadow:0 4px 0 #e0a800;color:#3c3c3c">👑 Admin panel</button></div>':''}
   <div class="sec"><div class="note">💾 Napredak se čuva u ovom pregledniku na ovom uređaju.</div><button class="btn ghost" id="rst" style="color:var(--red)">Resetuj napredak</button></div>`;
   const vs=$('#vs');if(vs)vs.onchange=()=>{S.voice=vs.value;save();};
   $('#rst').onclick=()=>{sheet(`<div style="text-align:center">${mascot(80,'sad')}<h3>Obrisati sav napredak?</h3><p class="muted">XP, niz i završene lekcije biće izbrisani.</p><button class="btn red" id="ry">Da, obriši</button><button class="btn ghost" id="rn">Odustani</button></div>`);$('#ry').onclick=()=>{S=def();save();closeSheet();render();};$('#rn').onclick=closeSheet;};
@@ -2483,57 +2489,96 @@ function calcSelf(){
 function resultCard(pct,sub){const pass=pct>=60;return `<div class="xres ${pass?'ok':'bad'}">${mascot(70,pass?'happy':'sad')}<div><div class="xr-p">${pct} %</div><div class="xr-s">${pass?'✓ Položeno':'✗ Nije položeno'} <span class="small">(prolaz 60 %)</span></div><div class="small" style="margin-top:4px">${sub}</div></div></div>`;}
 
 
-/* ============ RANG LISTA (javni MQTT, kao #Bash igre) ============ */
-const LB_T='bashdeutsch/v1/lb/',LB_B=['wss://broker.emqx.io:8084/mqtt','wss://broker.hivemq.com:8884/mqtt'];
-const LB={clients:[],data:{},status:'off',view:'week',last:0};
+/* ============ RANG LISTA + ADMIN (javni MQTT, potpisano ECDSA ključem) ============ */
+const ADMIN_PUB=null; /* javni admin ključ (base64url, P-256 raw) – upisuje se nakon pravljenja ključa na adminovom telefonu */
+const NS='bashdeutsch/v1/',LB_T=NS+'lb/',CTL=NS+'ctl/',PING=NS+'ping/',LB_B=['wss://broker.emqx.io:8084/mqtt','wss://broker.hivemq.com:8884/mqtt'];
+const LB={clients:[],data:{},pings:{},ban:new Set(),banTs:0,news:null,status:'off',view:'week'};
+const NICK_RE=/^[\p{L}\p{N}_. -]{3,16}$/u;
+/* --- base64url + kripto --- */
+const b64e=buf=>btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+const b64d=s=>{s=s.replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+='=';return Uint8Array.from(atob(s),c=>c.charCodeAt(0));};
+const ADM_LS='bashdeutsch-admin';
+const admHasKey=()=>{try{return !!localStorage.getItem(ADM_LS);}catch(e){return false;}};let ADM={pub:null,priv:null,is:false,mine:null};
+const EC={name:'ECDSA',namedCurve:'P-256'},SG={name:'ECDSA',hash:'SHA-256'},enc=s=>new TextEncoder().encode(s);
+async function admInit(){
+  try{if(ADMIN_PUB)ADM.pub=await crypto.subtle.importKey('raw',b64d(ADMIN_PUB),EC,false,['verify']);}catch(e){}
+  try{const j=JSON.parse(localStorage.getItem(ADM_LS)||'null');if(j){ADM.priv=await crypto.subtle.importKey('jwk',j,EC,true,['sign']);ADM.mine=jwkPub(j);ADM.is=!!ADMIN_PUB&&ADM.mine===ADMIN_PUB;}}catch(e){}
+  if(ADM.is)LB.clients.forEach(c=>{if(c.connected)c.subscribe(PING+'+');});
+  if(tab==='profile'||tab==='admin'||tab==='rank')render();
+}
+function jwkPub(j){const x=b64d(j.x),y=b64d(j.y),r=new Uint8Array(65);r[0]=4;r.set(x,1);r.set(y,33);return b64e(r);}
+async function admVerify(str,sig){try{if(!ADM.pub||!sig)return false;return await crypto.subtle.verify(SG,ADM.pub,b64d(sig),enc(str));}catch(e){return false;}}
+async function admSign(str){return b64e(await crypto.subtle.sign(SG,ADM.priv,enc(str)));}
+async function admCreate(){const kp=await crypto.subtle.generateKey(EC,true,['sign','verify']);const j=await crypto.subtle.exportKey('jwk',kp.privateKey);localStorage.setItem(ADM_LS,JSON.stringify(j));await admInit();render();}
+async function admImport(txt){try{const j=JSON.parse(txt.trim());await crypto.subtle.importKey('jwk',j,EC,true,['sign']);localStorage.setItem(ADM_LS,JSON.stringify(j));await admInit();render();return true;}catch(e){return false;}}
+/* --- rang lista --- */
 function isoWeek(d=new Date()){const t=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));const day=t.getUTCDay()||7;t.setUTCDate(t.getUTCDate()+4-day);const y=new Date(Date.UTC(t.getUTCFullYear(),0,1));return t.getUTCFullYear()+'-W'+Math.ceil(((t-y)/864e5+1)/7);}
 function weekXP(){const d=new Date(),day=(d.getDay()+6)%7;let s=0;for(let i=0;i<=day;i++)s+=S.daily[dk(dayOff(-i))]||0;return s;}
-function myLevel(){const R=S.exam||{};let lv='A1';for(const l of ['A1','A2','B1','B2'])if(MODS.every(([k])=>((R[l]||{})[k]??-1)>=60))lv=l+' ✓';return lv.includes('✓')?lv:UNITS[Math.max(0,curIdx()<0?UNITS.length-1:curIdx()>>2)].lvl;}
-function myEntry(){return {v:1,id:S.uid,n:S.nick,xp:S.xp,wk:weekXP(),wid:isoWeek(),st:streakNow(),lv:myLevel(),w:Object.values(S.words).filter(r=>r.ok>r.bad).length+Object.values(S.vocab||{}).filter(r=>r.b>=3).length,ts:Date.now()};}
+function myLevel(){const R=S.exam||{};let lv='';for(const l of ['A1','A2','B1','B2'])if(MODS.every(([k])=>((R[l]||{})[k]??-1)>=60))lv=l+' ✓';return lv||UNITS[curIdx()<0?UNITS.length-1:curIdx()>>2].lvl;}
+const lbCanon=e=>[e.id,e.n,e.xp,e.wk,e.wid,e.st,e.lv,e.w,e.ts].join('|');
+async function myEntry(){const e={v:1,id:S.uid,n:S.nick,xp:S.xp,wk:weekXP(),wid:isoWeek(),st:streakNow(),lv:myLevel(),w:Object.values(S.words).filter(r=>r.ok>r.bad).length+Object.values(S.vocab||{}).filter(r=>r.b>=3).length,ts:Date.now()};if(ADM.is)try{e.sig=await admSign(lbCanon(e));}catch(x){}return e;}
 function lbLib(){return new Promise(res=>{if(window.mqtt)return res(true);const add=(src,fb)=>{const s=document.createElement('script');s.src=src;s.onload=()=>res(!!window.mqtt);s.onerror=fb;document.head.appendChild(s);};add('https://unpkg.com/mqtt@5/dist/mqtt.min.js',()=>add('https://cdn.jsdelivr.net/npm/mqtt@5/dist/mqtt.min.js',()=>res(false)));});}
 async function lbConnect(){
   if(LB.clients.length)return;LB.status='wait';
-  const ok=await lbLib();if(!ok){LB.status='err';lbDraw();return;}
+  if(!await lbLib()){LB.status='err';lbDraw();return;}
   LB_B.forEach(u=>{try{const c=mqtt.connect(u,{clientId:'bd_'+Math.random().toString(36).slice(2,10),clean:true,connectTimeout:8000,reconnectPeriod:6000,keepalive:30});
-    c.on('connect',()=>{LB.status='ok';c.subscribe(LB_T+'+');if(LB.want)lbSend(c);lbDraw();});
+    c.on('connect',()=>{LB.status='ok';c.subscribe([LB_T+'+',CTL+'+']);if(ADM.is)c.subscribe(PING+'+');sendAll(c);lbDraw();});
     c.on('message',(t,m)=>lbMsg(t,m));c.on('error',()=>{});LB.clients.push(c);}catch(e){}});
   setTimeout(()=>{if(LB.status==='wait'){LB.status='err';lbDraw();}},10000);
 }
-function lbMsg(t,m){
+function pub(c,topic,obj){try{if(c.connected)c.publish(topic,obj===''?'':JSON.stringify(obj),{qos:1,retain:true});}catch(e){}}
+function pubAll(topic,obj){LB.clients.forEach(c=>pub(c,topic,obj));}
+async function sendAll(c){
+  if(!S.first){S.first=Date.now();save();}
+  const p={ts:Date.now(),f:S.first,lv:myLevel(),wk:weekXP(),wid:isoWeek()};(c?[c]:LB.clients).forEach(x=>pub(x,PING+S.uid,p));
+  if(S.nick&&!S.lbOff){const e=await myEntry();LB.data[S.uid]={...e,adm:ADM.is};(c?[c]:LB.clients).forEach(x=>pub(x,LB_T+S.uid,e));}
+}
+function lbPublish(){if(!LB.clients.length){lbConnect();return;}sendAll();}
+async function lbMsg(t,m){
+  const s=m&&m.toString?m.toString():'';
+  if(t.startsWith(CTL)){let e;try{e=JSON.parse(s);}catch(x){return;}
+    if(t===CTL+'ban'&&e&&Array.isArray(e.ids)&&e.ts>LB.banTs&&await admVerify('ban|'+e.ts+'|'+e.ids.join(','),e.sig)){LB.ban=new Set(e.ids);LB.banTs=e.ts;lbDrawSoon();}
+    if(t===CTL+'news'&&e&&typeof e.msg==='string'&&(!LB.news||e.ts>LB.news.ts)&&await admVerify('news|'+e.ts+'|'+e.msg,e.sig)){LB.news={msg:e.msg.slice(0,300),ts:e.ts};newsDraw();}
+    return;}
+  if(t.startsWith(PING)){const id=t.slice(PING.length);if(!s){delete LB.pings[id];return;}try{const e=JSON.parse(s);if(+e.ts)LB.pings[id]={ts:+e.ts,f:+e.f||+e.ts,lv:String(e.lv||'').slice(0,5),wk:Math.min(20000,+e.wk||0),wid:String(e.wid||'')};if(tab==='admin')admDrawSoon();}catch(x){}return;}
   const id=t.slice(LB_T.length);if(!/^[a-z0-9]{6,24}$/.test(id))return;
-  const s=m&&m.toString?m.toString():'';if(!s){delete LB.data[id];lbDrawSoon();return;}
-  try{const e=JSON.parse(s);if(e.id!==id||typeof e.n!=='string'||!/^[\p{L}\p{N}_. -]{3,16}$/u.test(e.n))return;
+  if(!s){delete LB.data[id];lbDrawSoon();return;}
+  try{const e=JSON.parse(s);if(e.id!==id||typeof e.n!=='string'||!NICK_RE.test(e.n))return;
     const num=(x,max)=>Math.max(0,Math.min(max,Math.floor(+x||0)));
-    const r={id,n:e.n.slice(0,16),xp:num(e.xp,200000),wk:num(e.wk,20000),wid:String(e.wid||''),st:num(e.st,3650),lv:String(e.lv||'A1').slice(0,5),w:num(e.w,5000),ts:num(e.ts,9e15)};
+    const r={id,n:e.n,xp:num(e.xp,200000),wk:num(e.wk,20000),wid:String(e.wid||''),st:num(e.st,3650),lv:String(e.lv||'A1').slice(0,5),w:num(e.w,5000),ts:num(e.ts,9e15)};
     if(Date.now()-r.ts>60*864e5)return;
+    r.adm=!!e.sig&&await admVerify(lbCanon({...r,lv:String(e.lv||'A1').slice(0,5)}),e.sig);
     const o=LB.data[id];if(!o||r.ts>=o.ts){LB.data[id]=r;lbDrawSoon();}
   }catch(err){}
 }
-let lbT=0;function lbDrawSoon(){clearTimeout(lbT);lbT=setTimeout(lbDraw,250);}
-function lbSend(c){if(!S.nick||S.lbOff)return;try{c.publish(LB_T+S.uid,JSON.stringify(myEntry()),{qos:1,retain:true});}catch(e){}}
-function lbPublish(){if(!S.nick||S.lbOff)return;LB.want=true;LB.data[S.uid]=myEntry();if(!LB.clients.length){lbConnect();return;}LB.clients.forEach(c=>{if(c.connected)lbSend(c);});}
-function lbRemove(){LB.clients.forEach(c=>{try{if(c.connected)c.publish(LB_T+S.uid,'',{qos:1,retain:true});}catch(e){}});delete LB.data[S.uid];}
+let lbT=0;function lbDrawSoon(){clearTimeout(lbT);lbT=setTimeout(()=>{lbDraw();if(tab==='admin')admDraw();},250);}
+let admT=0;function admDrawSoon(){clearTimeout(admT);admT=setTimeout(admDraw,400);}
+function lbRemove(){pubAll(LB_T+S.uid,'');delete LB.data[S.uid];}
+/* --- obavještenje --- */
+function newsDraw(){const el=$('#news');if(!el)return;const n=LB.news;if(!n||!n.msg||n.ts<=(S.newsSeen||0)){el.innerHTML='';return;}
+  el.innerHTML=`<div class="newsb"><span style="font-size:22px">📢</span><div style="flex:1"><div class="small" style="font-weight:900;opacity:.8">Obavještenje · 👑 admin</div><div>${fmtT(n.msg)}</div></div><button class="xbtn" id="newsx" aria-label="Zatvori">✕</button></div>`;
+  $('#newsx').onclick=()=>{S.newsSeen=n.ts;save();el.innerHTML='';};}
+/* --- prikaz rang liste --- */
 function vRank(m){
-  if(!S.uid){S.uid=(Math.random().toString(36).slice(2,10)+Date.now().toString(36)).slice(0,16);save();}
   if(!S.nick&&!S.lbOff){m.innerHTML=`<div style="text-align:center;padding-top:20px">${mascot(110)}<h2 class="t">Rang lista</h2><p class="muted" style="font-weight:600">Takmiči se s ostalima koji uče njemački u Bash Deutsch. Izaberi nadimak: on je jedino što drugi vide.</p></div>
     <input class="search" id="nk" maxlength="16" placeholder="Nadimak, npr. Basa_93" autocomplete="off"><div class="small muted" id="nkh">3–16 znakova: slova, brojevi, _ . -</div><button class="btn" id="nks">Pridruži se rang listi</button><button class="btn ghost" id="nkn">Ne želim biti na listi</button>`;
-    $('#nks').onclick=()=>{const v=$('#nk').value.trim();if(!/^[\p{L}\p{N}_. -]{3,16}$/u.test(v)){$('#nkh').innerHTML='<span class="badc">Nadimak mora imati 3–16 znakova (slova, brojevi, _ . -).</span>';return;}S.nick=v;S.lbOff=false;save();lbPublish();render();};
+    $('#nks').onclick=()=>{const v=$('#nk').value.trim();if(!NICK_RE.test(v)){$('#nkh').innerHTML='<span class="badc">Nadimak mora imati 3–16 znakova (slova, brojevi, _ . -).</span>';return;}S.nick=v;S.lbOff=false;save();lbPublish();render();};
     $('#nkn').onclick=()=>{S.lbOff=true;save();render();};return;}
-  m.innerHTML=`<h2 class="t">🏆 Rang lista</h2><div class="seg" id="lbv">${[['week','Ova sedmica'],['all','Ukupno XP'],['streak','Niz 🔥']].map(([k,n])=>`<button data-lbv="${k}" class="${LB.view===k?'on':''}">${n}</button>`).join('')}</div><div id="lbl" style="margin-top:12px"></div>
-  <div class="sec"><div class="note">🌐 Rezultati idu preko istih javnih servera kao #Bash igre i osvježavaju se svaki put kad neko završi lekciju. Vidi se samo nadimak.</div>
-  ${S.lbOff?`<button class="btn" id="lbon">Pridruži se rang listi</button>`:`<div class="small muted" style="margin-top:10px">Tvoj nadimak: <b>${esc(S.nick)}</b></div><button class="btn ghost" id="lbn">Promijeni nadimak</button><button class="btn ghost" id="lbx" style="color:var(--red)">Ukloni me s liste</button>`}</div>`;
+  m.innerHTML=`<h2 class="t">🏆 Rang lista</h2><div class="seg">${[['week','Ova sedmica'],['all','Ukupno XP'],['streak','Niz 🔥']].map(([k,n])=>`<button data-lbv="${k}" class="${LB.view===k?'on':''}">${n}</button>`).join('')}</div><div id="lbl" style="margin-top:12px"></div>
+  <div class="sec"><div class="note">🌐 Rezultati idu preko istih javnih servera kao #Bash igre i osvježavaju se kad neko završi lekciju. Vidi se samo nadimak. Aplikacija šalje i anonimni signal bez imena (nivo i datum aktivnosti) za osnovnu statistiku.</div>
+  ${S.lbOff?`<button class="btn" id="lbon">Pridruži se rang listi</button>`:`<div class="small muted" style="margin-top:10px">Tvoj nadimak: <b>${esc(S.nick)}</b>${ADM.is?' 👑':''}</div><button class="btn ghost" id="lbn">Promijeni nadimak</button><button class="btn ghost" id="lbx" style="color:var(--red)">Ukloni me s liste</button>`}</div>`;
   m.querySelectorAll('[data-lbv]').forEach(b=>b.onclick=()=>{LB.view=b.dataset.lbv;m.querySelectorAll('[data-lbv]').forEach(x=>x.classList.toggle('on',x===b));lbDraw();});
   const on=$('#lbon');if(on)on.onclick=()=>{S.lbOff=false;S.nick=null;save();render();};
   const nn=$('#lbn');if(nn)nn.onclick=()=>{lbRemove();S.nick=null;save();render();};
   const x=$('#lbx');if(x)x.onclick=()=>{lbRemove();S.lbOff=true;save();render();};
-  if(!S.lbOff)lbPublish();else lbConnect();
-  lbDraw();
+  $('#lbl').onclick=e=>{const b=e.target.closest('[data-ban]');if(b)admToggleBan(b.dataset.ban);};
+  lbPublish();lbDraw();
 }
 function lbDraw(){
   const el=$('#lbl');if(!el)return;
   if(LB.status==='err'&&Object.keys(LB.data).length<=1){el.innerHTML=`<div class="note">⚠️ Ne mogu se spojiti na server rang liste. Provjeri internet. U verziji unutar Claude chata rang lista ne radi, nego samo na <b>basaofficial.github.io/deutsch</b>.</div>`;return;}
   const wid=isoWeek(),v=LB.view;
-  let rows=Object.values(LB.data);
+  let rows=Object.values(LB.data).filter(r=>ADM.is||!LB.ban.has(r.id)||r.id===S.uid);
   if(v==='week')rows=rows.filter(r=>r.wid===wid&&r.wk>0).sort((a,b)=>b.wk-a.wk);
   else if(v==='all')rows=rows.filter(r=>r.xp>0).sort((a,b)=>b.xp-a.xp);
   else rows=rows.filter(r=>r.st>0).sort((a,b)=>b.st-a.st||b.xp-a.xp);
@@ -2541,10 +2586,50 @@ function lbDraw(){
   const me=rows.findIndex(r=>r.id===S.uid);
   let h=LB.status==='wait'&&rows.length<2?'<p class="muted">Učitavam rezultate…</p>':'';
   if(me>=0)h+=`<div class="lbme">Ti si <b>#${me+1}</b> od ${rows.length}${v==='week'?' ove sedmice':''}</div>`;
-  else if(!S.lbOff&&S.nick)h+=`<div class="lbme">Završi lekciju da uđeš na listu${v==='streak'?' (niz dana)':''}.</div>`;
-  h+=rows.slice(0,50).map((r,i)=>`<div class="lbr ${r.id===S.uid?'me':''}"><span class="lbp">${i<3?['🥇','🥈','🥉'][i]:i+1}</span><span class="lbav" style="background:${PAL[(r.n.charCodeAt(0)||0)%PAL.length][0]}">${esc(r.n[0]||'?').toUpperCase()}</span><span class="lbn">${esc(r.n)}<small>${esc(r.lv)} · ${r.w} riječi</small></span><span class="lbv">${val(r)}</span></div>`).join('');
-  if(!rows.length&&LB.status==='ok')h+='<p class="muted">Još niko nije na listi ove sedmice. Budi prvi! 💪</p>';
+  else if(!S.lbOff&&S.nick)h+=`<div class="lbme">Završi lekciju da uđeš na listu.</div>`;
+  h+=rows.slice(0,50).map((r,i)=>{const banned=LB.ban.has(r.id);return `<div class="lbr ${r.id===S.uid?'me':''} ${banned?'ban':''}"><span class="lbp">${i<3?['🥇','🥈','🥉'][i]:i+1}</span><span class="lbav" style="background:${r.adm?'#ffc800':PAL[(r.n.charCodeAt(0)||0)%PAL.length][0]}">${r.adm?'👑':esc(r.n[0]||'?').toUpperCase()}</span><span class="lbn"><span>${esc(r.n)}${r.adm?' <span class="admb">ADMIN</span>':''}</span><small>${esc(r.lv)} · ${r.w} riječi${banned?' · 🚫 skriven':''}</small></span><span class="lbv">${val(r)}</span>${ADM.is&&r.id!==S.uid?`<button class="banb" data-ban="${r.id}" title="Sakrij / prikaži">${banned?'↩️':'🚫'}</button>`:''}</div>`;}).join('');
+  if(!rows.length&&LB.status==='ok')h+='<p class="muted">Još niko nije na listi. Budi prvi! 💪</p>';
   el.innerHTML=h;
+}
+/* --- admin akcije --- */
+async function admToggleBan(id){if(!ADM.is)return;LB.ban.has(id)?LB.ban.delete(id):LB.ban.add(id);const ids=[...LB.ban],ts=Date.now();LB.banTs=ts;pubAll(CTL+'ban',{ids,ts,sig:await admSign('ban|'+ts+'|'+ids.join(','))});lbDraw();if(tab==='admin')admDraw();}
+async function admNews(msg){if(!ADM.is)return;const ts=Date.now();msg=msg.trim().slice(0,300);pubAll(CTL+'news',{msg,ts,sig:await admSign('news|'+ts+'|'+msg)});LB.news={msg,ts};}
+function copyTxt(t,btn){const done=()=>{if(btn){const o=btn.textContent;btn.textContent='✓ Kopirano';setTimeout(()=>btn.textContent=o,1500);}};try{navigator.clipboard.writeText(t).then(done,()=>{});}catch(e){}}
+function vAdmin(m){
+  if(!window.crypto||!crypto.subtle){m.innerHTML='<div class="note">Ovaj preglednik ne podržava kriptografiju potrebnu za admin ključ.</div>';return;}
+  let j=null;try{j=JSON.parse(localStorage.getItem(ADM_LS)||'null');}catch(e){}
+  if(!j){m.innerHTML=`<h2 class="t">👑 Admin</h2><div class="card"><p style="font-weight:700;line-height:1.5">Na ovom uređaju još nema admin ključa. Napravi ga <b>samo na svom telefonu</b>. Privatni ključ ostaje na uređaju i nikad se ne šalje.</p><button class="btn" id="akc">Napravi admin ključ</button></div>
+    <div class="sec"><h3>Imaš rezervnu kopiju?</h3><textarea class="xta" id="aki" rows="4" placeholder="Zalijepi rezervnu kopiju ključa (JSON)…"></textarea><div class="small" id="akh"></div><button class="btn ghost" id="akim">Uvezi ključ</button></div>`;
+    $('#akc').onclick=admCreate;$('#akim').onclick=async()=>{if(!await admImport($('#aki').value))$('#akh').innerHTML='<span class="badc">Neispravan ključ.</span>';};return;}
+  if(!ADM.is){const mine=ADM.mine||jwkPub(j);m.innerHTML=`<h2 class="t">👑 Admin · podešavanje</h2><div class="card"><p style="font-weight:700;line-height:1.5">✅ Ključ je napravljen na ovom uređaju.<br>Još jedan korak: pošalji Claudeu <b>javni ključ</b> ispod da ga upiše u kod sajta. Javni ključ nije tajna.</p><div class="xm-text sm" style="word-break:break-all;font-family:monospace">${mine}</div><button class="btn" id="acp">Kopiraj javni ključ</button></div>
+    <div class="sec"><h3>🔐 Rezervna kopija (TAJNO)</h3><p class="small muted" style="font-weight:600">Sačuvaj je na sigurno mjesto, npr. u menadžer lozinki. Ne šalji je nikome, pa ni Claudeu. S njom vraćaš admin prava ako promijeniš telefon ili obrišeš podatke preglednika.</p><button class="btn ghost" id="abk">Kopiraj rezervnu kopiju</button></div>
+    ${ADMIN_PUB?'<div class="note" style="margin-top:12px">⚠️ Sajt već ima upisan drugi admin ključ. Ovaj ključ ne odgovara tom ključu.</div>':''}`;
+    $('#acp').onclick=e=>copyTxt(mine,e.target);$('#abk').onclick=e=>copyTxt(JSON.stringify(j),e.target);return;}
+  m.innerHTML=`<h2 class="t">👑 Admin panel</h2><div id="ast"></div>
+  <div class="sec"><h3>📢 Obavještenje za sve</h3><textarea class="xta" id="anm" rows="3" maxlength="300" placeholder="Npr. Stigle su nove A2 riječi! 🎉">${esc(LB.news?.msg||'')}</textarea><button class="btn" id="ans">Pošalji svima</button><button class="btn ghost" id="anc">Ukloni obavještenje</button><div class="small" id="anh"></div></div>
+  <div class="sec"><h3>🚫 Skriveni korisnici</h3><div id="abn"></div><p class="small muted" style="font-weight:600">Korisnike skrivaš tapom na 🚫 u rang listi.</p><button class="btn ghost" data-tab="rank">Otvori rang listu</button></div>
+  <div class="sec"><h3>🔐 Ključ</h3><button class="btn ghost" id="abk">Kopiraj rezervnu kopiju (tajno)</button></div>`;
+  $('#ans').onclick=async()=>{const v=$('#anm').value;if(!v.trim())return;await admNews(v);$('#anh').innerHTML='<span class="okc">✓ Poslano svima</span>';};
+  $('#anc').onclick=async()=>{await admNews('');$('#anm').value='';$('#anh').innerHTML='<span class="okc">✓ Uklonjeno</span>';};
+  $('#abk').onclick=e=>copyTxt(JSON.stringify(j),e.target);
+  $('#abn').onclick=e=>{const b=e.target.closest('[data-ban]');if(b)admToggleBan(b.dataset.ban);};
+  lbConnect();admDraw();
+}
+function admDraw(){
+  const el=$('#ast');if(!el||!ADM.is)return;
+  const now=Date.now(),P=Object.values(LB.pings),wid=isoWeek();
+  const d1=P.filter(p=>now-p.ts<864e5).length,d7=P.filter(p=>now-p.ts<7*864e5).length,nw=P.filter(p=>now-p.f<7*864e5).length;
+  const lv={};P.forEach(p=>{const k=(p.lv||'?').slice(0,2);lv[k]=(lv[k]||0)+1;});
+  const L=Object.values(LB.data),wx=L.filter(r=>r.wid===wid).reduce((s,r)=>s+r.wk,0);
+  el.innerHTML=`${LB.status!=='ok'?'<p class="muted">Povezujem se…</p>':''}<div class="grid2">
+  <div class="sbox"><span style="font-size:24px">👥</span><div><div class="n">${P.length}</div><div class="l">korisnika (60 dana)</div></div></div>
+  <div class="sbox"><span style="font-size:24px">🟢</span><div><div class="n">${d1}</div><div class="l">aktivno danas</div></div></div>
+  <div class="sbox"><span style="font-size:24px">📅</span><div><div class="n">${d7}</div><div class="l">aktivno 7 dana</div></div></div>
+  <div class="sbox"><span style="font-size:24px">✨</span><div><div class="n">${nw}</div><div class="l">novih ove sedmice</div></div></div>
+  <div class="sbox"><span style="font-size:24px">🏆</span><div><div class="n">${L.length}</div><div class="l">na rang listi</div></div></div>
+  <div class="sbox"><span style="font-size:24px">⚡</span><div><div class="n">${wx}</div><div class="l">XP ove sedmice</div></div></div></div>
+  <div class="card" style="margin-top:10px"><div class="small" style="font-weight:900;margin-bottom:6px">Po nivoima</div>${['A1','A2','B1','B2'].map(k=>`<div class="xsr"><span>${k}</span><div class="gbar" style="flex:2"><i style="width:${P.length?(lv[k]||0)/P.length*100:0}%"></i></div><b style="width:30px;text-align:right">${lv[k]||0}</b></div>`).join('')}</div>`;
+  const ab=$('#abn');if(ab)ab.innerHTML=LB.ban.size?[...LB.ban].map(id=>{const r=LB.data[id];return `<div class="lbr"><span class="lbn">${r?esc(r.n):'<i>nepoznat</i> '+id}</span><button class="banb" data-ban="${id}">↩️ Vrati</button></div>`;}).join(''):'<p class="muted">Niko nije skriven.</p>';
 }
 
 /* ============ EVENTS ============ */
@@ -2575,7 +2660,8 @@ document.addEventListener('keydown',e=>{
 });
 setInterval(()=>{if(!L&&S.hearts<5){const h=S.hearts;regen();if(S.hearts!==h)render();}},60000);
 render();
-if(S.nick&&!S.lbOff)setTimeout(lbPublish,1500);
+admInit();setTimeout(lbPublish,1200);
+window.addEventListener('hashchange',()=>{if(location.hash==='#admin'){tab='admin';render();}});
 </script>
 </body>
 </html>
