@@ -19,12 +19,12 @@ const UI = {
     news:'Šta je novo', newsNone:'Changelog trenutno nije dostupan.', size:'Veličina', version:'Verzija', platform:'Radi na',
     infoH:'Informacije', dev:'Developer', cat:'Kategorija', compat:'Kompatibilnost', price:'Cijena', free:'Besplatno', source:'Izvorni kod', shots:'Pregled',
     cats:{ games:'Igre', health:'Zdravlje i fitness', social:'Komunikacija', prod:'Produktivnost', tools:'Alati' },
-    fH:'Pitaj me za aplikaciju', fP:'Napiši šta ti treba – nova aplikacija, igra, web stranica ili tvoja verzija neke od mojih. Javim ti se da li to mogu napraviti.',
-    fName:'Ime', fContact:'Mail ili Instagram', fContactPh:'tvoj@mail.com ili @instagram', fType:'Šta trebaš?',
-    fTypes:['Android APK','Web aplikacija','Igra','Web stranica','Nešto drugo'], fAbout:'Odnosi se na', fNew:'Nova ideja',
-    fMsg:'Opiši ideju', fMsgPh:'Npr. trebam aplikaciju za… Treba da ima… Na kojem telefonu…', fSend:'Pošalji upit', fSending:'Šaljem…',
-    fOk:'✓ Upit je poslan! Javim ti se uskoro.', fErr:'Nije uspjelo slanje. Pošalji mi direktno na mail:', fReq:'Upiši kontakt i opis ideje.', fAsk:'Želim sličnu',
-    contactH:'Hajmo <span>raditi</span> zajedno', contactP:'Imaš ideju za aplikaciju, igru ili alat? Piši mi na Instagram ili mail.',
+    fH:'Prijedlozi i greške', fP:'Imaš ideju šta da dodam, našao si grešku ili imaš pitanje o nekoj od mojih aplikacija? Napiši mi.',
+    fName:'Ime', fContact:'Mail ili Instagram', fContactPh:'tvoj@mail.com ili @instagram', fType:'O čemu se radi?',
+    fTypes:['Prijedlog','Greška','Pitanje','Nešto drugo'], fAbout:'Odnosi se na', fNew:'Nova ideja',
+    fMsg:'Poruka', fMsgPh:'Npr. u aplikaciji … bi bilo super da … / Greška se desi kad …', fSend:'Pošalji', fSending:'Šaljem…',
+    fOk:'✓ Poslano! Hvala.', fErr:'Nije uspjelo slanje. Pošalji mi direktno na mail:', fReq:'Upiši kontakt i poruku.', fAsk:'Prijedlog / greška',
+    contactH:'Javi <span>se</span>', contactP:'Prijedlog, greška ili pitanje o nekoj aplikaciji? Piši mi na Instagram ili mail.',
     mailCopied:'✓ Mail kopiran: ', palhint:'↑↓ biraj · Enter otvori · Esc zatvori', palPh:'upiši projekat ili komandu…',
     cLang:'Jezik', cTop:'Na početak', cInst:'Instaliraj bashlab kao aplikaciju', cMail:'Kopiraj mail', cCoffee:'Buy me a coffee',
     installApp:'⤓ Instaliraj bashlab', installed:'✓ bashlab je instaliran', offline:'Offline si — prikazujem sačuvanu verziju.',
@@ -39,12 +39,12 @@ const UI = {
     news:'Neuigkeiten', newsNone:'Changelog gerade nicht verfügbar.', size:'Größe', version:'Version', platform:'Läuft auf',
     infoH:'Informationen', dev:'Entwickler', cat:'Kategorie', compat:'Kompatibilität', price:'Preis', free:'Gratis', source:'Quellcode', shots:'Vorschau',
     cats:{ games:'Spiele', health:'Gesundheit & Fitness', social:'Kommunikation', prod:'Produktivität', tools:'Dienstprogramme' },
-    fH:'Frag mich nach einer App', fP:'Schreib, was du brauchst – eine neue App, ein Spiel, eine Website oder deine Version einer meiner Apps. Ich melde mich, ob ich das bauen kann.',
-    fName:'Name', fContact:'Mail oder Instagram', fContactPh:'deine@mail.de oder @instagram', fType:'Was brauchst du?',
-    fTypes:['Android-APK','Web-App','Spiel','Website','Etwas anderes'], fAbout:'Bezieht sich auf', fNew:'Neue Idee',
-    fMsg:'Beschreib deine Idee', fMsgPh:'Z. B. ich brauche eine App für… Sie soll… Auf welchem Handy…', fSend:'Anfrage senden', fSending:'Sende…',
-    fOk:'✓ Anfrage gesendet! Ich melde mich bald.', fErr:'Senden fehlgeschlagen. Schreib mir direkt per Mail:', fReq:'Bitte Kontakt und Beschreibung angeben.', fAsk:'Will ich auch',
-    contactH:'Lass uns <span>zusammen</span> arbeiten', contactP:'Du hast eine Idee für eine App, ein Spiel oder ein Tool? Schreib mir auf Instagram oder per Mail.',
+    fH:'Vorschläge und Fehler', fP:'Du hast eine Idee, was ich hinzufügen soll, einen Fehler gefunden oder eine Frage zu einer meiner Apps? Schreib mir.',
+    fName:'Name', fContact:'Mail oder Instagram', fContactPh:'deine@mail.de oder @instagram', fType:'Worum geht es?',
+    fTypes:['Vorschlag','Fehler','Frage','Etwas anderes'], fAbout:'Bezieht sich auf', fNew:'Neue Idee',
+    fMsg:'Nachricht', fMsgPh:'Z. B. in der App … wäre es super, wenn … / Der Fehler passiert, wenn …', fSend:'Senden', fSending:'Sende…',
+    fOk:'✓ Gesendet! Danke.', fErr:'Senden fehlgeschlagen. Schreib mir direkt per Mail:', fReq:'Bitte Kontakt und Nachricht angeben.', fAsk:'Vorschlag / Fehler',
+    contactH:'Schreib <span>mir</span>', contactP:'Vorschlag, Fehler oder Frage zu einer App? Schreib mir auf Instagram oder per Mail.',
     mailCopied:'✓ Mail kopiert: ', palhint:'↑↓ wählen · Enter öffnen · Esc schließen', palPh:'Projekt oder Befehl eingeben…',
     cLang:'Sprache', cTop:'Nach oben', cInst:'bashlab als App installieren', cMail:'Mail kopieren', cCoffee:'Buy me a coffee',
     installApp:'⤓ bashlab installieren', installed:'✓ bashlab ist installiert', offline:'Du bist offline — zeige gespeicherte Version.',
@@ -59,12 +59,12 @@ const UI = {
     news:"What's new", newsNone:'Changelog not available right now.', size:'Size', version:'Version', platform:'Runs on',
     infoH:'Information', dev:'Developer', cat:'Category', compat:'Compatibility', price:'Price', free:'Free', source:'Source code', shots:'Preview',
     cats:{ games:'Games', health:'Health & Fitness', social:'Communication', prod:'Productivity', tools:'Utilities' },
-    fH:'Ask me for an app', fP:'Tell me what you need – a new app, a game, a website or your own version of one of mine. I\'ll get back to you on whether I can build it.',
-    fName:'Name', fContact:'Email or Instagram', fContactPh:'you@mail.com or @instagram', fType:'What do you need?',
-    fTypes:['Android APK','Web app','Game','Website','Something else'], fAbout:'About', fNew:'New idea',
-    fMsg:'Describe your idea', fMsgPh:'E.g. I need an app for… It should… Which phone…', fSend:'Send request', fSending:'Sending…',
-    fOk:'✓ Request sent! I\'ll get back to you soon.', fErr:'Sending failed. Email me directly:', fReq:'Please add your contact and a description.', fAsk:'I want one',
-    contactH:"Let's <span>work</span> together", contactP:'Got an idea for an app, a game or a tool? Message me on Instagram or by mail.',
+    fH:'Suggestions and bugs', fP:'Got an idea for something I should add, found a bug or have a question about one of my apps? Let me know.',
+    fName:'Name', fContact:'Email or Instagram', fContactPh:'you@mail.com or @instagram', fType:'What is it about?',
+    fTypes:['Suggestion','Bug','Question','Something else'], fAbout:'About', fNew:'New idea',
+    fMsg:'Message', fMsgPh:'E.g. in the app … it would be great if … / The bug happens when …', fSend:'Send', fSending:'Sending…',
+    fOk:'✓ Sent! Thanks.', fErr:'Sending failed. Email me directly:', fReq:'Please add your contact and a message.', fAsk:'Suggestion / bug',
+    contactH:'Get in <span>touch</span>', contactP:'Suggestion, bug or question about an app? Message me on Instagram or by mail.',
     mailCopied:'✓ Mail copied: ', palhint:'↑↓ choose · Enter open · Esc close', palPh:'type a project or command…',
     cLang:'Language', cTop:'Back to top', cInst:'Install bashlab as an app', cMail:'Copy mail', cCoffee:'Buy me a coffee',
     installApp:'⤓ Install bashlab', installed:'✓ bashlab is installed', offline:"You're offline — showing the saved version.",
@@ -273,7 +273,6 @@ function contactHtml(){
     <div class="cta" style="margin-top:0">
       <a class="btn pri" href="https://instagram.com/basa.gtm" target="_blank" rel="noopener">${I_IG}Instagram · @basa.gtm</a>
       <button class="btn" data-mail type="button">${I_MAIL}basagtm@gmail.com</button>
-      <a class="btn" href="https://paypal.me/basagtm" target="_blank" rel="noopener">☕ Buy me a coffee</a>
       <a class="btn" href="https://github.com/Basaofficial" target="_blank" rel="noopener">${I_GH}GitHub</a>
     </div>
     <form class="req" id="req" novalidate>
@@ -529,7 +528,6 @@ function palAll(){
     ...['bs', 'de', 'en'].map(l => ({ i: '◐', l: `${t('cLang')}: ${l.toUpperCase()}`, k: 'lang jezik sprache language ' + l, run: () => setLang(l) })),
     { i: '@', l: 'Instagram · @basa.gtm', k: 'instagram ig kontakt', run: () => open('https://instagram.com/basa.gtm', '_blank') },
     { i: '✉', l: t('cMail'), k: 'mail email kontakt', run: copyMail },
-    { i: '☕', l: t('cCoffee'), k: 'coffee paypal donate', run: () => open('https://paypal.me/basagtm', '_blank') },
     { i: '⌥', l: 'GitHub', k: 'github code kod', run: () => open('https://github.com/Basaofficial', '_blank') });
   if (deferredInstall) A.push({ i: '⤓', l: t('cInst'), k: 'install pwa app instaliraj', run: doInstall });
   P.filter(p => p.apk).forEach(p => A.push({ i: '⤓', l: `${p.name} APK`, k: 'apk download ' + p.id, run: () => { count('apk/' + p.id, 'APK ' + p.id, true); location.href = p.apk; } }));

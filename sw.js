@@ -1,5 +1,5 @@
 /* bashlab service worker – sajt radi i offline. Samo za glavnu stranicu (ne dira igre/fit/armory). */
-const V = 'bashlab-v5';
+const V = 'bashlab-v6';
 const CORE = ['./', 'index.html', 'assets/site.css?v=5', 'assets/site.js?v=5', 'assets/projects.js?v=5', 'manifest.webmanifest',
   'assets/icons/icon-192.png', 'assets/shots/armory-1.webp'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(V).then(c => c.addAll(CORE)).then(() => self.skipWaiting())); });
