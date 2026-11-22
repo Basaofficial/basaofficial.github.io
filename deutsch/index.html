@@ -1785,6 +1785,7 @@ const def=()=>({exam:{},xp:0,hearts:5,heartTs:Date.now(),streak:0,last:null,done
 function load(){try{const j=JSON.parse(localStorage.getItem(KEY));if(j)return Object.assign(def(),j);}catch(e){}return def();}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
 let S=load();
+if(S.reg&&!S.reg.nick){const n=(S.nick||S.reg.fn||'').trim();if(/^[\p{L}\p{N}_. -]{3,16}$/u.test(n))S.reg={nick:n,mail:S.reg.mail,ts:S.reg.ts};else{S.regDraft={mail:S.reg.mail};S.reg=null;}try{localStorage.setItem('bashdeutsch-v1',JSON.stringify(S));}catch(e){}}
 if(!S.uid){S.uid=(Math.random().toString(36).slice(2,10)+Date.now().toString(36)).slice(0,16);save();}
 function regen(){if(S.hearts>=5){S.hearts=5;S.heartTs=Date.now();return;}const n=Math.floor((Date.now()-S.heartTs)/HEART_MS);if(n>0){S.hearts=Math.min(5,S.hearts+n);S.heartTs=S.hearts>=5?Date.now():S.heartTs+n*HEART_MS;save();}}
 function streakNow(){if(!S.last)return 0;return (S.last===dk()||S.last===dk(dayOff(-1)))?S.streak:0;}
@@ -2729,7 +2730,7 @@ function newsDraw(){const el=$('#news');if(!el)return;const n=LB.news;if(!n||!n.
 /* --- rang lista UI --- */
 function vRank(m){
   if(!S.nick&&!S.lbOff){m.innerHTML=`<div style="text-align:center;padding-top:20px">${mascot(110)}<h2 class="t">Rang lista</h2><p class="muted" style="font-weight:600">Takmiči se s ostalima koji uče njemački u Bash Deutsch. Izaberi nadimak: on je jedino što drugi vide.</p></div>
-    <input class="search" id="nk" maxlength="16" placeholder="Nadimak, npr. Basa_93" autocomplete="off"><div class="small muted" id="nkh">3–16 znakova: slova, brojevi, _ . -</div><button class="btn" id="nks">Pridruži se rang listi</button><button class="btn ghost" id="nkn">Ne želim biti na listi</button>`;
+    <input class="search" id="nk" maxlength="16" placeholder="Nadimak, npr. Basa_93" autocomplete="off" value="${esc((S.reg&&S.reg.nick)||'')}"><div class="small muted" id="nkh">3–16 znakova: slova, brojevi, _ . -</div><button class="btn" id="nks">Pridruži se rang listi</button><button class="btn ghost" id="nkn">Ne želim biti na listi</button>`;
     $('#nks').onclick=()=>{const v=$('#nk').value.trim();if(!NICK_RE.test(v)){$('#nkh').innerHTML='<span class="badc">Nadimak mora imati 3–16 znakova (slova, brojevi, _ . -).</span>';return;}S.nick=v;S.lbOff=false;save();lbPublish();render();};
     $('#nkn').onclick=()=>{S.lbOff=true;save();render();};return;}
   const forced=LB.nicks[S.uid];
@@ -2876,48 +2877,46 @@ async function decForAdmin(e){
 }
 async function regSend(c){if(!S.reg||!ADMIN_PUB)return;S.reg.last=Date.now();S.reg.lv=myLevel();S.reg.first=S.first||S.reg.ts;if('age' in S.reg){delete S.reg.age;save();}try{const e=await encForAdmin({...S.reg,uid:S.uid});(c?[c]:LB.clients).forEach(x=>pub(x,REG+S.uid,e));}catch(x){}}
 async function regMsg(t,s){if(!ADM.is)return;const id=t.slice(REG.length);if(!s){delete LB.reg[id];admDrawSoon();return;}
-  try{const d=await decForAdmin(JSON.parse(s));LB.reg[id]={fn:String(d.fn||'').slice(0,40),ln:String(d.ln||'').slice(0,40),mail:String(d.mail||'').slice(0,80),from:String(d.from||'').slice(0,60),ts:+d.ts||0,last:+d.last||+d.ts||0,lv:String(d.lv||'').slice(0,5),first:+d.first||+d.ts||0};admDrawSoon();}catch(x){}}
+  try{const d=await decForAdmin(JSON.parse(s));LB.reg[id]={nick:String(d.nick||[d.fn,d.ln].filter(Boolean).join(' ')||'').slice(0,40),mail:String(d.mail||'').slice(0,80),ts:+d.ts||0,last:+d.last||+d.ts||0,lv:String(d.lv||'').slice(0,5),first:+d.first||+d.ts||0};admDrawSoon();}catch(x){}}
 const needReg=()=>!S.reg&&!isStaff()&&!admHasKey()&&!modHasKey()&&tab!=='admin'&&tab!=='mod';
 function vRegister(app){
   const r=S.regDraft||{};
   app.innerHTML=`<div style="padding:28px 18px 40px;max-width:520px;margin:0 auto">
-  <div style="text-align:center">${mascot(96)}<h2 class="t" style="margin:10px 0 4px">Dobro došao u Bash Deutsch! 🇩🇪</h2><p class="muted" style="font-weight:600;margin:0 0 18px">Prije početka kursa upiši svoje podatke.</p></div>
+  <div style="text-align:center">${mascot(96)}<h2 class="t" style="margin:10px 0 4px">Dobro došao u Bash Deutsch! 🇩🇪</h2><p class="muted" style="font-weight:600;margin:0 0 18px">Prije početka kursa upiši nadimak i email.</p></div>
   <div class="card" style="display:grid;gap:10px">
-   <div class="grid2"><input class="search" id="rfn" maxlength="40" placeholder="Ime" value="${esc(r.fn||'')}" autocomplete="given-name"><input class="search" id="rln" maxlength="40" placeholder="Prezime" value="${esc(r.ln||'')}" autocomplete="family-name"></div>
+   <input class="search" id="rnk" maxlength="16" placeholder="Nadimak (npr. Basa_93)" value="${esc(r.nick||'')}" autocomplete="nickname">
    <input class="search" id="rmail" type="email" maxlength="80" placeholder="Email" value="${esc(r.mail||'')}" autocomplete="email">
-   <input class="search" id="rfrom" maxlength="60" placeholder="Odakle si (grad, država)" value="${esc(r.from||'')}">
    <label class="xck" style="font-size:13px;font-weight:600"><input type="checkbox" id="r16"> <span>Imam 16 ili više godina (ili imam saglasnost roditelja).</span></label>
    <label class="xck" style="font-size:13px;font-weight:600"><input type="checkbox" id="rok"> <span>Pristajem da se ovi podaci <b>šifrovano</b> pošalju adminu kursa i koriste samo za vođenje kursa. Ne prikazuju se drugim korisnicima. Saglasnost mogu povući i podatke obrisati u Profilu. <a href="datenschutz.html#bs" target="_blank" rel="noopener">Izjava o privatnosti</a></span></label>
    <div class="small" id="rerr"></div>
    <button class="btn" id="rgo">Započni kurs</button></div></div>`;
   const q=id=>document.getElementById(id),val=id=>q(id).value.trim();
   q('rgo').onclick=()=>{
-    const d={fn:val('rfn'),ln:val('rln'),mail:val('rmail'),from:val('rfrom')};S.regDraft=d;
+    const d={nick:val('rnk'),mail:val('rmail')};S.regDraft=d;
     const err=m=>{q('rerr').innerHTML=`<span class="badc">${m}</span>`;};
-    if(d.fn.length<2||d.ln.length<2)return err('Upiši ime i prezime.');
+    if(!NICK_RE.test(d.nick))return err('Nadimak mora imati 3–16 znakova (slova, brojevi, _ . -).');
     if(!MAIL_RE.test(d.mail))return err('Email nije ispravan.');
-    if(d.from.length<2)return err('Upiši odakle si.');
     if(!q('r16').checked)return err('Kurs je za osobe od 16 godina ili uz saglasnost roditelja.');
     if(!q('rok').checked)return err('Potrebna je saglasnost za obradu podataka.');
     S.reg={...d,ts:Date.now()};delete S.regDraft;save();regSend();lbPublish();render();
   };
 }
 function privSheet(){sheet(`<h3>🔒 Privatnost</h3><div class="tip" style="font-weight:600;line-height:1.55">
-  <p><b>Šta se prikuplja:</b> ime, prezime, email i mjesto, te napredak u kursu.</p>
+  <p><b>Šta se prikuplja:</b> nadimak i email, te napredak u kursu.</p>
   <p><b>Ko vidi:</b> samo admin kursa (Basa). Podaci se na tvom telefonu šifruju adminovim ključem prije slanja, pa ih ne mogu pročitati ni serveri ni moderatori.</p>
   <p><b>Zašto:</b> za vođenje kursa i kontakt s polaznicima. Podaci se ne prodaju niti dijele.</p>
   <p><b>Brisanje:</b> u Profilu → „Moji podaci" → „Obriši moje podatke".</p>
   <p><b>Kontakt:</b> Instagram @basa.gtm</p></div><button class="btn" onclick="closeSheet()">U redu</button>`);}
 function myDataSection(){if(!S.reg)return '';const r=S.reg;
-  return `<div class="sec"><h3>🪪 Moji podaci</h3><div class="card small" style="font-weight:700;line-height:1.7">${esc(r.fn)} ${esc(r.ln)}<br>${esc(r.mail)}<br>${esc(r.from)}</div>
+  return `<div class="sec"><h3>🪪 Moji podaci</h3><div class="card small" style="font-weight:700;line-height:1.7">${esc(r.nick)}<br>${esc(r.mail)}</div>
   <button class="btn ghost" id="redit">Izmijeni podatke</button><button class="btn ghost" id="rdel" style="color:var(--red)">Obriši moje podatke</button><a class="btn ghost" href="datenschutz.html#bs" target="_blank" rel="noopener" style="text-align:center;text-decoration:none">🔒 Izjava o privatnosti</a></div>`;}
 function bindMyData(){const e=$('#redit'),d=$('#rdel');
   if(e)e.onclick=()=>{S.regDraft=S.reg;S.reg=null;save();render();};
   if(d)d.onclick=()=>{sheet(`<h3>Obrisati tvoje podatke?</h3><p class="muted" style="font-weight:600">Podaci se brišu sa servera. Za nastavak kursa morat ćeš ih ponovo upisati.</p><button class="btn red" id="rdy">Obriši</button><button class="btn ghost" id="rdn">Odustani</button>`);
     $('#rdn').onclick=closeSheet;$('#rdy').onclick=()=>{pubAll(REG+S.uid,'');S.reg=null;save();closeSheet();render();};};}
-function regRow(id){const g=LB.reg[id];return g?`<div class="small" style="font-weight:700;color:var(--blue)">🪪 ${esc(g.fn)} ${esc(g.ln)} · ${esc(g.from)}<br>✉️ ${esc(g.mail)}</div>`:'';}
-function regCSV(){const rows=[['Ime','Prezime','Email','Odakle','Nadimak','XP','Nivo','Registrovan']];
-  Object.entries(LB.reg).forEach(([id,g])=>{const r=LB.data[id];rows.push([g.fn,g.ln,g.mail,g.from,r?r.n:'',r?r.xp:'',r?r.lv:(LB.pings[id]?.lv||''),g.ts?fmtD(g.ts):'']);});
+function regRow(id){const g=LB.reg[id];return g?`<div class="small" style="font-weight:700;color:var(--blue)">🪪 ${esc(g.nick)} · ✉️ ${esc(g.mail)}</div>`:'';}
+function regCSV(){const rows=[['Nadimak (registracija)','Email','Nadimak (rang lista)','XP','Nivo','Registrovan']];
+  Object.entries(LB.reg).forEach(([id,g])=>{const r=LB.data[id];rows.push([g.nick,g.mail,r?r.n:'',r?r.xp:'',r?r.lv:(LB.pings[id]?.lv||''),g.ts?fmtD(g.ts):'']);});
   return rows.map(r=>r.map(x=>'"'+String(x).replace(/"/g,'""')+'"').join(';')).join('\n');}
 
 /* ============ EVENTS ============ */
