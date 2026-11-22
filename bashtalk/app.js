@@ -1,0 +1,413 @@
+(function(){
+'use strict';
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const hm = ts => { const d = new Date(ts); return String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0'); };
+const initials = n => (n||'?').trim().split(/\s+/).map(w => w[0]).join('').slice(0,2).toUpperCase();
+const enc = new TextEncoder(), dec = new TextDecoder();
+const b64 = u8 => { let s = ''; for (let i = 0; i < u8.length; i += 0x8000) s += String.fromCharCode.apply(null, u8.subarray(i, i + 0x8000)); return btoa(s); };
+const unb64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+const hex = buf => [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2,'0')).join('');
+function toast(t){ const e = $('#toast'); e.textContent = t; e.classList.add('show'); clearTimeout(toast.t); toast.t = setTimeout(() => e.classList.remove('show'), 2400); }
+function post(o){ try { if (window.parent !== window) window.parent.postMessage(Object.assign({bt:1}, o), '*'); } catch(e){} }
+
+const BROKERS = ['wss://broker.emqx.io:8084/mqtt', 'wss://broker.hivemq.com:8884/mqtt'];
+const BASE = 'bashtalk/v1/';
+const hash = new URLSearchParams(location.hash.slice(1));
+const INAPP = hash.get('app') === '1' || hash.get('app') === '2';
+const HEADLESS = hash.get('app') === '2';   // skriveni most za aplikaciju (jedan chat)
+let myNet = HEADLESS ? '' : 'web';
+if (INAPP) document.body.classList.add('inapp');
+
+const S = k => { try { return localStorage.getItem('bto_' + k); } catch(e) { return null; } };
+const W = (k, v) => { try { localStorage.setItem('bto_' + k, v); } catch(e) {} };
+
+let myId = hash.get('id') || S('id');
+if (!myId) myId = hex(crypto.getRandomValues(new Uint8Array(8)));
+W('id', myId);
+let myName = hash.get('name') || S('name') || '';
+let room = hash.get('r') || S('room') || 'javna';
+let pass = S('pass_' + room) || '';
+let client = null, rid = '', roomKey = null, ecdh = null, myPub = '';
+let people = {}, dmTo = '', msgs = [], seen = new Set(), brokerIdx = 0;
+
+/* ---------------- kripto ---------------- */
+async function sha(s){ return hex(await crypto.subtle.digest('SHA-256', enc.encode(s))); }
+async function deriveRoomKey(r, p){
+  if (!p) return null;
+  const km = await crypto.subtle.importKey('raw', enc.encode(p), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey({name:'PBKDF2', salt: enc.encode('bashtalk:' + r.toLowerCase()), iterations:100000, hash:'SHA-256'}, km, {name:'AES-GCM', length:256}, false, ['encrypt','decrypt']);
+}
+async function seal(key, u8){
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const ct = new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM', iv}, key, u8));
+  const out = new Uint8Array(12 + ct.length); out.set(iv); out.set(ct, 12); return out;
+}
+async function open(key, u8){ return new Uint8Array(await crypto.subtle.decrypt({name:'AES-GCM', iv: u8.subarray(0,12)}, key, u8.subarray(12))); }
+async function initEcdh(){
+  let jwk = S('ecdh');
+  if (jwk) { try { const j = JSON.parse(jwk); ecdh = { privateKey: await crypto.subtle.importKey('jwk', j.priv, {name:'ECDH', namedCurve:'P-256'}, false, ['deriveKey']), pub: j.pub }; } catch(e) { ecdh = null; } }
+  if (!ecdh) {
+    const kp = await crypto.subtle.generateKey({name:'ECDH', namedCurve:'P-256'}, true, ['deriveKey']);
+    const priv = await crypto.subtle.exportKey('jwk', kp.privateKey);
+    const pub = b64(new Uint8Array(await crypto.subtle.exportKey('raw', kp.publicKey)));
+    W('ecdh', JSON.stringify({priv, pub}));
+    ecdh = { privateKey: await crypto.subtle.importKey('jwk', priv, {name:'ECDH', namedCurve:'P-256'}, false, ['deriveKey']), pub };
+  }
+  myPub = ecdh.pub;
+}
+const dmKeys = {};
+async function dmKey(pub){
+  if (dmKeys[pub]) return dmKeys[pub];
+  const pk = await crypto.subtle.importKey('raw', unb64(pub), {name:'ECDH', namedCurve:'P-256'}, false, []);
+  return dmKeys[pub] = await crypto.subtle.deriveKey({name:'ECDH', public: pk}, ecdh.privateKey, {name:'AES-GCM', length:256}, false, ['encrypt','decrypt']);
+}
+
+/* ---------------- MQTT ---------------- */
+const T = s => BASE + 'r/' + rid + '/' + s;
+function setNet(on, txt){ $('#netDot').className = 'dot ' + (on ? 'on' : 'mid'); if (txt) toast(txt); post({type:'net', on}); }
+async function connect(){
+  if (!window.mqtt) { setNet(false); return; }
+  rid = (await sha('bt1:' + room.toLowerCase() + ':' + pass)).slice(0, 24);
+  roomKey = await deriveRoomKey(room, pass);
+  $('#roomName').textContent = (pass ? '🔒 ' : '# ') + room;
+  post({type:'room', room, priv: !!pass});
+  W('room', room); W('pass_' + room, pass);
+  remember(room);
+  people = {}; renderPeople();
+  loadMsgs(); renderMsgs();
+  if (client) { try { client.end(true); } catch(e){} }
+  const url = BROKERS[brokerIdx % BROKERS.length];
+  client = mqtt.connect(url, {
+    clientId: 'bt_' + myId + '_' + Math.random().toString(16).slice(2, 6),
+    keepalive: 30, reconnectPeriod: 3000, connectTimeout: 10000, clean: true,
+    will: { topic: T('p'), payload: JSON.stringify({id: myId, on: false}), qos: 0, retain: false }
+  });
+  client.on('connect', async () => {
+    setNet(true);
+    client.subscribe([T('m'), T('p'), T('a'), T('h'), BASE + 'u/' + myId], {qos: 0});
+    presence(true);
+    setTimeout(() => pub('h', {t:'hreq', id: myId, since: lastTs()}), 600);
+  });
+  client.on('offline', () => setNet(false));
+  client.on('error', () => { setNet(false); });
+  client.on('close', () => { setNet(false); if (!client.connected && ++fails % 3 === 0) { brokerIdx++; connect(); } });
+  client.on('message', (topic, payload) => onMessage(topic, new Uint8Array(payload)).catch(() => {}));
+}
+let fails = 0;
+async function pub(kind, obj){
+  if (!client || !client.connected) return false;
+  let u8 = enc.encode(JSON.stringify(obj));
+  if (roomKey) u8 = await seal(roomKey, u8);
+  client.publish(T(kind), u8, {qos: 0});
+  return true;
+}
+async function readRoom(u8){
+  if (roomKey) u8 = await open(roomKey, u8);
+  return JSON.parse(dec.decode(u8));
+}
+function presence(on){ pub('p', {id: myId, name: myName, on, pub: myPub, ts: Date.now(), web: !INAPP, net: myNet}); }
+setInterval(() => { if (client && client.connected) presence(true); }, 20000);
+setInterval(() => { const now = Date.now(); let ch = false; for (const k in people) if (now - people[k].ts > 60000) { delete people[k]; ch = true; } if (ch) renderPeople(); }, 5000);
+
+async function onMessage(topic, u8){
+  if (topic.endsWith('/a')) return onAudio(u8);
+  if (topic === BASE + 'u/' + myId) {
+    const o = JSON.parse(dec.decode(u8));
+    const key = await dmKey(o.pub);
+    const m = JSON.parse(dec.decode(await open(key, unb64(o.e))));
+    m.dm = true; m.pub = o.pub;
+    if (people[m.id]) people[m.id].pub = o.pub;
+    return addMsg(m, true);
+  }
+  const o = await readRoom(u8);
+  if (topic.endsWith('/p')) {
+    if (!o || typeof o.id !== 'string' || !o.id || o.id.length > 64) return;
+    if (o.id === myId) return;
+    if (o.on !== false && (typeof o.name !== 'string' || o.name.length > 80 || (o.pub != null && typeof o.pub !== 'string') || !strOk(o.net, 40))) return;
+    if (o.on === false) { if (people[o.id]) { if (!HEADLESS) sys('⚪ ' + people[o.id].name + ' je otišao'); delete people[o.id]; renderPeople(); } return; }
+    const isNew = !people[o.id];
+    people[o.id] = Object.assign(people[o.id] || {}, {id: o.id, name: o.name, pub: o.pub, ts: Date.now(), web: o.web, net: o.net});
+    if (isNew) { if (!HEADLESS) sys('🟢 ' + o.name + ' je online'); presence(true); }
+    renderPeople();
+  } else if (topic.endsWith('/m')) {
+    addMsg(o, true);
+  } else if (topic.endsWith('/h')) {
+    if (o.t === 'hreq' && o.id !== myId) {
+      const list = msgs.filter(m => !m.dm && !m.sys && m.ts > (o.since || 0)).slice(-40).map(m => Object.assign({}, m, {img: m.img && m.img.length > 250000 ? undefined : m.img}));
+      if (!list.length) return;
+      clearTimeout(histT);
+      histT = setTimeout(() => pub('h', {t:'hrep', to: o.id, from: myId, list}), 200 + Math.random() * 1200);
+    } else if (o.t === 'hrep') {
+      if (o.to !== myId) { clearTimeout(histT); return; }
+      (o.list || []).forEach(m => addMsg(m, false));
+    }
+  }
+}
+let histT = 0;
+
+/* ---------------- poruke ---------------- */
+function key(){ return 'msgs_' + rid; }
+/* Poruke dolaze s javnog MQTT-a: svako može poslati bilo šta, pa sve provjeri prije prikaza. */
+const IMG_RE = /^data:image\/(jpeg|png|webp|gif);base64,[A-Za-z0-9+/]+=*$/;
+const B64_RE = /^[A-Za-z0-9+/]*=*$/;
+const strOk = (v, max) => v == null || (typeof v === 'string' && v.length <= max);
+function validMsg(m){
+  if (!m || typeof m !== 'object' || Array.isArray(m)) return false;
+  if (typeof m.mid !== 'string' || !m.mid || m.mid.length > 64) return false;
+  if (typeof m.id !== 'string' || m.id.length > 64) return false;
+  if (typeof m.ts !== 'number' || !Number.isFinite(m.ts)) return false;
+  if (!strOk(m.name, 80) || !strOk(m.text, 20000) || !strOk(m.toName, 80) || !strOk(m.net, 40) || !strOk(m.gw, 80)) return false;
+  if (m.img != null && !(typeof m.img === 'string' && m.img.length <= 4000000 && IMG_RE.test(m.img))) return false;
+  if (m.voice != null && !(typeof m.voice === 'string' && m.voice.length <= 2000000 && B64_RE.test(m.voice))) return false;
+  return true;
+}
+function loadMsgs(){ try { msgs = JSON.parse(S(key()) || '[]'); } catch(e) { msgs = []; } if (!Array.isArray(msgs)) msgs = []; msgs = msgs.filter(validMsg); seen = new Set(msgs.map(m => m.mid)); }
+function saveMsgs(){ let l = msgs.slice(-150); let s = JSON.stringify(l); while (s.length > 3500000 && l.length > 10) { l = l.slice(10); s = JSON.stringify(l); } W(key(), s); }
+function lastTs(){ let t = 0; msgs.forEach(m => { if (!m.sys && m.ts > t) t = m.ts; }); return t; }
+function sys(text){ if (HEADLESS) return; $('#msgs').insertAdjacentHTML('beforeend', `<div class="sys">${esc(text)}</div>`); scroll(); }
+function scroll(){ const b = $('#msgs'); b.scrollTop = b.scrollHeight; }
+function msgHtml(m){
+  const me = m.id === myId;
+  const dm = m.dm ? (me ? '🔒 → ' + esc(m.toName || '') : '🔒 privatno') : '';
+  const body = m.img && IMG_RE.test(m.img) ? `<img src="${esc(m.img)}" data-view="1">` : m.voice ? `<div class="vn">🎤 <audio controls preload="none" src="${voiceUrl(m)}"></audio></div>` : `<div class="x">${esc(m.text || '')}</div>`;
+  const via = m.gw ? 'offline → online · preko ' + esc(m.gw) : 'online · ' + esc(m.net || 'web');
+  return `<div class="m ${me ? 'me' : ''} ${m.dm ? 'dm' : ''}">${me ? (dm ? '<div class="n">' + dm + '</div>' : '') : `<div class="n">${esc(m.name)} ${dm}</div><div class="via">${via}</div>`}${body}<div class="tm">${hm(m.ts)}</div></div>`;
+}
+const vCache = {};
+function voiceUrl(m){
+  if (vCache[m.mid]) return vCache[m.mid];
+  const u = unb64(m.voice), n = u.length, b = new ArrayBuffer(44 + n * 2), v = new DataView(b);
+  const w = (o, s) => { for (let i = 0; i < 4; i++) v.setUint8(o + i, s.charCodeAt(i)); };
+  w(0,'RIFF'); v.setUint32(4, 36 + n*2, true); w(8,'WAVE'); w(12,'fmt '); v.setUint32(16,16,true); v.setUint16(20,1,true); v.setUint16(22,1,true);
+  v.setUint32(24,8000,true); v.setUint32(28,16000,true); v.setUint16(32,2,true); v.setUint16(34,16,true); w(36,'data'); v.setUint32(40,n*2,true);
+  for (let i = 0; i < n; i++) v.setInt16(44 + i*2, Math.round(DEC[u[i]] * 32767), true);
+  return vCache[m.mid] = URL.createObjectURL(new Blob([b], {type:'audio/wav'}));
+}
+function renderMsgs(){
+  if (HEADLESS) return;
+  const b = $('#msgs');
+  b.innerHTML = msgs.length ? msgs.map(msgHtml).join('') : `<div class="sys">Soba ${esc(room)} · ${pass ? 'šifrovana 🔒' : 'javna'}<br>Pozovi ljude preko 🔗</div>`;
+  scroll();
+}
+function addMsg(m, live){
+  if (!validMsg(m) || seen.has(m.mid)) return;
+  seen.add(m.mid);
+  if (HEADLESS) {
+    msgs.push(m); msgs.sort((a, b) => a.ts - b.ts); saveMsgs();
+    if (m.id !== myId) post({type:'msg', m});
+    return;
+  }
+  msgs.push(m); msgs.sort((a, b) => a.ts - b.ts);
+  saveMsgs();
+  if (!live || msgs[msgs.length - 1] !== m) { renderMsgs(); }
+  else {
+    const b = $('#msgs'); if (b.querySelector('.sys') && msgs.length === 1) b.innerHTML = '';
+    b.insertAdjacentHTML('beforeend', msgHtml(m)); scroll();
+  }
+  if (live && m.id !== myId) {
+    post({type:'msg', name: m.name, text: m.img ? '📷 slika' : m.text});
+    if (document.hidden && 'Notification' in window && Notification.permission === 'granted') { try { new Notification(m.name, {body: m.img ? '📷 slika' : m.text}); } catch(e){} }
+  }
+}
+async function sendMsg(extra){
+  const m = Object.assign({t:'msg', mid: hex(crypto.getRandomValues(new Uint8Array(8))), id: myId, name: myName, ts: Date.now(), net: myNet}, extra);
+  const target = extra.dmTo || dmTo; delete m.dmTo;
+  if (target) {
+    const dmTo = target;
+    const p = people[dmTo];
+    if (!p || !p.pub) { toast('Ta osoba nije online'); return; }
+    m.dm = true; m.to = dmTo; m.toName = p.name;
+    const k = await dmKey(p.pub);
+    const e = b64(await seal(k, enc.encode(JSON.stringify(m))));
+    if (!client || !client.connected) { toast('📵 Nema veze'); return; }
+    client.publish(BASE + 'u/' + dmTo, JSON.stringify({pub: myPub, e}));
+    addMsg(m, true);
+    return;
+  }
+  if (await pub('m', m)) addMsg(m, true); else toast('📵 Nema veze – pokušaj ponovo');
+}
+function send(){ const i = $('#inp'); const t = i.value.trim(); if (!t) return; i.value = ''; sendMsg({text: t.slice(0, 1000)}); }
+$('#send').onclick = send;
+$('#inp').addEventListener('keydown', e => { if (e.key === 'Enter') send(); });
+
+/* ---------------- ljudi ---------------- */
+function renderPeople(){
+  const l = Object.values(people).sort((a, b) => a.name.localeCompare(b.name));
+  if (HEADLESS) { post({type:'people', list: l.map(p => ({id: p.id, name: p.name, web: p.web, net: p.net}))}); return; }
+  $('#people').innerHTML = `<div class="chip me"><div class="av">${esc(initials(myName))}</div>Ti</div>` +
+    (l.length ? l.map(p => `<div class="chip ${p.talk ? 'talk' : ''}" data-id="${esc(p.id)}"><div class="av">${esc(initials(p.name))}</div>${esc(p.name)}${p.web ? ' 🌐' : ' 📱'}</div>`).join('')
+              : '<span class="hint">Niko drugi još nije online u ovoj sobi</span>');
+  document.querySelectorAll('#people [data-id]').forEach(c => c.onclick = () => setDm(c.dataset.id));
+  post({type:'people', n: l.length});
+}
+function setDm(id){
+  dmTo = id || '';
+  $('#dmBar').style.display = dmTo ? 'flex' : 'none';
+  $('#dmName').textContent = dmTo && people[dmTo] ? people[dmTo].name : '';
+  if (dmTo) toast('🔒 Privatne poruke za ' + people[dmTo].name);
+}
+$('#dmX').onclick = () => setDm('');
+
+/* ---------------- slike ---------------- */
+$('#attBtn').onclick = () => $('#file').click();
+$('#file').onchange = () => {
+  const f = $('#file').files[0]; if (!f) return;
+  const img = new Image();
+  img.onload = () => {
+    const sc = Math.min(1, 1024 / Math.max(img.width, img.height));
+    const c = document.createElement('canvas'); c.width = Math.round(img.width * sc); c.height = Math.round(img.height * sc);
+    c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+    sendMsg({img: c.toDataURL('image/jpeg', 0.6)});
+  };
+  img.src = URL.createObjectURL(f); $('#file').value = '';
+};
+document.addEventListener('click', e => { if (e.target.dataset && e.target.dataset.view) { $('#viewImg').src = e.target.src; $('#viewer').classList.add('show'); } });
+$('#viewer').onclick = () => $('#viewer').classList.remove('show');
+
+/* ---------------- glas (walkie-talkie) ---------------- */
+const DEC = new Float32Array(256);
+for (let i = 0; i < 256; i++) { const x = ~i & 0xff, sg = x & 0x80, ex = (x >> 4) & 7, mn = x & 15; const s = (((mn << 3) + 0x84) << ex) - 0x84; DEC[i] = (sg ? -s : s) / 32768; }
+function ulaw(v){ let s = Math.max(-32768, Math.min(32767, Math.round(v * 32767))); const sign = (s >> 8) & 0x80; if (sign) s = -s; if (s > 32635) s = 32635; s += 0x84; let e = 7; for (let m = 0x4000; (s & m) === 0 && e > 0; e--, m >>= 1); const mt = (s >> (e + 3)) & 0x0f; return (~(sign | (e << 4) | mt)) & 0xff; }
+let ac = null, nextT = 0, rxWho = {}, rxT = 0;
+function audioCtx(){ if (!ac) { ac = new (window.AudioContext || window.webkitAudioContext)(); } if (ac.state === 'suspended') ac.resume(); return ac; }
+document.addEventListener('pointerdown', () => { try { audioCtx(); } catch(e){} }, {once: true});
+
+async function onAudio(u8){
+  if (roomKey) u8 = await open(roomKey, u8);
+  const idLen = u8[0], id = dec.decode(u8.subarray(1, 1 + idLen));
+  if (id === myId || talking) return;
+  const nLen = u8[1 + idLen], name = dec.decode(u8.subarray(2 + idLen, 2 + idLen + nLen));
+  const pcm = u8.subarray(2 + idLen + nLen);
+  if (HEADLESS) { post({type:'audio', id, name, b64: b64(pcm)}); return; }
+  if (!ac) { $('#rx').style.display = 'block'; $('#rx').textContent = '🔊 ' + name + ' priča – dodirni ekran da čuješ'; return; }
+  const n = pcm.length * 3, buf = ac.createBuffer(1, n, 48000), d = buf.getChannelData(0);
+  for (let i = 0; i < pcm.length; i++) { const a = DEC[pcm[i]], b = DEC[pcm[Math.min(i + 1, pcm.length - 1)]]; d[i*3] = a; d[i*3+1] = a + (b - a) / 3; d[i*3+2] = a + 2 * (b - a) / 3; }
+  const src = ac.createBufferSource(); src.buffer = buf; src.connect(ac.destination);
+  const now = ac.currentTime; if (nextT < now + 0.05) nextT = now + 0.2;
+  src.start(nextT); nextT += buf.duration;
+  $('#rx').style.display = 'block'; $('#rx').textContent = '🔊 ' + name + ' priča';
+  if (people[id]) { people[id].talk = true; renderPeople(); }
+  clearTimeout(rxT); rxT = setTimeout(() => { $('#rx').style.display = 'none'; for (const k in people) people[k].talk = false; renderPeople(); }, 700);
+}
+
+let talking = false, stream = null, proc = null, srcNode = null, acc = [], ratio = 3;
+async function talkStart(){
+  if (talking) return;
+  if (!client || !client.connected) { toast('📵 Nema veze'); return; }
+  try {
+    const c = audioCtx();
+    stream = stream || await navigator.mediaDevices.getUserMedia({audio: {echoCancellation: true, noiseSuppression: true, autoGainControl: true}});
+    talking = true; $('#ptt').classList.add('on');
+    ratio = c.sampleRate / 16000;
+    srcNode = c.createMediaStreamSource(stream);
+    proc = c.createScriptProcessor(4096, 1, 1);
+    acc = [];
+    let pos = 0;
+    proc.onaudioprocess = ev => {
+      if (!talking) return;
+      const inp = ev.inputBuffer.getChannelData(0);
+      for (; pos < inp.length; pos += ratio) acc.push(ulaw(inp[Math.floor(pos)] * 1.4));
+      pos -= inp.length;
+      while (acc.length >= 1600) sendAudio(acc.splice(0, 1600));
+      ev.outputBuffer.getChannelData(0).fill(0);
+    };
+    srcNode.connect(proc); proc.connect(c.destination);
+  } catch (e) { talking = false; $('#ptt').classList.remove('on'); toast('🎙️ Mikrofon nije dozvoljen'); }
+}
+function talkStop(){
+  if (!talking) return;
+  talking = false; $('#ptt').classList.remove('on');
+  if (acc.length) sendAudio(acc.splice(0));
+  try { srcNode.disconnect(); proc.disconnect(); } catch(e){}
+}
+async function sendAudio(arr){
+  const idb = enc.encode(myId), nb = enc.encode(myName).subarray(0, 40);
+  let u8 = new Uint8Array(2 + idb.length + nb.length + arr.length);
+  u8[0] = idb.length; u8.set(idb, 1); u8[1 + idb.length] = nb.length; u8.set(nb, 2 + idb.length); u8.set(arr, 2 + idb.length + nb.length);
+  if (roomKey) u8 = await seal(roomKey, u8);
+  if (client && client.connected) client.publish(T('a'), u8, {qos: 0});
+}
+const ptt = $('#ptt');
+ptt.addEventListener('pointerdown', e => { e.preventDefault(); talkStart(); });
+['pointerup','pointercancel','pointerleave'].forEach(ev => ptt.addEventListener(ev, talkStop));
+ptt.addEventListener('contextmenu', e => e.preventDefault());
+
+/* ---------------- sobe + pozivnica ---------------- */
+function remember(r){ let l = []; try { l = JSON.parse(S('rooms') || '[]'); } catch(e){} l = [r].concat(l.filter(x => x !== r)).slice(0, 6); W('rooms', JSON.stringify(l)); }
+$('#roomPill').onclick = () => {
+  let l = []; try { l = JSON.parse(S('rooms') || '[]'); } catch(e){}
+  if (!l.includes('javna')) l.push('javna');
+  $('#recent').innerHTML = l.map(r => `<button class="btn" data-r="${esc(r)}">${S('pass_' + r) ? '🔒' : '#'} ${esc(r)}</button>`).join('');
+  document.querySelectorAll('#recent [data-r]').forEach(b => b.onclick = () => { room = b.dataset.r; pass = S('pass_' + room) || ''; $('#roomOv').classList.remove('show'); setDm(''); connect(); });
+  $('#roomIn').value = ''; $('#passIn').value = '';
+  $('#roomOv').classList.add('show');
+};
+$('#roomCancel').onclick = () => $('#roomOv').classList.remove('show');
+$('#roomGo').onclick = () => {
+  const r = $('#roomIn').value.trim().toLowerCase().replace(/\s+/g, '-');
+  if (!r) return toast('Upiši ime sobe');
+  if (client && client.connected) presence(false);
+  room = r; pass = $('#passIn').value;
+  $('#roomOv').classList.remove('show'); setDm(''); connect();
+};
+$('#inviteBtn').onclick = async () => {
+  const url = 'https://basaofficial.github.io/bashtalk/#r=' + encodeURIComponent(room);
+  const text = `Pridruži se na #Bash Talk – soba "${room}"${pass ? ' (šifru ću ti reći)' : ''}: ${url}`;
+  post({type:'share', text});
+  if (INAPP) return;
+  try { if (navigator.share) { await navigator.share({title: '#Bash Talk', text, url}); return; } } catch(e){}
+  try { await navigator.clipboard.writeText(text); toast('🔗 Link kopiran'); } catch(e) { prompt('Kopiraj link:', url); }
+};
+
+/* ---------------- start ---------------- */
+window.addEventListener('message', async e => {
+  const d = e.data || {};
+  if (d.btName) { myName = d.btName; W('name', myName); presence(true); }
+  if (!HEADLESS || !d.cmd) return;
+  if (d.net !== undefined) myNet = d.net;
+  if (d.cmd === 'join') {
+    myName = d.name || myName; W('name', myName);
+    if (d.ecPriv && d.ecPub && myPub !== d.ecPub) {
+      // isti ključ kao usluga u aplikaciji → privatne poruke stižu i kad je aplikacija zatvorena
+      try {
+        const pk = await crypto.subtle.importKey('pkcs8', unb64(d.ecPriv), {name:'ECDH', namedCurve:'P-256'}, false, ['deriveKey']);
+        ecdh = { privateKey: pk, pub: d.ecPub }; myPub = d.ecPub; for (const k in dmKeys) delete dmKeys[k];
+      } catch (err) {}
+    }
+    const nr = d.room || 'javna', np = d.pass || '';
+    if (nr !== room || np !== pass || !client) { if (client && client.connected) presence(false); room = nr; pass = np; await connect(); }
+  } else if (d.cmd === 'send') {
+    const m = Object.assign({t:'msg', id: myId, name: myName, ts: Date.now(), net: myNet}, d.m);
+    if (!m.net) m.net = myNet;
+    if (d.m.dmTo) return sendMsg(m);
+    if (seen.has(m.mid)) return;
+    if (await pub('m', m)) { seen.add(m.mid); msgs.push(m); saveMsgs(); }
+  } else if (d.cmd === 'audio') {
+    if (!client || !client.connected) return;
+    const pcm = unb64(d.b64), idb = enc.encode(myId), nb = enc.encode(myName).subarray(0, 40);
+    let u8 = new Uint8Array(2 + idb.length + nb.length + pcm.length);
+    u8[0] = idb.length; u8.set(idb, 1); u8[1 + idb.length] = nb.length; u8.set(nb, 2 + idb.length); u8.set(pcm, 2 + idb.length + nb.length);
+    if (roomKey) u8 = await seal(roomKey, u8);
+    client.publish(T('a'), u8, {qos: 0});
+  }
+});
+document.addEventListener('visibilitychange', () => { if (!document.hidden && client && !client.connected) client.reconnect(); });
+
+async function boot(){
+  if (!window.crypto || !crypto.subtle) { sys('⚠️ Preglednik ne podržava šifrovanje – otvori preko https'); return; }
+  await initEcdh();
+  if (HEADLESS) { post({type:'ready'}); return; }
+  if (hash.get('r') && hash.get('r') !== S('room')) pass = S('pass_' + room) || '';
+  connect();
+  if (!INAPP && 'Notification' in window && Notification.permission === 'default') setTimeout(() => { try { Notification.requestPermission(); } catch(e){} }, 4000);
+}
+window.btBoot = () => { if (myName || HEADLESS) boot(); };
+if (HEADLESS) { if (window.mqtt) boot(); }
+else if (!myName) {
+  $('#login').classList.add('show');
+  $('#loginGo').onclick = () => { myName = $('#nameIn').value.trim() || 'Gost'; W('name', myName); $('#login').classList.remove('show'); boot(); };
+} else if (window.mqtt) boot();
+else setTimeout(() => { if (window.mqtt && !client) boot(); else if (!window.mqtt) { setNet(false); sys('📵 Nema interneta – online chat nije dostupan'); } }, 4000);
+W('name', myName || '');
+})();

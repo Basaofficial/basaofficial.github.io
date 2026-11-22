@@ -22,7 +22,7 @@ const UI = {
     fH:'Prijedlozi i greške', fP:'Imaš ideju šta da dodam, našao si grešku ili imaš pitanje o nekoj od mojih aplikacija? Napiši mi.',
     fName:'Ime', fContact:'Mail ili Instagram', fContactPh:'tvoj@mail.com ili @instagram', fType:'O čemu se radi?',
     fTypes:['Prijedlog','Greška','Pitanje','Nešto drugo'], fAbout:'Odnosi se na', fNew:'Nova ideja',
-    fMsg:'Poruka', fMsgPh:'Npr. u aplikaciji … bi bilo super da … / Greška se desi kad …', fSend:'Pošalji', fSending:'Šaljem…', fPriv:'Poruka se šalje na moj email preko servisa FormSubmit. Više u izjavi o privatnosti.',
+    fMsg:'Poruka', fMsgPh:'Npr. u aplikaciji … bi bilo super da … / Greška se desi kad …', fSend:'Pošalji', fSending:'Šaljem…', fPriv:'Poruka se šalje na moj email preko servisa Web3Forms. Više u izjavi o privatnosti.',
     fOk:'✓ Poslano! Hvala.', fErr:'Nije uspjelo slanje. Pošalji mi direktno na mail:', fReq:'Upiši kontakt i poruku.', fAsk:'Prijedlog / greška',
     contactH:'Javi <span>se</span>', contactP:'Prijedlog, greška ili pitanje o nekoj aplikaciji? Piši mi na Instagram ili mail.',
     mailCopied:'✓ Mail kopiran: ', palhint:'↑↓ biraj · Enter otvori · Esc zatvori', palPh:'upiši projekat ili komandu…',
@@ -42,7 +42,7 @@ const UI = {
     fH:'Vorschläge und Fehler', fP:'Du hast eine Idee, was ich hinzufügen soll, einen Fehler gefunden oder eine Frage zu einer meiner Apps? Schreib mir.',
     fName:'Name', fContact:'Mail oder Instagram', fContactPh:'deine@mail.de oder @instagram', fType:'Worum geht es?',
     fTypes:['Vorschlag','Fehler','Frage','Etwas anderes'], fAbout:'Bezieht sich auf', fNew:'Neue Idee',
-    fMsg:'Nachricht', fMsgPh:'Z. B. in der App … wäre es super, wenn … / Der Fehler passiert, wenn …', fSend:'Senden', fSending:'Sende…', fPriv:'Die Nachricht wird über den Dienst FormSubmit per E-Mail an mich gesendet. Mehr in der Datenschutzerklärung.',
+    fMsg:'Nachricht', fMsgPh:'Z. B. in der App … wäre es super, wenn … / Der Fehler passiert, wenn …', fSend:'Senden', fSending:'Sende…', fPriv:'Die Nachricht wird über den Dienst Web3Forms per E-Mail an mich gesendet. Mehr in der Datenschutzerklärung.',
     fOk:'✓ Gesendet! Danke.', fErr:'Senden fehlgeschlagen. Schreib mir direkt per Mail:', fReq:'Bitte Kontakt und Nachricht angeben.', fAsk:'Vorschlag / Fehler',
     contactH:'Schreib <span>mir</span>', contactP:'Vorschlag, Fehler oder Frage zu einer App? Schreib mir auf Instagram oder per Mail.',
     mailCopied:'✓ Mail kopiert: ', palhint:'↑↓ wählen · Enter öffnen · Esc schließen', palPh:'Projekt oder Befehl eingeben…',
@@ -62,7 +62,7 @@ const UI = {
     fH:'Suggestions and bugs', fP:'Got an idea for something I should add, found a bug or have a question about one of my apps? Let me know.',
     fName:'Name', fContact:'Email or Instagram', fContactPh:'you@mail.com or @instagram', fType:'What is it about?',
     fTypes:['Suggestion','Bug','Question','Something else'], fAbout:'About', fNew:'New idea',
-    fMsg:'Message', fMsgPh:'E.g. in the app … it would be great if … / The bug happens when …', fSend:'Send', fSending:'Sending…', fPriv:'Your message is sent to my email via FormSubmit. See the privacy policy for details.',
+    fMsg:'Message', fMsgPh:'E.g. in the app … it would be great if … / The bug happens when …', fSend:'Send', fSending:'Sending…', fPriv:'Your message is sent to my email via Web3Forms. See the privacy policy for details.',
     fOk:'✓ Sent! Thanks.', fErr:'Sending failed. Email me directly:', fReq:'Please add your contact and a message.', fAsk:'Suggestion / bug',
     contactH:'Get in <span>touch</span>', contactP:'Suggestion, bug or question about an app? Message me on Instagram or by mail.',
     mailCopied:'✓ Mail copied: ', palhint:'↑↓ choose · Enter open · Esc close', palPh:'type a project or command…',
@@ -293,6 +293,8 @@ function contactHtml(){
       <div class="req-st" role="status" aria-live="polite"></div>
     </form></div></section>`;
 }
+/* Web3Forms (web3forms.com): access key nije tajna, smije biti u kodu. */
+const W3F_KEY = 'OVDJE-UPISI-WEB3FORMS-ACCESS-KEY';
 async function sendReq(e){
   e.preventDefault();
   const f = e.currentTarget, st = f.querySelector('.req-st'), btn = f.querySelector('.req-send');
@@ -300,13 +302,14 @@ async function sendReq(e){
   if (d._honey) return;
   if (!d.kontakt.trim() || !d.poruka.trim()) { st.className = 'req-st err'; st.textContent = t('fReq'); return; }
   btn.disabled = true; btn.querySelector('span').textContent = t('fSending'); st.className = 'req-st'; st.textContent = '';
-  const body = { 'Ime': d.ime || '-', 'Kontakt': d.kontakt, 'Vrsta': d.vrsta, 'Aplikacija': d.app || 'Nova ideja', 'Poruka': d.poruka, 'Jezik': L,
-    _subject: `bashlab upit: ${d.vrsta}${d.app ? ' – ' + d.app : ''}`, _template: 'table', _captcha: 'false' };
-  if (/^\S+@\S+\.\S+$/.test(d.kontakt.trim())) body._replyto = d.kontakt.trim();
+  const body = { access_key: W3F_KEY, subject: `bashlab upit: ${d.vrsta}${d.app ? ' – ' + d.app : ''}`, from_name: 'bashlab forma', botcheck: '',
+    'Ime': d.ime || '-', 'Kontakt': d.kontakt, 'Vrsta': d.vrsta, 'Aplikacija': d.app || 'Nova ideja', 'Poruka': d.poruka, 'Jezik': L };
+  if (/^\S+@\S+\.\S+$/.test(d.kontakt.trim())) body.replyto = d.kontakt.trim();
   try {
-    const r = await fetch('https://formsubmit.co/ajax/basagtm@gmail.com', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body: JSON.stringify(body) });
+    if (!/^[0-9a-f-]{36}$/i.test(W3F_KEY)) throw new Error('Web3Forms ključ nije podešen');
+    const r = await fetch('https://api.web3forms.com/submit', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body: JSON.stringify(body) });
     const j = await r.json().catch(() => ({}));
-    if (!r.ok || String(j.success) !== 'true') throw new Error(j.message || r.status);
+    if (!r.ok || j.success !== true) throw new Error(j.message || r.status);
     f.reset(); st.className = 'req-st ok'; st.textContent = t('fOk'); count('upit', 'Upit poslan', true);
   } catch (err) {
     st.className = 'req-st err';
