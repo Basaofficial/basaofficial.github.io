@@ -201,31 +201,6 @@ window.PROJECTS = [
   }
 },
 {
-  id: "tv", name: "Bash TV", tags: ["web"], status: "live", isNew: true,
-  group: "apps", cat: "tools", icon: "tv", c: ["#7cff01", "#4cc9ff"],
-  web: "tv/", alt: { href: "tv/kanali.m3u", label: { bs: "M3U lista", de: "M3U-Liste", en: "M3U list" } },
-  gh: { repo: "Basaofficial/basaofficial.github.io", path: "tv" },
-  shots: [],
-  platform: "Web",
-  t: {
-    bs: { sub: "Ex-YU TV uživo, besplatno",
-          short: "Besplatni javni TV kanali iz regije, uživo u pregledniku.",
-          long: "Kanali iz Srbije, BiH, Hrvatske, Crne Gore, Makedonije i Slovenije koje same televizije besplatno puštaju uživo. Gledaš direktno na sajtu, na telefonu ili računaru.",
-          more: "Ista lista postoji i kao M3U link za TiviMate, IPTV Smarters ili VLC na TV-u. Samo javni, besplatni strimovi, bez plaćenih kanala.",
-          feats: ["Gledanje uživo u pregledniku", "M3U lista za TV aplikacije", "Filter po državi i pretraga", "Samo legalni javni strimovi"] },
-    de: { sub: "Ex-YU-TV live, kostenlos",
-          short: "Kostenlose, frei verfügbare TV-Sender aus der Region, live im Browser.",
-          long: "Sender aus Serbien, Bosnien, Kroatien, Montenegro, Nordmazedonien und Slowenien, die die Sender selbst kostenlos live streamen. Direkt auf der Seite schauen, am Handy oder PC.",
-          more: "Dieselbe Liste gibt es als M3U-Link für TiviMate, IPTV Smarters oder VLC am Fernseher. Nur öffentliche, kostenlose Streams, keine Pay-TV-Sender.",
-          feats: ["Live im Browser", "M3U-Liste für TV-Apps", "Filter nach Land und Suche", "Nur legale öffentliche Streams"] },
-    en: { sub: "Ex-YU live TV, free",
-          short: "Free public TV channels from the region, live in the browser.",
-          long: "Channels from Serbia, Bosnia, Croatia, Montenegro, North Macedonia and Slovenia that the broadcasters themselves stream for free. Watch right on the site, on phone or PC.",
-          more: "The same list is available as an M3U link for TiviMate, IPTV Smarters or VLC on your TV. Public, free streams only, no pay-TV channels.",
-          feats: ["Watch live in the browser", "M3U list for TV apps", "Filter by country and search", "Legal public streams only"] }
-  }
-},
-{
   id: "bashmouse", name: "BashMouse", tags: ["apk"], status: "soon",
   group: "apps", cat: "tools", icon: "hand", c: ["#a78bfa", "#ec4899"],
   shots: [],
