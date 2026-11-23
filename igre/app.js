@@ -2,7 +2,7 @@
 'use strict';
 if(location.protocol==='http:'&&!/^(localhost|127\.0\.0\.1|192\.168\.|10\.)/.test(location.hostname))location.replace('https:'+location.href.slice(5));
 
-const APP_VER='20261116e';
+const APP_VER='20261123a';
 (async()=>{try{if(!/^https?:/.test(location.protocol))return;const r=await fetch('version.json?t='+Date.now(),{cache:'no-store'});const j=await r.json();
  if(j&&j.v&&j.v!==APP_VER){const k='nljc_rl_'+j.v;if(!sessionStorage.getItem(k)){sessionStorage.setItem(k,'1');location.replace(location.pathname+'?v='+j.v+location.hash)}}}catch(e){}})();
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
@@ -436,6 +436,7 @@ function guestMsg(d){
   case 'throw':showThrow(d);break;
   case 'rose':onRose(d);break;
   case 'count':countdown();break;
+  case 'pm':pmOpen(d);break;
   case 'full':toast('Soba je puna (najviše 5 igrača).',3500);leave();break;
   case 'bye':toast('Domaćin je zatvorio sobu.');leave();break;
   default:if(String(d.t).startsWith('sk')&&typeof skOnMsg==='function')skOnMsg(d);else if(String(d.t).startsWith('un')&&typeof unOnMsg==='function')unOnMsg(d);
@@ -459,10 +460,11 @@ function createRoom(local){
  if(!local&&!hostOpen(rand4())){App.role=null;showScreen('sHome')}
 }
 function readyState(lb){
- let ids;if(lb.game==='sketch'||lb.game==='uno')ids=Object.keys(lb.players).filter(id=>id!==lb.host&&lb.players[id].online);
+ let ids;if(lb.game==='sketch'||lb.game==='uno'||lb.game==='pm')ids=Object.keys(lb.players).filter(id=>id!==lb.host&&lb.players[id].online);
  else{const M=MODES[lb.mode];ids=[...new Set(M.seats.map(i=>lb.seatCfg[i].owner))].filter(o=>o!=='bot'&&o!==lb.host)}
  return {guests:ids,ready:ids.filter(id=>lb.players[id]&&lb.players[id].online&&lb.players[id].ready).length}}
 function lobbySummary(lb){
+ if(lb.game==='pm'){const ht=(lb.pm&&lb.pm.hostT)==='w'?'w':'f';return `🔥💧 Pido i Mico · 60 nivoa · domaćin je ${ht==='f'?'🔴 Mico':'🔵 Pido'}`}
  if(lb.game==='uno'){const u=Object.assign({},UN_DEF,lb.uno);return `🃏 ${u.start} karata · ⏱ ${u.time?u.time+'s':'bez limita'}${u.bots?' · 🤖 '+u.bots+' bot'+(u.bots>1?'a':''):''}${u.stack?' · slaganje +2/+4':''}${u.drawMatch?' · vuci dok ne možeš':''}`}
  if(lb.game==='sketch'){const s=lb.sk;return `🎨 ${s.rounds} ${s.rounds<5?'runde':'rundi'} · ⏱ ${s.time}s po crtanju · ${s.hints?'💡 nagovještaji':'bez nagovještaja'} · ${s.cats.length===Object.keys(WORD_CATS).length?'sve kategorije':s.cats.length+' kategorija'}`}
  const R=lb.rules,king=Object.keys(PRESETS.king).every(k=>k==='turnTime'||R[k]===PRESETS.king[k]);
@@ -499,7 +501,7 @@ function renderLobby(){
   const me=lb.players[App.me.id],mySeats=lb.game==='ludo'?M.seats.filter(i=>lb.seatCfg[i].owner===App.me.id):[1];
   if(!mySeats.length){br.style.display='none';w.innerHTML='👀 Domaćin ti još nije dao boju – možeš gledati.'}
   else{br.className=me&&me.ready?'btn ghost':'btn fill';br.textContent=me&&me.ready?'✕ Ipak nisam spreman/na':'✓ Spreman/na sam!';
-   w.innerHTML=me&&me.ready?'<span class="spin"></span> Čekamo da domaćin pokrene igru…':(lb.game==='ludo'?'Tvoja boja: '+mySeats.map(i=>COLORS[i].name).join(' + '):lb.game==='uno'?'Igra: Jedna! 🃏':'Igra: Crtaj & pogađaj')}
+   w.innerHTML=me&&me.ready?'<span class="spin"></span> Čekamo da domaćin pokrene igru…':(lb.game==='ludo'?'Tvoja boja: '+mySeats.map(i=>COLORS[i].name).join(' + '):lb.game==='uno'?'Igra: Jedna! 🃏':lb.game==='pm'?'Igra: Pido i Mico 🔥💧 – ti si '+(pmRoleOf(lb,App.me.id)==='w'?'🔵 Pido':'🔴 Mico'):'Igra: Crtaj & pogađaj')}
  }
 }
 function lobbyChanged(){if(!App.lobby)return;LS.set('settings',{game:App.lobby.game,mode:App.lobby.mode,rules:App.lobby.rules,sk:App.lobby.sk,uno:App.lobby.uno});bcastLobby();if($('#settings').classList.contains('on'))renderSettings()}
@@ -510,9 +512,12 @@ $('#lPlayers').addEventListener('click',e=>{const p=e.target.closest('[data-pid]
 // settings sheet
 function renderSettings(){
  const lb=App.lobby;if(!lb)return;const ro=App.role==='guest',dis=ro?' disabled':'';const local=App.role==='local';
- $('#setT').textContent=lb.game==='sketch'?'🎨 Crtaj & pogađaj':lb.game==='uno'?'🃏 Jedna!':'🎲 Ne ljuti se';
+ $('#setT').textContent=lb.game==='pm'?'🔥💧 Pido i Mico':lb.game==='sketch'?'🎨 Crtaj & pogađaj':lb.game==='uno'?'🃏 Jedna!':'🎲 Ne ljuti se';
  let h='';
- if(lb.game==='uno'){const u=lb.uno=Object.assign({},UN_DEF,lb.uno);
+ if(lb.game==='pm'){const ht=(lb.pm&&lb.pm.hostT)==='w'?1:0;
+  h+=`<label class="l">Domaćin igra kao</label><div class="seg" data-pm="hostT">${[[0,'🔴 Mico (vatra)'],[1,'🔵 Pido (voda)']].map(([v,l])=>`<button${ht===v?' class="on"':''} data-v="${v}"${dis}>${l}</button>`).join('')}</div>`;
+  h+=`<p class="muted">Co-op za tačno 2 igrača. Mico ide kroz lavu, Pido kroz vodu, zelena kiselina ubija oba. Nivo birate u igri.</p>`;
+ }else if(lb.game==='uno'){const u=lb.uno=Object.assign({},UN_DEF,lb.uno);
   h+=`<label class="l">🤖 Botovi (popune sto)</label><div class="seg" data-un="bots">${[0,1,2,3].map(v=>`<button${u.bots===v?' class="on"':''} data-v="${v}"${dis}>${v||'bez'}</button>`).join('')}</div>`;
   h+=`<label class="l">Karata na početku</label><div class="seg" data-un="start">${[5,7,10].map(v=>`<button${u.start===v?' class="on"':''} data-v="${v}"${dis}>${v}</button>`).join('')}</div>`;
   h+=`<label class="l">⏱ Vrijeme za potez</label><div class="seg" data-un="time">${[0,15,20,30,45].map(v=>`<button${u.time===v?' class="on"':''} data-v="${v}"${dis}>${v?v+'s':'∞'}</button>`).join('')}</div>`;
@@ -554,12 +559,13 @@ $('#setBody').addEventListener('input',e=>{const t=e.target;if(t.dataset.sname!=
 $('#setBody').addEventListener('click',e=>{if(App.role==='guest'||!App.lobby)return;const lb=App.lobby;
  const pr=e.target.closest('[data-preset]');if(pr){Object.assign(lb.rules,PRESETS[pr.dataset.preset]);if(pr.dataset.preset==='classic')lb.rules.turnTime=0;toast(pr.dataset.preset==='king'?'👑 Ludo King pravila':'🎲 Klasična pravila');lobbyChanged();return}
  const b=e.target.closest('.seg button');if(!b)return;const seg=b.parentNode,v=+b.dataset.v;
- if(seg.dataset.sk)lb.sk[seg.dataset.sk]=v;else if(seg.dataset.un)lb.uno[seg.dataset.un]=v;else if(seg.dataset.time)lb.rules.turnTime=v;sfx.click();lobbyChanged()});
+ if(seg.dataset.pm){lb.pm=Object.assign({},lb.pm,{hostT:v?'w':'f'})}else if(seg.dataset.sk)lb.sk[seg.dataset.sk]=v;else if(seg.dataset.un)lb.uno[seg.dataset.un]=v;else if(seg.dataset.time)lb.rules.turnTime=v;sfx.click();lobbyChanged()});
 // start / countdown / back
 function startGame(force){
  const lb=App.lobby;if(!lb||App.starting)return;
  if(App.role==='host'&&!lb.code){toast('Soba se još otvara…');return}
  if(App.role==='host'&&!force){const rs=readyState(lb);if(!(lb.game==='uno'&&!rs.guests.length&&(lb.uno&&lb.uno.bots))&&(!rs.guests.length||rs.ready<rs.guests.length)){toast('Čekamo da svi budu spremni');return}}
+ if(lb.game==='pm'&&Object.values(lb.players).filter(p=>p.online).length!==2){toast('Pido i Mico je za tačno 2 igrača 🔥💧');return}
  if(lb.game==='sketch'&&Object.values(lb.players).filter(p=>p.online).length<2){toast('Za crtanje trebaju bar 2 igrača 🎨');return}
  if(lb.game==='uno'&&Object.values(lb.players).filter(p=>p.online).length+((lb.uno&&lb.uno.bots)|0)<2){toast('Treba bar 2 igrača – ili dodaj bota u ⚙️ postavkama 🃏');return}
  App.starting=true;bcast({t:'count'});ovl('settings',false);
@@ -567,6 +573,7 @@ function startGame(force){
   if(typeof gAnnounce==='function')setTimeout(gAnnounce,300);
   if(lb.game==='sketch'){skStart();return}
   if(lb.game==='uno'){unStart();return}
+  if(lb.game==='pm'){pmStart();return}
   const seatCfg=[0,1,2,3].map(i=>({owner:lb.seatCfg[i].owner,name:seatName(lb,i),av:seatAv(lb,i)}));
   clearTimeout(App.H.timer);App.H={};App.game=mkState({mode:lb.mode,rules:lb.rules,seatCfg});wake();afterChange()});
 }
@@ -574,7 +581,7 @@ function countdown(cb){hideWin();ovl('count',true);const n=$('#cnum');let k=3;
  const tick=()=>{n.textContent=k>0?k:'kreni!';n.style.animation='none';void n.offsetWidth;n.style.animation='';
   if(k>0){tone(660,.15,'sine',.15);vib(30)}else{tone(990,.3,'triangle',.18);vib(80)}
   if(k-->0)setTimeout(tick,850);else setTimeout(()=>{ovl('count',false);cb&&cb()},650)};tick()}
-function toLobbyView(){App.st=null;App.shown=null;App.skv=null;if(typeof skResetUI==='function')skResetUI();if(typeof unResetUI==='function')unResetUI();hideWin();showScreen('sLobby');renderLobby()}
+function toLobbyView(){pmClose();App.st=null;App.shown=null;App.skv=null;if(typeof skResetUI==='function')skResetUI();if(typeof unResetUI==='function')unResetUI();hideWin();showScreen('sLobby');renderLobby()}
 function backToLobby(){if(App.role==='guest'||!App.lobby)return;clearTimeout(App.H.timer);if(typeof skStop==='function')skStop();if(typeof unStop==='function')unStop();
  App.game=null;App.sk=null;App.un=null;App.H={};Object.entries(App.lobby.players).forEach(([id,p])=>{if(id!==App.lobby.host)p.ready=false});
  bcast({t:'back'});bcastLobby();toLobbyView();saveGame()}
@@ -584,7 +591,7 @@ function leave(){
  if(App.role==='host')bcast({t:'bye'});
  const pr=App.peer;setTimeout(()=>{try{App.conns.forEach(c=>c.close())}catch(e){}App.conns.clear();try{pr&&pr.destroy()}catch(e){}},300);
  Object.assign(App,{peer:null,conn:null,role:null,game:null,st:null,shown:null,sk:null,skv:null,un:null,unv:null,lobby:null,H:{},code:'',chat:[],unread:0});
- ['prof','settings','win','drawer'].forEach(i=>ovl(i,false));
+ ['prof','settings','win','drawer'].forEach(i=>ovl(i,false));pmClose();
  LS.del('save');showScreen('sHome');renderHome();
 }
 
@@ -683,3 +690,15 @@ sndBtns();renderHome();
  const fr=document.fonts&&document.fonts.load?Promise.race([document.fonts.load('100px "Kaushan Script"'),sleep(1800)]):Promise.resolve();
  fr.then(()=>{drawLogo($('#ldLogo'));done()},done)})();
 if(typeof Peer==='undefined')setTimeout(()=>{if(typeof Peer==='undefined')toast('⚠️ Online dio nije učitan (nema interneta?). Lokalna igra radi.',4000)},3500);
+
+// ================= PIDO I MICO (vatra & voda, co-op za 2) =================
+function pmRoleOf(lb,id){const ht=(lb.pm&&lb.pm.hostT)==='w'?'w':'f';return id===lb.host?ht:(ht==='f'?'w':'f')}
+function pmStart(){const lb=App.lobby;if(!lb||!lb.code)return;
+ const d={t:'pm',code:lb.code,s:Date.now()};bcast(d);pmOpen(d,true)}
+function pmOpen(d,host){const lb=App.lobby;if(!lb||!d||!/^\d{3,6}$/.test(String(d.code||'')))return;
+ const me=pmRoleOf(lb,App.me.id),f=$('#pmFrame');
+ f.src='pidomico.html?room='+d.code+'&me='+me+(host?'&host=1':'')+'&nick='+encodeURIComponent(App.me.nick||'')+'&s='+(d.s|0);
+ $('#sPM').classList.add('on');App.pmOn=true}
+function pmClose(){const p=$('#sPM');if(!p||!App.pmOn)return;App.pmOn=false;p.classList.remove('on');$('#pmFrame').src='about:blank'}
+window.addEventListener('message',e=>{if(e.source!==($('#pmFrame')||{}).contentWindow||!e.data||e.data.pm!=='exit')return;
+ pmClose();if(App.role==='host')backToLobby();else{showScreen('sLobby');renderLobby()}});
