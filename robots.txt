@@ -1,3 +1,4 @@
 User-agent: *
 Allow: /
+Disallow: /melisa/
 Sitemap: https://basaofficial.github.io/sitemap.xml
