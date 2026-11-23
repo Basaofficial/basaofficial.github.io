@@ -59,20 +59,20 @@ window.PROJECTS = [
   platform: "Web · Android · iPhone",
   t: {
     bs: { sub: "Igre za društvo, bez registracije",
-          short: "Online igre za društvo: Ne ljuti se, Sketch, Uno, Pido i Mico.",
+          short: "Online igre za društvo: Ne ljuti se, Sketch, Uno, Remi, Pido i Mico.",
           long: "Igre za društvo koje rade u pregledniku, na Androidu i iPhoneu. Uđeš u kanal, napraviš sobu i igraš s ekipom. Ne treba registracija ni server.",
           more: "Potezi, crteži i poruke stižu odmah, pa se igra kao da ste za istim stolom. Pošto radi u pregledniku, možeš je dodati na početni ekran telefona i otvarati kao aplikaciju.",
-          feats: ["Ne ljuti se čovječe 1v1 i 2v2", "Sketch: crtaj i pogađaj do 5 igrača", "Pido i Mico: vatra i voda co-op, 60 nivoa", "Lobby, chat, nadimci i ruže", "Bez registracije"] },
+          feats: ["Ne ljuti se čovječe 1v1 i 2v2", "Sketch: crtaj i pogađaj do 5 igrača", "Remi (domaći): 2 špila, džokeri, otvaranje 51", "Pido i Mico: vatra i voda co-op, 60 nivoa", "Lobby, chat, nadimci i ruže", "Bez registracije"] },
     de: { sub: "Partyspiele ohne Anmeldung",
-          short: "Online-Partyspiele: Mensch ärgere dich nicht, Sketch, Uno, Pido & Mico.",
+          short: "Online-Partyspiele: Mensch ärgere dich nicht, Sketch, Uno, Rommé, Pido & Mico.",
           long: "Partyspiele im Browser, auf Android und iPhone. Kanal betreten, Raum erstellen und mit Freunden spielen. Ohne Anmeldung und ohne Server.",
           more: "Züge, Zeichnungen und Nachrichten kommen sofort an – fast wie am selben Tisch. Da alles im Browser läuft, kannst du es zum Homescreen hinzufügen und wie eine App öffnen.",
-          feats: ["Mensch ärgere dich nicht 1v1 und 2v2", "Sketch: zeichnen und raten bis 5 Spieler", "Pido & Mico: Feuer-und-Wasser-Koop, 60 Level", "Lobby, Chat, Spitznamen, Rosen", "Ohne Anmeldung"] },
+          feats: ["Mensch ärgere dich nicht 1v1 und 2v2", "Sketch: zeichnen und raten bis 5 Spieler", "Rommé: 2 Decks, Joker, Auslegen ab 51", "Pido & Mico: Feuer-und-Wasser-Koop, 60 Level", "Lobby, Chat, Spitznamen, Rosen", "Ohne Anmeldung"] },
     en: { sub: "Party games, no sign-up",
-          short: "Online party games: Ludo, Sketch, Uno, Pido & Mico.",
+          short: "Online party games: Ludo, Sketch, Uno, Rummy, Pido & Mico.",
           long: "Party games that run in the browser, on Android and iPhone. Join the channel, open a room and play with friends. No sign-up and no server.",
           more: "Moves, drawings and messages arrive instantly, so it feels like sitting at the same table. Since it runs in the browser, you can add it to your home screen and open it like an app.",
-          feats: ["Ludo 1v1 and 2v2", "Sketch: draw and guess, up to 5 players", "Pido & Mico: fire and water co-op, 60 levels", "Lobby, chat, nicknames and roses", "No sign-up"] }
+          feats: ["Ludo 1v1 and 2v2", "Sketch: draw and guess, up to 5 players", "Rummy (Balkan style): 2 decks, jokers, open with 51", "Pido & Mico: fire and water co-op, 60 levels", "Lobby, chat, nicknames and roses", "No sign-up"] }
   }
 },
 {
