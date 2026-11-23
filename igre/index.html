@@ -468,6 +468,74 @@ select option{background:#111}
 .skchat .gm.rose{color:#ff8fb1;font-weight:700}
 #sSketch .cin{width:var(--cw);min-width:280px}
 #sPM{position:fixed;inset:0;z-index:900;background:#07070c;display:none}#sPM.on{display:block}#sPM iframe{width:100%;height:100%;border:0;display:block}
+
+/* ---------- REMI ---------- */
+#sRemi{--uw:min(96vw,560px);height:100vh;gap:6px;padding-top:calc(env(safe-area-inset-top) + 6px);padding-bottom:calc(env(safe-area-inset-bottom) + 8px);overflow:hidden}
+@supports (height:100dvh){#sRemi{height:100dvh}}
+#sRemi .topbar{width:var(--uw)}
+#sRemi .unops{min-height:88px}
+.rmsc{font-size:11px;color:var(--muted);font-weight:700}
+.rc{--w:66px;width:var(--w);height:calc(var(--w)*1.42);border-radius:calc(var(--w)*.09);flex:none;position:relative;overflow:hidden;cursor:pointer;
+ background:linear-gradient(160deg,#ffffff,#f6f3ea 60%,#ece7d8);color:#15171c;border:1px solid #cfc8b5;font-family:Georgia,"Times New Roman",serif;
+ box-shadow:inset 0 1px 0 #fff,0 2px 5px rgba(0,0,0,.55),0 0 0 .5px #0004}
+.rc.red{color:#c8102e}
+.rc .ix{position:absolute;display:flex;flex-direction:column;align-items:center;line-height:.86;font-size:calc(var(--w)*.19)}
+.rc .ix b{font-size:calc(var(--w)*.25);font-weight:700;letter-spacing:-.06em}
+.rc .ix.tl{top:4%;left:5%}.rc .ix.br{bottom:4%;right:5%;transform:rotate(180deg)}
+.rc .pips{position:absolute;inset:9% 17%}
+.rc .pips i{position:absolute;font-style:normal;font-size:calc(var(--w)*.21);line-height:1;transform:translate(-50%,-50%)}
+.rc .pips i.f{transform:translate(-50%,-50%) rotate(180deg)}
+.rc .one{display:none}
+.rc .ace{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:calc(var(--w)*.58);line-height:1;filter:drop-shadow(0 1px 0 #0002)}
+.rc .face{position:absolute;inset:17% 19%;border:1px solid currentColor;border-radius:3px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+ background:linear-gradient(160deg,#fff7d6,#f3dc95 55%,#e7c066);box-shadow:inset 0 0 0 2px #fff9}
+.rc .face.f11{background:linear-gradient(160deg,#f1f7ff,#c3daf6 60%,#9cc0ec)}.rc .face.f12{background:linear-gradient(160deg,#fff2f6,#f6c3d3 60%,#ec9db7)}
+.rc .face b{font-size:calc(var(--w)*.36);line-height:1}.rc .face i{font-style:normal;font-size:calc(var(--w)*.2);line-height:1}
+.rc .face em{position:absolute;top:3%;font-style:normal;font-size:calc(var(--w)*.15);opacity:.8}
+.rc.jk .jx{position:absolute;font:900 calc(var(--w)*.12)/.92 Arial,sans-serif;color:#7a2bd9;text-align:center}
+.rc.jk .jx.tl{top:5%;left:6%}.rc.jk .jx.br{bottom:5%;right:6%;transform:rotate(180deg)}
+.rc.jk .jst{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:calc(var(--w)*.66);line-height:1;
+ background:conic-gradient(#ff3b5c,#ffd23f,#3ddc84,#3d8bff,#c77dff,#ff3b5c);-webkit-background-clip:text;background-clip:text;color:transparent}
+.rc.jk .jr{position:absolute;left:50%;bottom:3px;transform:translateX(-50%);background:#15171cdd;color:#fff;font:800 9px/1 Arial,sans-serif;padding:2px 4px;border-radius:4px;white-space:nowrap}
+.rc.back{background:repeating-linear-gradient(45deg,#0e3d20 0 4px,#0a2d17 4px 8px);border:3px solid #f6f3ea;box-shadow:0 2px 5px #0009}
+.rc.back::after{content:"#B";position:absolute;inset:0;display:grid;place-items:center;font-family:var(--hand);font-size:calc(var(--w)*.4);color:var(--g);text-shadow:0 0 10px rgba(124,255,1,.6)}
+.rc.sm{--w:38px;cursor:inherit}.rc.sm .pips,.rc.sm .ix.br,.rc.sm .face em,.rc.sm .face i,.rc.sm .jx{display:none}
+.rc.sm .one{display:block;position:absolute;left:50%;top:62%;transform:translate(-50%,-50%);font-size:calc(var(--w)*.5);line-height:1}
+.rc.sm .ace{top:62%;font-size:calc(var(--w)*.55)}.rc.sm .face{inset:42% 10% 7%}.rc.sm .face b{font-size:calc(var(--w)*.3)}
+.rc.sm .ix{font-size:calc(var(--w)*.22)}.rc.sm .ix b{font-size:calc(var(--w)*.3)}
+.rmfelt{width:var(--uw);flex:1;min-height:140px;border-radius:22px;padding:10px 10px 8px;display:flex;flex-direction:column;gap:8px;overflow:hidden;position:relative;
+ background:radial-gradient(ellipse at 50% 25%,#23864b,#13592f 60%,#0b3d20);box-shadow:inset 0 0 0 5px #3a2210,inset 0 0 0 7px #6b4523,inset 0 0 0 8px #2a170a,inset 0 0 50px #000b,0 10px 26px #000}
+.rmfelt::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.18;background:repeating-radial-gradient(circle at 30% 40%,#fff1 0 1px,transparent 1px 3px)}
+.rmtop{display:flex;gap:22px;justify-content:center;align-items:center;flex:none}
+#rmDeck{position:relative;cursor:pointer}#rmDeck .rc{--w:50px;box-shadow:1px 1px 0 #0a2d17,2px 2px 0 #f6f3ea,3px 3px 0 #0a2d17,4px 4px 0 #f6f3ea,6px 6px 10px #000}
+#rmDeckN{position:absolute;right:-8px;bottom:-6px;background:#000c;color:#fff;font-size:11px;font-weight:800;border-radius:8px;padding:1px 6px}
+#rmDisc{position:relative;width:50px;height:71px;cursor:pointer}#rmDisc .ul{position:absolute;inset:0;transform:rotate(var(--r))}#rmDisc .rc{--w:50px}
+#rmDisc .ul.hid{opacity:0}.rmslot{position:absolute;inset:0;border:2px dashed #ffffff40;border-radius:6px;display:grid;place-items:center;font-size:10px;color:#ffffff80;text-align:center}
+#rmDeck.can .rc,#rmDisc.can .ul.top .rc{animation:ring2 1.1s ease-in-out infinite;outline:2px solid var(--g);outline-offset:2px}
+#rmTable{flex:1;overflow:auto;display:flex;flex-wrap:wrap;gap:8px 8px;align-content:flex-start;justify-content:center;padding:2px;position:relative}
+.rmm{display:flex;flex-direction:column;align-items:center;gap:2px;padding:5px 6px 3px;border-radius:10px;background:#00000038;cursor:pointer;border:1px solid #ffffff10}
+.rmm.mine{border-color:#7cff0155;background:#7cff010f}.rmm small{font-size:10px;color:#d6efdc;font-weight:700}
+.rmmc{display:flex}.rmmc .rc{margin-left:-17px;box-shadow:-2px 0 4px #0004}.rmmc .rc:first-child{margin-left:0}
+.rmm.pop{animation:cin .5s cubic-bezier(.2,1.2,.4,1)}
+.rmempty{margin:auto;color:#ffffffa0;font-size:13px;text-align:center;padding:10px}
+#rmSt{width:var(--uw);text-align:center;font-size:14px;min-height:20px;flex:none}
+#rmStage{width:var(--uw);display:flex;gap:6px;overflow-x:auto;flex:none;padding:2px 0;scrollbar-width:none}
+.rmg{display:flex;align-items:center;padding:4px 6px;border-radius:10px;background:#7cff0112;border:1px solid #7cff0150;flex:none;cursor:pointer}
+.rmg .rc{margin-left:-17px}.rmg .rc:first-child{margin-left:0}.rmg small{margin-left:6px;font-weight:800;color:var(--g);font-size:12px}
+.rmg.bad{border-color:var(--red);background:#ff2d5514}.rmg.bad small{color:var(--red)}
+.rmhand{width:var(--uw);overflow-x:auto;overflow-y:visible;flex:none;padding:22px 0 4px;scrollbar-width:none}
+.rmhand::-webkit-scrollbar{display:none}
+.rmhand .inner{display:flex;width:max-content;margin:0 auto;padding:0 18px}
+.rmhand .rc{margin-right:var(--ov,-30px);transition:transform .15s,box-shadow .15s}.rmhand .rc:last-child{margin-right:0}
+.rmhand .rc.sel{transform:translateY(-16px);box-shadow:0 0 0 2px var(--g),0 8px 16px #000}
+.rmhand .rc.must{outline:2px dashed #ffd23f;outline-offset:1px}
+.rmhand .rc.new{animation:cin .5s cubic-bezier(.2,1.2,.4,1) both}
+.rmhand .rc.lift{transform:translateY(-24px) scale(1.07);z-index:5;transition:none}
+#rmBtns{flex-wrap:wrap}#rmBtns .btn{flex:1 1 30%}
+#rmHint{font-size:11.5px;color:var(--muted);min-height:14px;flex:none;text-align:center}
+#sRemi .gchat{width:var(--uw);flex:0 0 74px;min-height:0}#sRemi .gchat .feed{min-height:0}
+#rmOps .avw{margin-bottom:7px}
+.rmfelt{flex:1 1 auto;min-height:190px}
 </style>
 </head>
 <body>
@@ -530,6 +598,7 @@ select option{background:#111}
     <div class="gcard" data-game="ludo"><div class="gi">🎲</div><b>Ne ljuti se</b><small>2–4 igrača</small></div>
     <div class="gcard" data-game="sketch"><div class="gi">🎨</div><b>Crtaj &amp; pogađaj</b><small>2–5 igrača</small></div>
     <div class="gcard" data-game="uno"><div class="gi">🃏</div><b>Jedna!</b><small>UNO pravila · 2–5</small></div>
+    <div class="gcard" data-game="remi"><div class="gi">🂡</div><b>Remi</b><small>domaći · 2–5</small></div>
     <div class="gcard" data-game="pm"><div class="gi">🔥💧</div><b>Pido i Mico</b><small>vatra &amp; voda · 2 igrača</small></div>
    </div>
    <div class="summary" id="lSum"></div>
@@ -594,6 +663,29 @@ select option{background:#111}
  <div class="gchat"><div class="feed" id="unFeed"></div>
   <div class="cbar" data-chat="room"><button class="eb">😀</button><input id="unIn" maxlength="120" placeholder="Poruka…" autocomplete="off"><button class="sb">➤</button></div></div>
 </section>
+<!-- REMI -->
+<section id="sRemi" class="screen">
+ <div class="topbar">
+  <button class="ib hb" data-menu><i></i></button>
+  <div class="mid"><div class="skr" id="rmInfo"></div><div class="untm" id="rmTimeMe"></div></div>
+  <button class="ib" id="rmHelp">?</button>
+ </div>
+ <div class="unops" id="rmOps"></div>
+ <div class="rmfelt">
+  <div class="rmtop"><div id="rmDeck"><div class="rc back"></div><span id="rmDeckN"></span></div><div id="rmDisc"></div></div>
+  <div id="rmTable"></div>
+ </div>
+ <div id="rmSt"></div>
+ <div id="rmStage"></div>
+ <div class="rmhand" id="rmHand"></div>
+ <div class="unbtns" id="rmBtns"><button class="btn ghost" id="rmSortB">♠♥ Po boji</button><button class="btn fill" id="rmMeldB">⬇ Spusti</button><button class="btn fill" id="rmOpenB">Otvori se</button><button class="btn ghost" id="rmClrB">✕ Poništi</button><button class="btn" id="rmDiscB">⬆ Baci</button><button class="btn red" id="rmBackB">↩ Vrati kartu</button></div>
+ <div id="rmHint"></div>
+ <div class="gchat"><div class="feed" id="rmFeed"></div>
+  <div class="cbar" data-chat="room"><button class="eb">😀</button><input id="rmIn" maxlength="120" placeholder="Poruka…" autocomplete="off"><button class="sb">➤</button></div></div>
+</section>
+<div class="ovl" id="rmRound"><div class="panel"><h2 class="wt" id="rmRT"></h2><div id="rmRB"></div>
+ <button class="btn fill" id="rmNextB">▶ Sljedeća runda</button><p class="muted" id="rmWaitP" style="text-align:center">Domaćin dijeli sljedeću rundu…</p>
+ <button class="btn ghost" data-close="rmRound">Pogledaj sto</button></div></div>
 <div class="ovl" id="unPick"><div class="panel" style="max-width:340px"><h2 style="text-align:center">Izaberi boju</h2><div class="unpick">
  <button data-col="r" style="--cc:#ff3b5c">Crvena</button><button data-col="y" style="--cc:#ffd23f">Žuta</button><button data-col="g" style="--cc:#3ddc84">Zelena</button><button data-col="b" style="--cc:#3d8bff">Plava</button></div></div></div>
 <div id="unShout" class="unshout"></div>
@@ -629,14 +721,15 @@ select option{background:#111}
 <div id="pmWrap"><div id="sPM"><iframe id="pmFrame" title="Pido i Mico" allow="fullscreen; autoplay"></iframe></div></div>
 <div id="toast"></div>
 
-<script src="err.js?v=20261123a"></script>
-<script src="net.js?v=20261123a"></script>
-<script src="pawn3d.js?v=20261123a"></script>
-<script src="logic.js?v=20261123a"></script>
-<script src="words.js?v=20261123a"></script>
-<script src="app.js?v=20261123a"></script>
-<script src="sketch.js?v=20261123a"></script>
-<script src="uno.js?v=20261123a"></script>
-<script src="global.js?v=20261123a"></script>
+<script src="err.js?v=20261123b"></script>
+<script src="net.js?v=20261123b"></script>
+<script src="pawn3d.js?v=20261123b"></script>
+<script src="logic.js?v=20261123b"></script>
+<script src="words.js?v=20261123b"></script>
+<script src="app.js?v=20261123b"></script>
+<script src="sketch.js?v=20261123b"></script>
+<script src="uno.js?v=20261123b"></script>
+<script src="rm.js?v=20261123b"></script>
+<script src="global.js?v=20261123b"></script>
 </body>
 </html>
