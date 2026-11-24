@@ -62,7 +62,7 @@ window.PROJECTS = [
           short: "Online igre za društvo: Ne ljuti se, Sketch, Uno, Remi, Pido i Mico.",
           long: "Igre za društvo koje rade u pregledniku, na Androidu i iPhoneu. Uđeš u kanal, napraviš sobu i igraš s ekipom. Ne treba registracija ni server.",
           more: "Potezi, crteži i poruke stižu odmah, pa se igra kao da ste za istim stolom. Pošto radi u pregledniku, možeš je dodati na početni ekran telefona i otvarati kao aplikaciju.",
-          feats: ["Ne ljuti se čovječe 1v1 i 2v2", "Sketch: crtaj i pogađaj do 5 igrača", "Remi (domaći): 2 špila, džokeri, otvaranje 51", "Pido i Mico: vatra i voda co-op, 60 nivoa", "Lobby, chat, nadimci i ruže", "Bez registracije"] },
+          feats: ["Ne ljuti se čovječe 1v1 i 2v2", "Sketch: crtaj i pogađaj do 5 igrača", "Remi (domaći): 2 špila, džokeri, otvaranje 51", "Pido i Mico: vatra i voda co-op, 30 nivoa i dostignuća", "Lobby, chat, nadimci i ruže", "Bez registracije"] },
     de: { sub: "Partyspiele ohne Anmeldung",
           short: "Online-Partyspiele: Mensch ärgere dich nicht, Sketch, Uno, Rommé, Pido & Mico.",
           long: "Partyspiele im Browser, auf Android und iPhone. Kanal betreten, Raum erstellen und mit Freunden spielen. Ohne Anmeldung und ohne Server.",
