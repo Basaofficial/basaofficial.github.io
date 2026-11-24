@@ -2,7 +2,7 @@
 'use strict';
 if(location.protocol==='http:'&&!/^(localhost|127\.0\.0\.1|192\.168\.|10\.)/.test(location.hostname))location.replace('https:'+location.href.slice(5));
 
-const APP_VER='20261123b';
+const APP_VER='20261124a';
 (async()=>{try{if(!/^https?:/.test(location.protocol))return;const r=await fetch('version.json?t='+Date.now(),{cache:'no-store'});const j=await r.json();
  if(j&&j.v&&j.v!==APP_VER){const k='nljc_rl_'+j.v;if(!sessionStorage.getItem(k)){sessionStorage.setItem(k,'1');location.replace(location.pathname+'?v='+j.v+location.hash)}}}catch(e){}})();
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
@@ -468,7 +468,7 @@ function readyState(lb){
  return {guests:ids,ready:ids.filter(id=>lb.players[id]&&lb.players[id].online&&lb.players[id].ready).length}}
 function lobbySummary(lb){
  if(lb.game==='remi'){const r=Object.assign({},RM_DEF,lb.rm);return `🂡 Remi · otvaranje ${r.open} · ${r.rounds} ${r.rounds===1?'runda':r.rounds<5?'runde':'rundi'} · ⏱ ${r.time?r.time+'s':'bez limita'}${r.bots?' · 🤖 '+r.bots+' bot'+(r.bots>1?'a':''):''}`}
- if(lb.game==='pm'){const ht=(lb.pm&&lb.pm.hostT)==='w'?'w':'f';return `🔥💧 Pido i Mico · 60 nivoa · domaćin je ${ht==='f'?'🔴 Mico':'🔵 Pido'}`}
+ if(lb.game==='pm'){const ht=(lb.pm&&lb.pm.hostT)==='w'?'w':'f';return `🔥💧 Pido i Mico · 30 nivoa · domaćin je ${ht==='f'?'🔴 Mico':'🔵 Pido'}`}
  if(lb.game==='uno'){const u=Object.assign({},UN_DEF,lb.uno);return `🃏 ${u.start} karata · ⏱ ${u.time?u.time+'s':'bez limita'}${u.bots?' · 🤖 '+u.bots+' bot'+(u.bots>1?'a':''):''}${u.stack?' · slaganje +2/+4':''}${u.drawMatch?' · vuci dok ne možeš':''}`}
  if(lb.game==='sketch'){const s=lb.sk;return `🎨 ${s.rounds} ${s.rounds<5?'runde':'rundi'} · ⏱ ${s.time}s po crtanju · ${s.hints?'💡 nagovještaji':'bez nagovještaja'} · ${s.cats.length===Object.keys(WORD_CATS).length?'sve kategorije':s.cats.length+' kategorija'}`}
  const R=lb.rules,king=Object.keys(PRESETS.king).every(k=>k==='turnTime'||R[k]===PRESETS.king[k]);
@@ -710,7 +710,7 @@ function pmStart(){const lb=App.lobby;if(!lb||!lb.code)return;
  const d={t:'pm',code:lb.code,s:Date.now()};bcast(d);pmOpen(d,true)}
 function pmOpen(d,host){const lb=App.lobby;if(!lb||!d||!/^\d{3,6}$/.test(String(d.code||'')))return;
  const me=pmRoleOf(lb,App.me.id),f=$('#pmFrame');
- f.src='pidomico.html?room='+d.code+'&me='+me+(host?'&host=1':'')+'&nick='+encodeURIComponent(App.me.nick||'')+'&s='+(d.s|0);
+ f.src='pidomico.html?v='+APP_VER+'&room='+d.code+'&me='+me+(host?'&host=1':'')+'&nick='+encodeURIComponent(App.me.nick||'')+'&s='+(d.s|0);
  $('#sPM').classList.add('on');App.pmOn=true}
 function pmClose(){const p=$('#sPM');if(!p||!App.pmOn)return;App.pmOn=false;p.classList.remove('on');$('#pmFrame').src='about:blank'}
 window.addEventListener('message',e=>{if(e.source!==($('#pmFrame')||{}).contentWindow||!e.data||e.data.pm!=='exit')return;
