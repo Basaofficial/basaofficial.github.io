@@ -25,7 +25,9 @@ Builder.prototype={
  button(id,x,y,z){this.objs.push({t:'button',id,x,y,z})},
  door(id,x0,y0,z0,x1,y1,z1){this.fill(x0,y0,z0,x1,y1,z1,AIR);this.objs.push({t:'door',id,x0,y0,z0,x1,y1,z1})},
  pad(x,y,z,vx,vy,vz){this.g[this.k(x,y,z)]=PAD;this.objs.push({t:'pad',x,y,z,v:[vx,vy,vz]})},
- cube(x,y,z){this.objs.push({t:'cube',x,y,z})},
+ cube(x,y,z,kind,dir){this.objs.push({t:'cube',x,y,z,kind:kind||'',dir:dir||0})},
+ laser(x,y,z,dx,dy,dz){this.g[this.k(x,y,z)]=MET;this.objs.push({t:'laser',x,y,z,d:[dx,dy,dz]})},
+ receiver(id,x,y,z){this.g[this.k(x,y,z)]=MET;this.objs.push({t:'recv',id,x,y,z})},
  light(x,y,z,c,i){this.objs.push({t:'light',x,y,z,c:c||'#fff4e0',i:i||1})},
  def(info){return Object.assign({W:this.W,H:this.H,D:this.D,g:Array.from(this.g),objs:this.objs},info)}
 };
@@ -33,7 +35,7 @@ Builder.prototype={
 /* ---------- svijet ---------- */
 function World(def){
  this.def=def;this.W=def.W;this.H=def.H;this.D=def.D;this.g=Uint8Array.from(def.g);
- this.doors=[];this.doorAt=new Map();this.buttons=[];this.pads=new Map();this.cubes=[];this.spawn={};this.lights=[];
+ this.doors=[];this.doorAt=new Map();this.buttons=[];this.pads=new Map();this.cubes=[];this.spawn={};this.lights=[];this.lasers=[];this.recvs=[];this.recvAt=new Map();this.beams=[];
  let did=0;
  for(const o of def.objs){
   if(o.t==='spawn')this.spawn[o.r]={p:V(o.x+.5,o.y+PHH+.001,o.z+.5),yaw:o.yaw};
@@ -42,7 +44,9 @@ function World(def){
    for(let y=o.y0;y<=o.y1;y++)for(let z=o.z0;z<=o.z1;z++)for(let x=o.x0;x<=o.x1;x++){const k=this.key(x,y,z);d.cells.push(k);this.doorAt.set(k,d)}
    this.doors.push(d)}
   else if(o.t==='pad')this.pads.set(this.key(o.x,o.y,o.z),{x:o.x,y:o.y,z:o.z,v:V(o.v[0],o.v[1],o.v[2])});
-  else if(o.t==='cube'){const c={kind:'c',i:this.cubes.length,home:V(o.x+.5,o.y+CHW+.001,o.z+.5),p:V(o.x+.5,o.y+CHW+.001,o.z+.5),v:V(0,0,0),hw:CHW,hh:CHW,on:false,held:null,gone:0,tp:0,ot:0};this.cubes.push(c)}
+  else if(o.t==='cube'){const c={kind:'c',i:this.cubes.length,home:V(o.x+.5,o.y+CHW+.001,o.z+.5),p:V(o.x+.5,o.y+CHW+.001,o.z+.5),v:V(0,0,0),hw:CHW,hh:CHW,on:false,held:null,gone:0,tp:0,ot:0,prism:o.kind==='prism',dir:o.dir||0};this.cubes.push(c)}
+  else if(o.t==='laser')this.lasers.push({x:o.x,y:o.y,z:o.z,d:V(o.d[0],o.d[1],o.d[2]),o:V(o.x+.5+o.d[0]*.51,o.y+.5+o.d[1]*.51,o.z+.5+o.d[2]*.51)});
+  else if(o.t==='recv'){const r={id:o.id,x:o.x,y:o.y,z:o.z,on:false,hold:0,t:0};this.recvs.push(r);this.recvAt.set(this.key(o.x,o.y,o.z),r)}
   else if(o.t==='light')this.lights.push(o);
  }
  const mk=r=>{const s=this.spawn[r]||{p:V(2,2,2),yaw:0};return{kind:'p',r,p:V(s.p.x,s.p.y,s.p.z),v:V(0,0,0),hw:PHW,hh:PHH,yaw:s.yaw,pitch:0,on:false,coy:0,jb:0,
@@ -141,7 +145,7 @@ World.prototype={
    const h=ax==='y'?b.hh:b.hw;
    if(d>0)b.p[ax]=Math.floor(b.p[ax]+h-1e-6)-h-1e-4;else b.p[ax]=Math.floor(b.p[ax]-h+1e-6)+1+h+1e-4;
    if(this.hits(b))b.p[ax]=old;
-   if(ax==='y'){if(d<0){if(b.v.y<-9)this.emit('land',{b,v:-b.v.y});b.on=true}b.v.y=0}
+   if(ax==='y'){if(d<0){if(b.v.y<-9)this.emit('land',{b,v:-b.v.y});if(b.kind==='c'&&!b.held&&!b.on&&b.v.y<-4){b.v.x*=.5;b.v.z*=.5}b.on=true}b.v.y=0}
    else{b.v[ax]=b.kind==='c'&&!b.held?-b.v[ax]*.2:0}
    return;
   }
@@ -183,12 +187,14 @@ World.prototype={
  funnel(b,dt){
   if(b.held)return;
   for(const[P]of this.linked()){const l=this.local(P,b.p);
-   const ex=Math.abs(b.hw*(Math.abs(P.r.x)+Math.abs(P.r.z))+b.hh*Math.abs(P.r.y));
-   if(l.z<0||l.z>(P.n.y!==0?b.hh+.15:b.hw+.6)||Math.abs(l.x)>.62||Math.abs(l.y)>1.1)continue;
+   const ab=Math.abs,ex=b.hw*(ab(P.r.x)+ab(P.r.z))+b.hh*ab(P.r.y),ey=b.hw*(ab(P.u.x)+ab(P.u.z))+b.hh*ab(P.u.y);
    const vin=-dot(b.v,P.n);if(P.n.y===0&&vin<.5)continue;
-   const lim=.5-ex-.01;if(Math.abs(l.x)<=lim)continue;
-   const want=Math.sign(l.x)*lim-l.x,s=Math.sign(want)*Math.min(Math.abs(want),3*dt);
-   const old=V(b.p.x,b.p.y,b.p.z);b.p=add(b.p,P.r,s);if(this.hits(b))b.p=old;
+   const reach=(P.n.y!==0?b.hh+.15:b.hw+.6)+Math.max(0,vin)*.12;
+   if(l.z<0||l.z>reach||ab(l.x)>.5+ex-.02||ab(l.y)>1+ey-.02)continue;
+   const sp=(3+Math.max(0,vin)*1.5)*dt;
+   for(const[ax,val,lim]of[[P.r,l.x,.5-ex-.01],[P.u,l.y,1-ey-.01]]){if(lim<=0||ab(val)<=lim)continue;
+    const want=Math.sign(val)*lim-val,s=Math.sign(want)*Math.min(ab(want),sp);
+    const old=V(b.p.x,b.p.y,b.p.z);b.p=add(b.p,ax,s);if(this.hits(b))b.p=old}
   }
  },
  cellAt(q){return this.cell(Math.floor(q.x),Math.floor(q.y),Math.floor(q.z))},
@@ -253,20 +259,55 @@ World.prototype={
    this.move(c,dt);c.on=false;
    if(c.tpGrace>0)c.tpGrace-=dt;else if(len(sub(c.p,t))>3.2)this.drop(p);
   }else{
-   if(c.on){const hs=Math.hypot(c.v.x,c.v.z),a=Math.min(hs,14*dt);if(hs>0){c.v.x-=c.v.x/hs*a;c.v.z-=c.v.z/hs*a}}
-   c.v.y=Math.max(c.v.y-GRAV*dt,-TERM);c.on=false;this.move(c,dt);
+   if(c.on){const hs=Math.hypot(c.v.x,c.v.z),a=Math.min(hs,30*dt);if(hs>0){c.v.x-=c.v.x/hs*a;c.v.z-=c.v.z/hs*a}}
+   c.v.y=Math.max(c.v.y-GRAV*dt,-TERM);c.on=false;this.move(c,dt);this.funnel(c,dt);
    this.pad(c);
   }
   const hz=this.hazards(c);if(hz)this.kill(c,hz);
  },
+ laserBlock(x,y,z){const c=this.cell(x,y,z);if(c===MET||c===WHT)return true;const d=this.doorAt.get(this.key(x,y,z));return !!(d&&!d.open)},
+ laserWall(o,d){let x=Math.floor(o.x),y=Math.floor(o.y),z=Math.floor(o.z);
+  if(this.laserBlock(x,y,z))return{x,y,z,t:0};
+  const sx=Math.sign(d.x),sy=Math.sign(d.y),sz=Math.sign(d.z);const tm=(o,c,dd)=>dd?((c+(dd>0?1:0))-o)/dd:Infinity;
+  let tx=tm(o.x,x,d.x),ty=tm(o.y,y,d.y),tz=tm(o.z,z,d.z);const dx=d.x?1/Math.abs(d.x):Infinity,dy=d.y?1/Math.abs(d.y):Infinity,dz=d.z?1/Math.abs(d.z):Infinity;
+  for(let i=0;i<400;i++){let t;if(tx<ty&&tx<tz){x+=sx;t=tx;tx+=dx}else if(ty<tz){y+=sy;t=ty;ty+=dy}else{z+=sz;t=tz;tz+=dz}
+   if(t>120)break;if(this.laserBlock(x,y,z))return{x,y,z,t}}
+  return{t:120}},
+ slab(o,d,b){let t0=1e-4,t1=1e9;for(const ax of['x','y','z']){const h=ax==='y'?b.hh:b.hw,mn=b.p[ax]-h,mx=b.p[ax]+h;
+  if(Math.abs(d[ax])<1e-9){if(o[ax]<mn||o[ax]>mx)return null;continue}let a=(mn-o[ax])/d[ax],c=(mx-o[ax])/d[ax];if(a>c){const q=a;a=c;c=q}t0=Math.max(t0,a);t1=Math.min(t1,c);if(t0>t1)return null}
+  return t0},
+ trace(L){
+  const segs=[];let o=L.o,d=L.d,skip=null;
+  for(let i=0;i<12;i++){
+   const w=this.laserWall(o,d);let best={t:w.t,k:'wall',w};
+   for(const b of this.bodies()){if(b===skip||b.hidden)continue;const t=this.slab(o,d,b);if(t!=null&&t<best.t)best={t,k:'body',b}}
+   for(const[P,Q]of this.linked()){const dn=dot(d,P.n);if(dn>-1e-6)continue;const t=dot(sub(P.c,o),P.n)/dn;if(t<1e-4||t>best.t+1e-3)continue;
+    const h=add(o,d,t),l=this.local(P,h);if(Math.abs(l.x)<.5&&Math.abs(l.y)<1)best={t,k:'portal',P,Q,h}}
+   const e=add(o,d,best.t);segs.push({a:o,b:e,k:best.k});
+   if(best.k==='portal'){o=add(this.xp(best.P,best.Q,best.h),best.Q.n,.003);d=this.xd(best.P,best.Q,d);const l=len(d);d=V(d.x/l,d.y/l,d.z/l);skip=null;continue}
+   if(best.k==='body'){const b=best.b;if(b.kind==='p'){b.laser=true;break}
+    if(b.prism&&!b.gone){const yw=b.held?b.held.yaw:b.dir;d=V(-Math.sin(yw),0,-Math.cos(yw));o=V(b.p.x,b.p.y,b.p.z);skip=b;b.lit=true;continue}break}
+   if(best.w&&best.w.x!=null){const r=this.recvAt.get(this.key(best.w.x,best.w.y,best.w.z));if(r)r.hitNow=true}
+   break}
+  return segs;
+ },
+ stepLasers(dt){
+  if(!this.lasers.length){this.beams=[];return}
+  for(const p of Object.values(this.players))p.laser=false;for(const c of this.cubes){c.lit=false;if(c.prism&&c.held)c.dir=c.held.yaw}for(const r of this.recvs)r.hitNow=false;
+  const B=[];for(const L of this.lasers)B.push(...this.trace(L));this.beams=B;
+  for(const r of this.recvs){if(r.hitNow)r.hold=.12;else r.hold-=dt;const on=r.hold>0;if(on!==r.on){r.on=on;this.emit(on?'press':'release',{btn:r})}r.t+=((on?1:0)-r.t)*Math.min(1,dt*10)}
+  for(const r of['a','b']){const p=this.players[r];if(p.remote||p.dead)continue;
+   if(p.laser){p.heat=(p.heat||0)+dt;if(p.heat>.55){p.heat=0;this.kill(p,'laser')}}else p.heat=Math.max(0,(p.heat||0)-dt*1.5)}
+ },
  stepMech(dt){
+  this.stepLasers(dt);
   const bs=this.bodies();
   for(const b of this.buttons){
    const on=bs.some(o=>o.p.x+o.hw>b.x+.12&&o.p.x-o.hw<b.x+.88&&o.p.z+o.hw>b.z+.12&&o.p.z-o.hw<b.z+.88&&o.p.y-o.hh<b.y+.35&&o.p.y+o.hh>b.y);
    if(on!==b.on){b.on=on;this.emit(on?'press':'release',{btn:b})}
    b.t+=((on?1:0)-b.t)*Math.min(1,dt*14)}
   for(const d of this.doors){
-   let open=this.buttons.some(b=>b.id===d.id&&b.on);
+   let open=this.buttons.some(b=>b.id===d.id&&b.on)||this.recvs.some(b=>b.id===d.id&&b.on);
    if(!open&&d.open){const o=d.box;if(bs.some(q=>q.p.x+q.hw>o.x0&&q.p.x-q.hw<o.x1+1&&q.p.y+q.hh>o.y0&&q.p.y-q.hh<o.y1+1&&q.p.z+q.hw>o.z0&&q.p.z-q.hw<o.z1+1))open=true}
    if(open!==d.open){d.open=open;this.emit(open?'open':'close',{door:d})}
    d.t+=((open?1:0)-d.t)*Math.min(1,dt*6)}

@@ -101,7 +101,7 @@ kbd{display:inline-block;min-width:22px;padding:1px 6px;margin:1px;border-radius
   <div><h3 style="color:var(--a1)">Igrač 1 / online</h3><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> hod · <kbd>Space</kbd> skok<br>🖱️ miš – gledanje<br><b>lijevi klik</b> prvi portal · <b>desni klik</b> drugi<br><kbd>E</kbd> uzmi / pusti kocku · <kbd>R</kbd> na start</div>
   <div><h3 style="color:var(--b1)">Igrač 2 (podijeljen ekran)</h3>🎮 <b>gamepad</b>: lijeva palica hod, desna gledanje, <b>A</b> skok, <b>X</b> kocka, <b>LT/RT</b> portali<br>ili tastatura: <kbd>↑</kbd><kbd>←</kbd><kbd>↓</kbd><kbd>→</kbd> hod, <kbd>I</kbd><kbd>J</kbd><kbd>K</kbd><kbd>L</kbd> gledanje, <kbd>Enter</kbd> skok, <kbd>U</kbd> / <kbd>O</kbd> portali, <kbd>P</kbd> kocka</div>
  </div>
- <p class="mut">Portali idu samo na <b>bijele ploče</b>. Ono što uđe brzo – izlazi brzo. Za izlaz morate stići oboje. <kbd>H</kbd> savjet · <kbd>Esc</kbd> meni.<br>Najbolje na računaru. Na telefonu: lijevo vuci za hod, desno za gledanje.</p>
+ <p class="mut">Portali idu samo na <b>bijele ploče</b>. Laser prolazi kroz portale i staklo, a peče ako stojiš u njemu. Prizmu (prozirna kocka) nosi i okreni prema meti. Ono što uđe brzo – izlazi brzo. Za izlaz morate stići oboje. <kbd>H</kbd> savjet · <kbd>Esc</kbd> meni.<br>Najbolje na računaru. Na telefonu: lijevo vuci za hod, desno za gledanje.</p>
  <button class="big" id="bKeysBack">Nazad</button>
 </div></div>
 <div class="ov" id="online"><div class="card">
@@ -121,8 +121,8 @@ kbd{display:inline-block;min-width:22px;padding:1px 6px;margin:1px;border-radius
 </div></div>
 
 <script src="net.js?v=20261123a"></script>
-<script src="pt3-core.js?v=20261125a"></script>
-<script src="pt3-levels.js?v=20261125a"></script>
+<script src="pt3-core.js?v=20261126a"></script>
+<script src="pt3-levels.js?v=20261126a"></script>
 <script type="module">
 import * as THREE from '../assets/vendor/three-0.160.0.module.min.js';
 const $=id=>document.getElementById(id);
@@ -188,7 +188,13 @@ const lamps=[];for(let i=0;i<4;i++){const l=new THREE.PointLight(0xffeedd,0,18,1
 const pLights=[];for(let i=0;i<4;i++){const l=new THREE.PointLight(0xffffff,0,6,2);scene.add(l);pLights.push(l)}
 
 /* ---------- nivo: geometrija ---------- */
-let world=null,lvN=0,levelGroup=null,voxMeshes=null,builtRev=-1,dyn=null;
+let world=null,lvN=0,levelGroup=null,voxMeshes=null,builtRev=-1,dyn=null,burnT=0;
+const beamPool=[],hitLights=[];
+{const cg=new THREE.CylinderGeometry(.022,.022,1,8,1,true),gg=new THREE.CylinderGeometry(.075,.075,1,12,1,true);
+ const cm=new THREE.MeshBasicMaterial({color:new THREE.Color(0xff3020).multiplyScalar(3),toneMapped:false});
+ for(let i=0;i<24;i++){const core=new THREE.Mesh(cg,cm),glow=new THREE.Mesh(gg,new THREE.MeshBasicMaterial({color:0xff2a10,transparent:true,opacity:.35,blending:THREE.AdditiveBlending,depthWrite:false}));
+  core.layers.enableAll();glow.layers.enableAll();core.frustumCulled=glow.frustumCulled=false;core.visible=glow.visible=false;scene.add(core,glow);beamPool.push({core,glow})}
+ for(let i=0;i<3;i++){const l=new THREE.PointLight(0xff3020,0,4,2);scene.add(l);hitLights.push(l)}}
 const FACES=[[0,1],[0,-1],[1,1],[1,-1],[2,1],[2,-1]];
 function buildVoxels(){
  const w=world,W=w.W,H=w.H,D=w.D,opaque=(x,y,z)=>{const c=w.cell(x,y,z);return c===1||c===2};
@@ -286,10 +292,27 @@ function buildLevel(){
   const lc=document.createElement('canvas');lc.width=256;lc.height=64;const g=lc.getContext('2d');g.font='700 44px Fredoka, sans-serif';g.textAlign='center';g.fillStyle='#3dff8a';g.fillText('IZLAZ',128,48);
   const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(lc),transparent:true,depthWrite:false}));sp.scale.set(1.6,.4,1);sp.position.set(cx,o.y0+2.7,cz);levelGroup.add(sp);
   const el=new THREE.PointLight(0x3dff8a,5,7,2);el.position.set(cx,o.y0+1.4,cz);levelGroup.add(el);dyn.exit.push({ring,beam,sp})}
+ // laseri: emiteri i mete
+ dyn.recv=[];
+ const housM=new THREE.MeshStandardMaterial({color:0x2a2f3c,roughness:.4,metalness:.7});
+ for(const L of w.lasers){const g=new THREE.Group();g.position.set(L.x+.5+L.d.x*.5,L.y+.5+L.d.y*.5,L.z+.5+L.d.z*.5);g.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),new THREE.Vector3(L.d.x,L.d.y,L.d.z));
+  const h=new THREE.Mesh(new THREE.CylinderGeometry(.32,.38,.16,24),housM);h.position.y=.08;g.add(h);
+  const ring=new THREE.Mesh(new THREE.TorusGeometry(.2,.04,10,24),housM);ring.rotation.x=Math.PI/2;ring.position.y=.17;g.add(ring);
+  const lens=new THREE.Mesh(new THREE.SphereGeometry(.13,18,12),new THREE.MeshBasicMaterial({color:new THREE.Color(0xff3020).multiplyScalar(2.5),toneMapped:false}));lens.position.y=.17;g.add(lens);
+  levelGroup.add(g)}
+ for(const r of w.recvs){const m=new THREE.MeshBasicMaterial({color:0xff3a30});dyn.recv.push({r,m});
+  for(const[ax,sg]of[[0,1],[0,-1],[1,1],[1,-1],[2,1],[2,-1]]){const q=[r.x,r.y,r.z];q[ax]+=sg;const c=w.cell(q[0],q[1],q[2]);if(c===1||c===2||w.recvAt.has(w.key(...q)))continue;
+   const n=new THREE.Vector3();n.setComponent(ax,sg);const g=new THREE.Group();g.position.set(r.x+.5+n.x*.5,r.y+.5+n.y*.5,r.z+.5+n.z*.5);g.quaternion.setFromUnitVectors(new THREE.Vector3(0,0,1),n);
+   const plate=new THREE.Mesh(new THREE.BoxGeometry(.94,.94,.04),housM);g.add(plate);
+   const ring=new THREE.Mesh(new THREE.RingGeometry(.22,.32,28),m);ring.position.z=.03;g.add(ring);
+   const dot=new THREE.Mesh(new THREE.CircleGeometry(.1,20),m);dot.position.z=.03;g.add(dot);levelGroup.add(g)}}
  // kocke
  const cubeTex=canvasTex(256,(g,s)=>{g.fillStyle='#c8d0dc';g.fillRect(0,0,s,s);g.fillStyle='#596379';const c=56;[[0,0],[s-c,0],[0,s-c],[s-c,s-c]].forEach(([x,y])=>g.fillRect(x,y,c,c));
   g.strokeStyle='#596379';g.lineWidth=12;g.strokeRect(60,60,s-120,s-120);g.strokeStyle='#8f9bb0';g.lineWidth=3;g.strokeRect(2,2,s-4,s-4);noiseFill(g,s,0,0,14)},true).t;
- for(const c of w.cubes){const g=new THREE.Group();const m=new THREE.Mesh(new THREE.BoxGeometry(.56,.56,.56),new THREE.MeshStandardMaterial({map:cubeTex,roughness:.5,metalness:.35}));m.castShadow=m.receiveShadow=true;g.add(m);
+ for(const c of w.cubes){const g=new THREE.Group();const m=new THREE.Mesh(new THREE.BoxGeometry(.56,.56,.56),c.prism?new THREE.MeshStandardMaterial({color:0xbfe7ff,roughness:.08,metalness:.1,transparent:true,opacity:.55}):new THREE.MeshStandardMaterial({map:cubeTex,roughness:.5,metalness:.35}));m.castShadow=m.receiveShadow=true;g.add(m);
+  if(c.prism){const core=new THREE.Mesh(new THREE.OctahedronGeometry(.17),new THREE.MeshBasicMaterial({color:0xff5a4a}));g.add(core);
+   const frame=new THREE.Mesh(new THREE.BoxGeometry(.58,.58,.58),new THREE.MeshBasicMaterial({color:0x9aa6b8,wireframe:true}));g.add(frame);
+   const lens=new THREE.Mesh(new THREE.CylinderGeometry(.1,.12,.08,20),new THREE.MeshBasicMaterial({color:0xff6a50}));lens.rotation.x=Math.PI/2;lens.position.z=-.3;g.add(lens);g.userData.core=core}
   const em=new THREE.MeshBasicMaterial({color:0x9fd8ff});for(const ax of[0,1,2])for(const s of[-1,1]){const d=new THREE.Mesh(new THREE.CircleGeometry(.07,20),em);const p=[0,0,0];p[ax]=s*.285;d.position.set(...p);d.lookAt(p[0]*2,p[1]*2,p[2]*2);g.add(d)}
   levelGroup.add(g);dyn.cubes.push({c,g,em})}
  // likovi
@@ -543,7 +566,7 @@ function handleEvents(){
   case 'tp':SFX.tp();if(e.b.kind==='p'&&isMine(e.b.r))flash('rgba(255,255,255,.15)');break;
   case 'jump':if(isMine(e.b.r))SFX.jump();break;case 'land':SFX.land();break;
   case 'press':SFX.press();break;case 'release':SFX.release();break;case 'open':case 'close':SFX.door();break;
-  case 'die':burst(e.p.x,e.p.y,e.p.z,e.why==='goo'?0x8dff4a:0xffffff,60,4);SFX.die();if(isMine(e.b.r))flash(e.why==='goo'?'rgba(80,255,60,.6)':'rgba(255,255,255,.5)');break;
+  case 'die':burst(e.p.x,e.p.y,e.p.z,e.why==='goo'?0x8dff4a:e.why==='laser'?0xff4030:0xffffff,60,4);SFX.die();if(isMine(e.b.r))flash(e.why==='goo'?'rgba(80,255,60,.6)':e.why==='laser'?'rgba(255,40,20,.7)':'rgba(255,255,255,.5)');break;
   case 'dissolve':burst(e.p.x,e.p.y,e.p.z,0x9fd8ff,50,2,-1);SFX.clear();break;
   case 'pad':burst(e.P.x+.5,e.P.y+.2,e.P.z+.5,0xffd24a,30,3);SFX.pad();break;
   case 'grab':case 'drop':SFX.grab();break;
@@ -568,7 +591,20 @@ function updateScene(dt){
  let moved=false;
  for(const C of dyn.cubes){const c=C.c;C.g.visible=!c.gone;C.g.position.set(c.p.x,c.p.y,c.p.z);
   const on=world.buttons.some(b=>b.on&&Math.abs(b.x+.5-c.p.x)<.5&&Math.abs(b.z+.5-c.p.z)<.5&&Math.abs(b.y-(c.p.y-c.hh))<.4);C.em.color.setHex(on?0x3dff8a:0x9fd8ff);
-  if(c.held){C.g.rotation.y=c.held.yaw}moved=true}
+  if(c.held){C.g.rotation.y=c.held.yaw}else if(c.prism)C.g.rotation.y=c.dir;if(C.g.userData.core){C.g.userData.core.rotation.y=clock*2;C.g.userData.core.material.color.setHex(c.lit?0xffb0a0:0xff5a4a)}moved=true}
+ // laseri
+ const BM=world.beams||[];
+ for(let i=0;i<beamPool.length;i++){const P=beamPool[i],b=BM[i];P.core.visible=P.glow.visible=!!b;if(!b)continue;
+  const a=new THREE.Vector3(b.a.x,b.a.y,b.a.z),e=new THREE.Vector3(b.b.x,b.b.y,b.b.z),d=e.clone().sub(a),L=d.length();if(L<1e-4){P.core.visible=P.glow.visible=false;continue}
+  const mid=a.clone().add(e).multiplyScalar(.5);_q.setFromUnitVectors(new THREE.Vector3(0,1,0),d.normalize());
+  for(const m of[P.core,P.glow]){m.position.copy(mid);m.quaternion.copy(_q);m.scale.set(1,L,1)}
+  P.glow.material.opacity=.32+.08*Math.sin(clock*30+i);
+  if(b.k!=='portal'&&Math.random()<dt*14)burst(b.b.x-d.x*.03,b.b.y-d.y*.03,b.b.z-d.z*.03,0xff4030,2,1.5,3)}
+ let li=0;for(const b of BM){if(b.k==='portal'||li>=hitLights.length)continue;const l=hitLights[li++];l.position.set(b.b.x,b.b.y,b.b.z);l.intensity=2.2+Math.random()*.6}
+ for(;li<hitLights.length;li++)hitLights[li].intensity=0;
+ for(const RV of dyn.recv){const on=RV.r.on;RV.m.color.setHex(on?0x3dff8a:0xff3a30)}
+ for(const r of['a','b']){const p=world.players[r];if(isMine(r)&&p.heat>.05&&!p.dead){const f=$('flash');f.style.transition='none';f.style.background='radial-gradient(ellipse at center,rgba(255,40,20,0) 35%,rgba(255,40,20,.75))';f.style.opacity=Math.min(.9,p.heat*1.8);burnT=.15}}
+ if(burnT>0){burnT-=dt;if(burnT<=0){$('flash').style.transition='opacity .4s';$('flash').style.opacity=0}}
  for(const r of['a','b']){const p=world.players[r],ch=chars[r];if(!ch)continue;
   ch.g.visible=!p.dead&&!p.hidden;ch.g.position.set(p.p.x,p.p.y-.85,p.p.z);ch.g.rotation.y=p.yaw;
   const sp=Math.hypot(p.v.x,p.v.z);bob[r]+=sp*dt*1.6;const sw=p.on?Math.sin(bob[r]*1.9)*Math.min(1,sp/5)*.6:.25;
@@ -607,7 +643,7 @@ function netSend(now){
  const st={pk:3,id:myId,r:myR,run,nk:nm(myR)};
  if(world&&run.seq){const p=world.players[myR];
   Object.assign(st,{p:[r3(p.p.x),r3(p.p.y),r3(p.p.z)],v:[r3(p.v.x),r3(p.v.y),r3(p.v.z)],yw:r3(p.yaw),pt:r3(p.pitch),on:p.on?1:0,d:p.dead?1:0,ex:p.inExit?1:0,lk:p.lastK||0,
-   po:world.portals[myR].map(pk),cb:world.cubes.map((c,i)=>!c.remote?[i,r3(c.p.x),r3(c.p.y),r3(c.p.z),c.gone?1:0,c.ot||0,c.held?1:0]:null).filter(Boolean)})}
+   po:world.portals[myR].map(pk),cb:world.cubes.map((c,i)=>!c.remote?[i,r3(c.p.x),r3(c.p.y),r3(c.p.z),c.gone?1:0,c.ot||0,c.held?1:0,r3(c.held?c.held.yaw:c.dir)]:null).filter(Boolean)})}
  try{BUS.pub(netTopic,st)}catch(e){}
 }
 function mkPortal(a,r,k){const V=PT3.V,c=V(a[0],a[1],a[2]),n=V(a[3],a[4],a[5]),u=V(a[6],a[7],a[8]),rr=PT3.cross(u,n);
@@ -626,7 +662,7 @@ function applyRemote(o){
   if(arr(a,9)){if(!cur||cur.c.x!==a[0]||cur.c.y!==a[1]||cur.c.z!==a[2]||cur.n.x!==a[3]||cur.n.y!==a[4]||cur.n.z!==a[5]){world.setPortal(o.r,k,mkPortal(a,o.r,k));SFX.portal(k)}}
   else if(cur)world.setPortal(o.r,k,null)}
  if(Array.isArray(o.cb))for(const v of o.cb){if(!Array.isArray(v))continue;const c=world.cubes[v[0]];if(!c||!num(v[1])||!num(v[2])||!num(v[3]))continue;
-  if((v[5]||0)>=(c.ot||0)&&!(c.held&&c.held.r===myR)){c.ot=v[5];c.remote=true;c.np={x:v[1],y:v[2],z:v[3]};c.rgone=!!v[4];c.rheld=!!v[6];c.locked=c.rheld}}
+  if((v[5]||0)>=(c.ot||0)&&!(c.held&&c.held.r===myR)){c.ot=v[5];c.remote=true;c.np={x:v[1],y:v[2],z:v[3]};c.rgone=!!v[4];c.rheld=!!v[6];c.locked=c.rheld;if(num(v[7]))c.dir=v[7]}}
 }
 function netSmooth(dt){
  if(MODE!=='online'||!world)return;const o=world.players[myR==='a'?'b':'a'];
