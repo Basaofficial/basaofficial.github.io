@@ -38,7 +38,7 @@ lv('Skok vjere','Brzina ulazi, brzina izlazi! Portal na dno jame, drugi VISOKO n
 });
 lv('Odskočna ploča','Žuta ploča te baci u zrak – usmjeri se na policu. Odatle: portal na bijeli pod police i na strop iznad izlaza.',b=>{
  b.size(22,12,7);b.shell();
- b.pad(5,1,3,3,13,0);
+ b.pad(5,1,3,4,13.5,0);
  b.fill(8,1,1,14,4,5,M);b.fill(11,4,2,12,4,4,W);
  b.fill(15,1,1,16,1,5,GOO);
  b.fill(17,1,1,20,8,5,M);b.exit(18,9,2,19,10,4);b.fill(17,11,1,20,11,5,W);

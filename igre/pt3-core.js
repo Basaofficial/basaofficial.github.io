@@ -61,7 +61,7 @@ World.prototype={
  cell(x,y,z){if(x<0||y<0||z<0||x>=this.W||y>=this.H||z>=this.D)return MET;return this.g[(y*this.D+z)*this.W+x]},
  solid(x,y,z){const c=this.cell(x,y,z);if(c===MET||c===WHT||c===GLS)return true;const d=this.doorAt.get(this.key(x,y,z));return !!(d&&!d.open&&x>=0)},
  block(x,y,z){return this.solid(x,y,z)||this.cell(x,y,z)===FIZ},
- eye(p){return V(p.p.x,p.p.y+EYE,p.p.z)},
+ eye(p){return V(p.p.x,p.p.y+p.hh-.15,p.p.z)},
  fwd(p){return fwd(p.yaw,p.pitch)},
  bodies(){const a=[];for(const r of['a','b']){const p=this.players[r];if(!p.dead)a.push(p)}for(const c of this.cubes)if(!c.gone)a.push(c);return a},
  /* ----- portali ----- */
@@ -135,7 +135,7 @@ World.prototype={
   for(const o of this.bodies()){if(o===b||o===b.hold||b.held===o||o.held)continue;
    if(Math.abs(b.p.x-o.p.x)>=b.hw+o.hw-1e-4||Math.abs(b.p.z-o.p.z)>=b.hw+o.hw-1e-4||Math.abs(b.p.y-o.p.y)>=b.hh+o.hh-1e-4)continue;
    if(ax==='y'&&d<0&&b.p.y-b.hh-d>=o.p.y+o.hh-.02)return o;
-   if(ax!=='y'&&b.kind==='p'&&o.kind==='c'&&b.p.y-b.hh<o.p.y+o.hh-.25)return o;
+   if(ax!=='y'&&o.kind==='c'&&b.p.y-b.hh<o.p.y+o.hh-.25)return o;
   }
   return null;
  },
@@ -151,7 +151,10 @@ World.prototype={
   }
   const o=this.boxHit(b,ax,d);
   if(o){if(ax==='y'){b.p.y=o.p.y+o.hh+b.hh+1e-4;if(b.v.y<-9)this.emit('land',{b,v:-b.v.y});b.v.y=Math.max(0,o.v.y);b.on=true;b.ride=o}
-   else{b.p[ax]=old;b.v[ax]=0}}
+   else{// guranje kocke
+    if(b.kind==='p'&&o.kind==='c'&&!o.remote&&!this._push){this._push=true;const ov=o.p[ax];this.axis(o,ax,d*.92);this._push=false;
+     if(o.p[ax]!==ov){o.v[ax]=b.v[ax]*.9;b.p[ax]=old+d*.92;if(this.hits(b)||this.boxHit(b,ax,0))b.p[ax]=old;b.v[ax]*=.9;return}}
+    b.p[ax]=old;b.v[ax]=0}}
  },
  portalCross(b,prev){
   if(b.held)return false;
@@ -218,10 +221,26 @@ World.prototype={
  grab(p){
   if(p.hold){this.drop(p);return}
   const e=this.eye(p),f=this.fwd(p);let best=null,bs=-1;
-  for(const c of this.cubes){if(c.gone||c.held||c.locked)continue;const d=sub(c.p,e),L=len(d);if(L>2.6)continue;const s=dot(d,f)/L;if(s>.55&&s>bs){bs=s;best=c}}
-  if(best){best.held=p;p.hold=best;best.ot=this.time;this.emit('grab',{b:p,c:best})}
+  for(const c of this.cubes){if(c.gone||c.held||c.locked)continue;const d=sub(c.p,e),L=len(d);if(L>7)continue;const s=dot(d,f)/L;
+   const need=L<2.4?.6:.93;if(s<need)continue;
+   if(L>1.2){const h=this.ray(e,V(d.x/L,d.y/L,d.z/L),L);if(!h.miss&&h.t<L-.35)continue}
+   const sc=s-L*.01;if(sc>bs){bs=sc;best=c}}
+  if(best){best.held=p;p.hold=best;best.ot=this.time;best.grabT=.8;this.emit('grab',{b:p,c:best,far:len(sub(best.p,e))>2.4})}
+  else this.emit('nograb',{b:p})
  },
- drop(p){const c=p.hold;if(!c)return;c.held=null;p.hold=null;c.v=V(p.v.x*.6,Math.min(p.v.y,0),p.v.z*.6);this.emit('drop',{b:p,c})},
+ throwCube(p){const c=p.hold;if(!c)return;const f=this.fwd(p);c.held=null;p.hold=null;c.v=V(p.v.x+f.x*13,p.v.y+f.y*13+1.5,p.v.z+f.z*13);c.spin=1;this.emit('throw',{b:p,c})},
+ drop(p){const c=p.hold;if(!c)return;c.held=null;p.hold=null;c.v=V(p.v.x*.5,Math.min(p.v.y,0),p.v.z*.5);this.emit('drop',{b:p,c})},
+ crouch(p,want){
+  if(want&&!p.crouch){p.crouch=true;const d=PHH-.55;p.hh=.55;if(p.on||p.on0)p.p.y-=d;else p.p.y+=d*0;}
+  else if(!want&&p.crouch){const old=p.p.y,d=PHH-.55;p.hh=PHH;if(p.on||p.on0)p.p.y+=d;if(this.hits(p)){p.p.y=old-(p.on||p.on0?0:d);p.hh=PHH;if(this.hits(p)){p.p.y=old;p.hh=.55;p.crouchBlock=true;return}}p.crouch=false}
+  p.crouchBlock=false;
+ },
+ separate(p){
+  for(const r of['a','b']){const o=this.players[r];if(o===p||o.dead||o.hidden)continue;
+   const dx=p.p.x-o.p.x,dz=p.p.z-o.p.z,d=Math.hypot(dx,dz),m=p.hw+o.hw;
+   if(d>=m||Math.abs(p.p.y-o.p.y)>=p.hh+o.hh-.2)continue;
+   const k=(m-d)*.5/(d||1),old=V(p.p.x,p.p.y,p.p.z);p.p.x+=(d?dx:1)*k;p.p.z+=(d?dz:0)*k;if(this.hits(p))p.p=old}
+ },
  /* ----- korak ----- */
  stepPlayer(p,I,dt){
   if(p.dead){p.dead-=dt;if(p.dead<=0)this.respawn(p);return}
@@ -229,23 +248,26 @@ World.prototype={
   if(typeof I.yaw==='number'&&isFinite(I.yaw))p.yaw=I.yaw;
   if(typeof I.pitch==='number'&&isFinite(I.pitch))p.pitch=Math.max(-1.5,Math.min(1.5,I.pitch));
   const mx=I.mx||0,mz=I.mz||0,sy=Math.sin(p.yaw),cy=Math.cos(p.yaw);
-  let wx=-sy*mz+cy*mx,wz=-cy*mz-sy*mx;const wl=Math.hypot(wx,wz);if(wl>1){wx/=wl;wz/=wl}
-  const tx=wx*WALK,tz=wz*WALK;
-  if(p.on){const a=GACC*dt,dx=tx-p.v.x,dz=tz-p.v.z,dl=Math.hypot(dx,dz);if(dl<=a){p.v.x=tx;p.v.z=tz}else{p.v.x+=dx/dl*a;p.v.z+=dz/dl*a}p.coy=.12}
-  else{p.coy-=dt;const hs=Math.hypot(p.v.x,p.v.z);
-   if(wl>.01){const along=(p.v.x*wx+p.v.z*wz)/Math.max(1e-6,Math.min(1,wl));if(along<WALK){p.v.x+=wx*AIRACC*dt;p.v.z+=wz*AIRACC*dt}}
-   else if(hs<=WALK+.01&&hs>0){const a=Math.min(hs,4*dt);p.v.x-=p.v.x/hs*a;p.v.z-=p.v.z/hs*a}}
+  let wx=-sy*mz+cy*mx,wz=-cy*mz-sy*mx;let wl=Math.hypot(wx,wz);if(wl>1){wx/=wl;wz/=wl;wl=1}
+  // čučanj
+  this.crouch(p,!!I.c);
+  const maxs=(p.crouch?2.4:I.walk?2.6:WALK)*wl,dx=wl>1e-3?wx/wl:0,dz=wl>1e-3?wz/wl:0;
+  const accel=(ws,acc,cap)=>{const cur=p.v.x*dx+p.v.z*dz,add=Math.min(ws,cap)-cur;if(add<=0)return;const a=Math.min(acc*ws*dt,add);p.v.x+=dx*a;p.v.z+=dz*a};
+  if(p.on){const hs=Math.hypot(p.v.x,p.v.z);if(hs>0){const ctl=Math.max(hs,1.6),drop=ctl*7*dt,ns=Math.max(0,hs-drop)/hs;p.v.x*=ns;p.v.z*=ns}
+   accel(maxs,11,maxs);p.coy=.12}
+  else{p.coy-=dt;accel(maxs,10,2)}
   if(I.jp)p.jb=.12;else p.jb-=dt;
-  if(p.jb>0&&p.coy>0){p.v.y=JUMP;p.jmp=true;p.on=false;p.coy=0;p.jb=0;this.emit('jump',{b:p})}
+  if(p.jb>0&&p.coy>0&&!p.crouchBlock){p.v.y=JUMP;p.jmp=true;p.on=false;p.coy=0;p.jb=0;this.emit('jump',{b:p})}
   if(!I.j&&p.jmp&&p.v.y>JUMP*.45)p.v.y=JUMP*.45;
   p.v.y=Math.max(p.v.y-GRAV*dt,-TERM);if(p.v.y<=0)p.jmp=false;
   p.on=false;p.ride=null;
-  this.move(p,dt);this.funnel(p,dt);
-  if(p.on)p.walk+=Math.hypot(p.v.x,p.v.z)*dt;
+  const wasOn=p.on0;
+  this.move(p,dt);this.funnel(p,dt);this.separate(p);p.on0=p.on;
+  if(p.on){const st=Math.hypot(p.v.x,p.v.z)*dt;p.walk+=st;p.stepD=(p.stepD||0)+st;if(p.stepD>1.9){p.stepD=0;this.emit('step',{b:p})}}
   const hz=this.hazards(p);
   if(hz==='fizz')this.clearPortals(p.r);else if(hz){this.kill(p,hz);return}
   this.pad(p);
-  if(I.gp)this.grab(p);
+  if(I.th&&p.hold)this.throwCube(p);else if(I.gp)this.grab(p);
   if(I.f0)this.shoot(p.r,0);
   if(I.f1)this.shoot(p.r,1);
   p.inExit=this.cellAt(p.p)===EXI||this.cellAt(V(p.p.x,p.p.y-.6,p.p.z))===EXI;
@@ -257,7 +279,8 @@ World.prototype={
    const e=this.eye(p),f=this.fwd(p),t=add(e,f,1.45);t.y=Math.max(t.y,p.p.y-p.hh+c.hh+.02);
    const d=sub(t,c.p);c.v=V(d.x*16,d.y*16,d.z*16);const L=len(c.v);if(L>30)c.v=V(c.v.x*30/L,c.v.y*30/L,c.v.z*30/L);
    this.move(c,dt);c.on=false;
-   if(c.tpGrace>0)c.tpGrace-=dt;else if(len(sub(c.p,t))>3.2)this.drop(p);
+   if(c.grabT>0)c.grabT-=dt;
+   if(c.tpGrace>0)c.tpGrace-=dt;else if(c.grabT<=0&&len(sub(c.p,t))>3.2)this.drop(p);
   }else{
    if(c.on){const hs=Math.hypot(c.v.x,c.v.z),a=Math.min(hs,30*dt);if(hs>0){c.v.x-=c.v.x/hs*a;c.v.z-=c.v.z/hs*a}}
    c.v.y=Math.max(c.v.y-GRAV*dt,-TERM);c.on=false;this.move(c,dt);this.funnel(c,dt);
