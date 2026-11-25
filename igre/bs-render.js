@@ -239,7 +239,7 @@ export class BSRender{
   this.r=new THREE.WebGLRenderer({canvas,antialias:this.q!=='low',powerPreference:'high-performance',alpha:false});
   this.r.outputColorSpace=THREE.SRGBColorSpace;this.r.toneMapping=THREE.ACESFilmicToneMapping;this.r.toneMappingExposure=1.05;
   this.setPR();this.scene=new THREE.Scene();this.cam=new THREE.PerspectiveCamera(74,1,.05,600);this.cam.rotation.order='YXZ';
-  this.vmScene=new THREE.Scene();this.vmCam=new THREE.PerspectiveCamera(58,1,.01,10);this.vmScene.add(new THREE.HemisphereLight('#fff','#556',1.3));const vd=new THREE.DirectionalLight('#fff',1.4);vd.position.set(.5,1,.4);this.vmScene.add(vd);
+  this.vmScene=new THREE.Scene();this.vmCam=new THREE.PerspectiveCamera(68,1,.01,10);this.vmScene.add(new THREE.HemisphereLight('#fff','#556',1.3));const vd=new THREE.DirectionalLight('#fff',1.4);vd.position.set(.5,1,.4);this.vmScene.add(vd);
   this.ents=new Map();this.fx=[];this.puff=puffTex();this.dropM=new Map();this.nadeM=new Map();this.smokes=new Map();this.fires=new Map();
   this.menuScene=null;this.resize();addEventListener('resize',()=>this.resize());
   this.vm={g:null,w:null,sk:null,kick:0,kickR:0,bob:0,sway:[0,0],anim:null,animT:0,animD:1,draw:0,lastYaw:0,lastPitch:0};
@@ -371,11 +371,11 @@ export class BSRender{
    const V=(x,y,z)=>new THREE.Vector3(x,y,z);const limb=(a,b2,r)=>{const v=b2.clone().sub(a);const len=v.length();const m=new THREE.Mesh(new THREE.CylinderGeometry(r,r*1.18,len,10),sleeve);m.position.copy(a).addScaledVector(v,.5);m.quaternion.setFromUnitVectors(V(0,1,0),v.normalize());g.add(m)};
    const glv=(p,sx,sy,sz)=>{const m=new THREE.Mesh(new THREE.CapsuleGeometry(Math.min(sx,sy)/2,Math.max(sz-Math.min(sx,sy),.01),3,8),glove);m.rotation.x=Math.PI/2;m.scale.set(sx/Math.min(sx,sy),1,sy/Math.min(sx,sy));m.position.copy(p);g.add(m)};
    const tip=gun.userData.tip;const pistol=wd.cat==='pistol'||wd.cat==='zeus';
-   glv(V(0,-.045,.012),.05,.08,.075);limb(V(.005,-.085,.03),V(.08,-.26,.34),.034);
-   if(pistol){glv(V(-.03,-.07,.02),.05,.06,.08);limb(V(-.04,-.1,.04),V(-.2,-.3,.3),.033)}
-   else{const fz=-Math.min(tip[0]*.55,.34);glv(V(0,tip[1]*.4-.035,fz),.055,.05,.09);limb(V(-.02,tip[1]*.4-.06,fz+.03),V(-.2,-.26,.12),.033)}}
+   glv(V(0,-.045,.012),.05,.08,.075);limb(V(.008,-.08,.035),V(.16,-.32,.28),.032);
+   if(pistol){glv(V(-.028,-.068,.022),.05,.06,.08);limb(V(-.035,-.095,.045),V(-.3,-.34,.28),.03)}
+   else{const fz=-Math.min(tip[0]*.5,.3);glv(V(0,tip[1]*.4-.04,fz),.055,.05,.09);limb(V(-.012,tip[1]*.4-.065,fz+.035),V(-.36,-.34,fz+.3),.03)}}
   else{mkA(0,-.03,.08,0,0);const fw=(INV.GS[wd.model]&&INV.GS[wd.model].handguard)?INV.GS[wd.model].handguard[0]/100+.08:.16;mkA(-.06,-.02,-fw,-.5,.1)}
-  vm.base=wd.model==='knife'?[.2,-.24,-.4]:wd.slot===4?[.2,-.25,-.36]:wd.model==='c4'?[.05,-.3,-.42]:wd.cat==='pistol'||wd.cat==='zeus'?[.16,-.19,-.44]:[.19,-.2,-.46];
+  vm.base=wd.model==='knife'?[.17,-.18,-.36]:wd.slot===4?[.16,-.19,-.34]:wd.model==='c4'?[.05,-.23,-.4]:wd.cat==='pistol'||wd.cat==='zeus'?[.13,-.15,-.38]:wd.cat==='sniper'?[.17,-.195,-.4]:[.17,-.2,-.44];
   vm.g=g;this.vmScene.add(g);vm.w=w}
  vmEvent(k,dur){const vm=this.vm;if(k==='fire'){vm.kick=1;vm.flashT=.05}else{vm.anim=k;vm.animT=0;vm.animD=dur||1}}
  updVM(dt,state){const vm=this.vm;if(!vm.g)return;const g=vm.g;vm.kick=Math.max(0,vm.kick-dt*9);vm.animT+=dt;

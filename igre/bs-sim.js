@@ -94,9 +94,10 @@ function segSmoke(smokes,o,e){for(const s of smokes){if(s.t<1)continue;const r=s
 const HG={head:4,chest:1,stomach:1.25,legs:.75};
 class Game{
  constructor(o){
+  this.size=[1,2,5].includes(+o.size)?+o.size:5;this.R=Object.assign({},RL,D.FORMATS[this.size]);
   this.mapId=o.map in MP.MAPS?o.map:'dina';this.M=MP.build(MP.MAPS[this.mapId]);this.diff=clamp(o.diff|0,0,2);
   this.t=0;this.players=[];this.nextIdx=1;this.ev=[];this.evId=1;this.nades=[];this.smokes=[];this.fires=[];this.drops=[];this.dropId=1;this.nadeId=1;
-  this.mode='warmup';this.timer=o.warmup!=null?o.warmup:RL.warmup;this.round=0;this.tscore=[0,0];this.halves=[];this.loss=[0,0];this.swaps=0;
+  this.mode='warmup';this.timer=o.warmup!=null?o.warmup:this.R.warmup;this.round=0;this.tscore=[0,0];this.halves=[];this.loss=[0,0];this.swaps=0;
   this.bomb={st:'none'};this.hostId=o.hostId||'';this.rnd=Math.random;this.tPlan='A';this.dirty=1;this.roundStart=0;this.buyEnd=0;this.matchNo=1;
   this.fill=o.fill!==false;
  }
@@ -124,14 +125,14 @@ class Game{
   if(!this.fill)return;
   const used=new Set(this.players.map(p=>p.n));
   for(let t=0;t<2;t++){
-   while(cnt[t]>5){const b=this.players.filter(p=>p.bot&&p.team===t).sort((a,b)=>a.alive-b.alive)[0];if(!b)break;this.removePlayer(b.id);cnt[t]--}
-   while(cnt[t]<5){let nm;const pool=D.BOT_NAMES.filter(n=>!used.has('BOT '+n));nm='BOT '+(pool.length?pool[Math.floor(this.rnd()*pool.length)]:('Bot'+this.nextIdx));used.add(nm);
+   while(cnt[t]>this.size){const b=this.players.filter(p=>p.bot&&p.team===t).sort((a,b)=>a.alive-b.alive)[0];if(!b)break;this.removePlayer(b.id);cnt[t]--}
+   while(cnt[t]<this.size){let nm;const pool=D.BOT_NAMES.filter(n=>!used.has('BOT '+n));nm='BOT '+(pool.length?pool[Math.floor(this.rnd()*pool.length)]:('Bot'+this.nextIdx));used.add(nm);
     const ag=Math.floor(this.rnd()*5);this.addPlayer({bot:true,n:nm,team:t,ag});cnt[t]++}
   }}
  // novi čovjek ulazi: zamijeni bota u timu s manje ljudi
  join(o){let p=this.byId(o.id);if(p){p.conn=true;p.lastIn=this.t;if(p.bot&&p.wasHuman){p.bot=false;p.ai=null;p.n=p.wasHuman;p.wasHuman=null}if(o.skins)p.skins=o.skins;this.dirty=1;return p}
-  const hum=[0,0];this.humans().forEach(q=>hum[q.team]++);if(hum[0]+hum[1]>=10)return null;
-  let team=o.team!=null&&o.team>=0?o.team:(hum[0]<=hum[1]?0:1);if(hum[team]>=5)team=1-team;
+  const hum=[0,0];this.humans().forEach(q=>hum[q.team]++);if(hum[0]+hum[1]>=2*this.size)return null;
+  let team=o.team!=null&&o.team>=0?o.team:(hum[0]<=hum[1]?0:1);if(hum[team]>=this.size)team=1-team;
   const bot=this.players.filter(q=>q.bot&&q.team===team).sort((a,b)=>a.alive-b.alive)[0];
   if(bot){ // preuzmi mjesto bota (ali ne njegovo oružje usred runde)
    this.removePlayer(bot.id)}
@@ -157,8 +158,8 @@ class Game{
  startMatch(){this.mode='freeze';this.round=1;this.tscore=[0,0];this.halves=[];this.loss=[0,0];this.swaps=0;this.ev.length=0;
   this.players.forEach(p=>{p.side=this.sideOfTeam(p.team);p.money=RL.startMoney;p.st={k:0,d:0,a:0,hs:0,dmg:0,mvp:0,sc:0};this.resetInv(p);p.lastBuy=[]});
   this.emit({ty:'msg',txt:'Meč počinje! Sretno.'});this.startRound()}
- startRound(){this.mode='freeze';this.timer=RL.freeze;this.nades.length=0;this.fires.length=0;this.smokes.length=0;this.drops.length=0;this.bomb={st:'none'};
-  this.roundStart=this.t;this.buyEnd=this.t+RL.freeze+RL.buyTime;this.roundKills={};
+ startRound(){this.mode='freeze';this.timer=this.R.freeze;this.nades.length=0;this.fires.length=0;this.smokes.length=0;this.drops.length=0;this.bomb={st:'none'};
+  this.roundStart=this.t;this.buyEnd=this.t+this.R.freeze+this.R.buyTime;this.roundKills={};
   this.players.forEach(p=>{p.lastBuy=p.bought.length?p.bought.map(b=>b.i):p.lastBuy;p.bought=[];if(!p.alive)this.resetInvDead(p);this.stripTeamItems(p);this.spawn(p);p.rk=0});
   // C4 slučajnom T igraču (prednost ljudima nema – kao u CS-u)
   const ts=this.players.filter(p=>p.side==='T');if(ts.length&&this.mode!=='warmup'){const c=ts[Math.floor(this.rnd()*ts.length)];c.inv[5]=true;this.bomb={st:'carried',c:c.idx}}
@@ -182,21 +183,21 @@ class Game{
  nextRound(){
   const played=this.tscore[0]+this.tscore[1];const a=this.tscore[0],b=this.tscore[1];
   // kraj meča?
-  let over=false;if(played<=24){if(a>=RL.winRounds||b>=RL.winRounds)over=true}
-  else{const ot=Math.floor((played-24-1)/6),tgt=16+3*ot;if(a>=tgt||b>=tgt)over=true}
+  const R=this.R,REG=2*R.halfRounds;let over=false;if(played<=REG){if(a>=R.winRounds||b>=R.winRounds)over=true}
+  else{const ot=Math.floor((played-REG-1)/6),tgt=R.winRounds+3*(ot+1);if(a>=tgt||b>=tgt)over=true}
   if(over){this.mode='over';this.timer=14;const wt=a>b?0:1;this.emit({ty:'over',wt,ts:[a,b]});this.dirty=1;return}
   this.round=played+1;
   // poluvrijeme / produžeci
   let half=false,money=null;
-  if(played===RL.halfRounds){half=true;money=RL.startMoney}
-  else if(played>=24&&(played-24)%RL.otHalf===0){half=(played-24)%6===3;if((played-24)%6===0||half)money=RL.otMoney}
+  if(played===R.halfRounds){half=true;money=RL.startMoney}
+  else if(played>=REG&&(played-REG)%RL.otHalf===0){half=(played-REG)%6===3;if((played-REG)%6===0||half)money=RL.otMoney}
   if(half){this.halves.push([a,b]);this.swaps++;this.loss=[0,0];this.players.forEach(p=>{p.side=this.sideOfTeam(p.team);this.resetInv(p);p.alive=false;p.lastBuy=[];p.bought=[]});
    this.emit({ty:'msg',txt:'Poluvrijeme – timovi mijenjaju strane!'})}
   if(money!=null)this.players.forEach(p=>{p.money=money;if(!half){this.resetInv(p);p.alive=false}});
   this.startRound()}
- restartMatch(){this.matchNo++;this.mode='warmup';this.timer=30;this.round=0;this.tscore=[0,0];this.halves=[];this.swaps=0;this.loss=[0,0];this.bomb={st:'none'};
+ restartMatch(){this.matchNo++;this.mode='warmup';this.timer=Math.min(30,this.R.warmup);this.round=0;this.tscore=[0,0];this.halves=[];this.swaps=0;this.loss=[0,0];this.bomb={st:'none'};
   this.players.forEach(p=>{p.side=this.sideOfTeam(p.team);p.money=16000;this.resetInv(p);p.st={k:0,d:0,a:0,hs:0,dmg:0,mvp:0,sc:0};this.spawn(p)});this.emit({ty:'msg',txt:'Novi meč – zagrijavanje!'});this.dirty=1}
- switchTeam(p){if(this.mode==='over')return;const nt=1-p.team;if(this.humans().filter(q=>q.team===nt).length>=5)return;
+ switchTeam(p){if(this.mode==='over')return;const nt=1-p.team;if(this.humans().filter(q=>q.team===nt).length>=this.size)return;
   if(p.alive&&this.mode!=='warmup'){this.dropAll(p);p.alive=false;p.st.d++}
   p.team=nt;p.side=this.sideOfTeam(nt);this.resetInv(p);p.money=this.avgMoney(nt);if(this.mode==='warmup'||this.mode==='freeze')this.spawn(p);this.balance();this.emit({ty:'msg',txt:p.n+' prelazi u '+(p.side==='T'?'Teroriste':'Anti-teroriste')});this.dirty=1;this.checkEnd()}
  changeMap(id){if(!(id in MP.MAPS))return;this.mapId=id;this.M=MP.build(MP.MAPS[id]);this.nades.length=0;this.smokes.length=0;this.fires.length=0;this.drops.length=0;this.restartMatch();this.emit({ty:'map',map:id})}
@@ -335,7 +336,7 @@ class Game{
  tick(dt){this.t+=dt;const M=this.M;flushLater();
   // tajmeri modova
   if(this.mode==='warmup'){this.timer-=dt;this.players.forEach(p=>{if(!p.alive&&p.respawnAt&&this.t>=p.respawnAt){p.respawnAt=0;this.spawn(p)}if(p.money<16000)p.money=16000});if(this.timer<=0)this.startMatch()}
-  else if(this.mode==='freeze'){this.timer-=dt;if(this.timer<=0){this.mode='live';this.timer=RL.roundTime;this.dirty=1;this.emit({ty:'go'})}}
+  else if(this.mode==='freeze'){this.timer-=dt;if(this.timer<=0){this.mode='live';this.timer=this.R.roundTime;this.dirty=1;this.emit({ty:'go'})}}
   else if(this.mode==='live'){if(this.bomb.st!=='planted'){this.timer-=dt;if(this.timer<=0){this.timer=0;this.endRound('CT','time')}}}
   else if(this.mode==='end'){this.timer-=dt;if(this.timer<=0)this.nextRound()}
   else if(this.mode==='over'){this.timer-=dt;if(this.timer<=0)this.restartMatch()}
@@ -366,7 +367,7 @@ class Game{
    for(const p of this.players){if(!p.alive)continue;
     const want=p.cur===5&&p.inv[5]&&(p.btn&1)&&p.onGround&&M_site(this.M,p)&&b.st==='carried';
     if(want){if(!p.planting)this.emit({ty:'planting',p:p.idx});p.planting+=dt;if(p.planting>=RL.plantTime){p.planting=0;p.inv[5]=false;p.cur=bestSlot(p);
-      this.bomb={st:'planted',x:r2(p.x),y:r2(p.y),z:r2(p.z),t:RL.bombTime,site:M_site(this.M,p),planter:p.idx,def:0,dp:0};this.pay(p,RL.plantRew);p.st.sc+=2;
+      this.bomb={st:'planted',x:r2(p.x),y:r2(p.y),z:r2(p.z),t:this.R.bombTime,site:M_site(this.M,p),planter:p.idx,def:0,dp:0};this.pay(p,RL.plantRew);p.st.sc+=2;
       this.emit({ty:'plant',p:p.idx,site:this.bomb.site});this.radio(p,'bomb');this.dirty=1}}else p.planting=0}}
   if(b.st==='planted'){b.t-=dt;
    const dp=b.def?this.byIdx(b.def):null;
@@ -420,13 +421,13 @@ class Game{
   const b=this.bomb;return {k:'s',t:r3(this.t),md:this.mode,tm:r2(this.timer),p:ps,n:this.nades.map(n=>[n.id,n.w,r2(n.x),r2(n.y),r2(n.z)]),
    b:b.st==='planted'?[1,b.x,b.y,b.z,r2(b.t),b.def||0,r2(b.dp||0),b.dlen||10]:b.st==='dropped'?[2,b.x,b.y,b.z]:b.st==='carried'?[3,b.c]:[0],ev:this.ev.slice()}}
  info(){const inv=p=>{const o={};for(const s of [1,2]){const it=p.inv[s];o[s]=it?[it.w,it.clip,it.res,it.sk||0]:0}o[3]=p.inv[3].sk||0;o[4]=p.inv[4].slice();o[5]=p.inv[5]?1:0;o[6]=p.inv[6]?1:0;return o};
-  return {k:'i',t:r3(this.t),host:this.hostId,map:this.mapId,diff:this.diff,mode:this.mode,timer:r2(this.timer),round:this.round,ts:this.tscore.slice(),halves:this.halves,loss:this.loss.slice(),swaps:this.swaps,
+  return {k:'i',t:r3(this.t),host:this.hostId,map:this.mapId,size:this.size,wr:this.R.winRounds,diff:this.diff,mode:this.mode,timer:r2(this.timer),round:this.round,ts:this.tscore.slice(),halves:this.halves,loss:this.loss.slice(),swaps:this.swaps,
    bomb:Object.assign({},this.bomb),smokes:this.smokes.map(s=>({id:s.id,x:s.x,y:s.y,z:s.z,t:r2(s.t),life:s.life,r:s.r})),fires:this.fires.map(f=>({id:f.id,x:f.x,y:f.y,z:f.z,r:f.r,t:r2(f.t),life:f.life,o:f.o,w:f.w})),
    drops:this.drops,buyEnd:r2(this.buyEnd),roundStart:r2(this.roundStart),evId:this.evId,nextIdx:this.nextIdx,tPlan:this.tPlan,matchNo:this.matchNo,lastWin:this.lastWin||null,
    pl:this.players.map(p=>({id:p.id,i:p.idx,n:p.n,b:p.bot?1:0,wh:p.wasHuman||0,tm:p.team,sd:p.side,ag:p.ag,al:p.alive?1:0,hp:p.hp,ar:p.ar,hm:p.helm?1:0,kt:p.kit?1:0,$:p.money,inv:inv(p),c:p.cur,st:p.st,cn:p.conn?1:0,sp:p.sp,pg:p.ping|0,
     x:r2(p.x),y:r2(p.y),z:r2(p.z),yw:r3(p.yaw),lb:p.lastBuy||[],bt:p.bought.map(b=>b.i)}))}}
  // učitaj stanje (host migracija)
- load(s){this.t=s.t;this.mode=s.mode;this.timer=s.timer;this.round=s.round;this.tscore=s.ts.slice();this.halves=s.halves||[];this.loss=s.loss||[0,0];this.swaps=s.swaps|0;this.bomb=Object.assign({},s.bomb||{st:'none'});
+ load(s){this.size=[1,2,5].includes(+s.size)?+s.size:5;this.R=Object.assign({},RL,D.FORMATS[this.size]);this.t=s.t;this.mode=s.mode;this.timer=s.timer;this.round=s.round;this.tscore=s.ts.slice();this.halves=s.halves||[];this.loss=s.loss||[0,0];this.swaps=s.swaps|0;this.bomb=Object.assign({},s.bomb||{st:'none'});
   this.smokes=(s.smokes||[]).map(x=>Object.assign({},x));this.fires=(s.fires||[]).map(x=>Object.assign({},x));this.drops=(s.drops||[]).map(x=>Object.assign({},x));this.dropId=1+Math.max(0,...this.drops.map(d=>d.id));
   this.buyEnd=s.buyEnd;this.roundStart=s.roundStart;this.evId=(s.evId|0)+1000;this.nextIdx=s.nextIdx;this.tPlan=s.tPlan||'A';this.matchNo=s.matchNo||1;this.lastWin=s.lastWin||null;
   this.players=s.pl.map(q=>{const p={id:q.id,idx:q.i,n:q.n,bot:!!q.b,wasHuman:q.wh||null,team:q.tm,side:q.sd,ag:q.ag,skins:{},alive:!!q.al,hp:q.hp,ar:q.ar,helm:!!q.hm,kit:!!q.kt,money:q.$,
@@ -476,13 +477,13 @@ class Bot{
    else if(this.task==='hunt'&&(!this.path||this.pi>=this.path.length))this.huntOrRoam();
   } else {
    if(b.st==='planted'){if(this.task!=='retake'||(!this.path||this.pi>=this.path.length)&&Math.hypot(p.x-b.x,p.z-b.z)>1.6){this.task='retake';this.setPath(b.x,b.z,.5)}return}
-   if(!this.hold){const mates=g.players.filter(q=>q.side==='CT');const i=mates.indexOf(p);const key=i<2?'A':i<4?'B':'M';const hs=def.holds[key];const h=hs[(i+Math.floor(rnd()*hs.length))%hs.length];
+   if(!this.hold){const mates=g.players.filter(q=>q.side==='CT');const i=mates.indexOf(p);const key=g.size<=2?(i===0?(rnd()<.5?'A':'B'):(mates[0]&&mates[0].ai&&mates[0].ai.holdKey==='A'?'B':'A')):i<2?'A':i<4?'B':'M';const hs=def.holds[key];const h=hs[(i+Math.floor(rnd()*hs.length))%hs.length];
     this.hold=M.cellC(h[0],h[1]);this.holdKey=key;this.task='hold';this.setPath(this.hold[0],this.hold[1],.8);
     // gledaj prema smjeru odakle dolaze T
     const tc=M.spawnCenter('T');const pt=M.path(this.hold[0],this.hold[1],tc[0],tc[1]);if(pt&&pt.length>3){const q=pt[Math.min(pt.length-1,6)];this.lookAt=[q[0],1.5,q[2]]}}
    if(g.lastSpot&&g.t-g.lastSpot.t<4&&this.task==='hold'&&this.holdKey!==g.lastSpot.site&&g.lastSpot.site&&rnd()<.01){const c=M.cellC(...def.plant[g.lastSpot.site]);this.task='rotate';this.setPath(c[0]+(rnd()-.5)*8,c[1]+(rnd()-.5)*8,1)}
    if(this.task==='rotate'&&(!this.path||this.pi>=this.path.length)){this.task='hold2'}
-   const alive=g.players.filter(q=>q.side==='T'&&q.alive).length;if(alive<=2&&g.t-g.roundStart>RL.freeze+40&&this.task!=='hunt')this.huntOrRoam();
+   const alive=g.players.filter(q=>q.side==='T'&&q.alive).length;if(alive<=2&&g.t-g.roundStart>g.R.freeze+Math.min(40,g.R.roundTime*.35)&&this.task!=='hunt')this.huntOrRoam();
    if(this.task==='hunt'&&(!this.path||this.pi>=this.path.length))this.huntOrRoam();
   }}
  huntOrRoam(){const g=this.g,p=this.p;const en=g.players.filter(q=>q.alive&&q.side!==p.side);if(!en.length)return;const e=en[Math.floor(g.rnd()*en.length)];this.task='hunt';this.setPath(e.x+(g.rnd()-.5)*6,e.z+(g.rnd()-.5)*6,1.5)}
@@ -510,7 +511,7 @@ class Bot{
   const it=curItem(p);if(it&&W[it.w].mag&&it.clip<W[it.w].mag*.35&&!this.tgt&&it.res>0)c.rl=1;
   let mvx=0,mvz=0,aimYaw=p.yaw,aimPitch=p.pitch;
   // kretanje po putanji
-  if(now>this.wait+g.roundStart+RL.freeze||g.mode==='warmup'){
+  if(now>this.wait+g.roundStart+g.R.freeze||g.mode==='warmup'){
    if(this.path&&this.pi<this.path.length){const wp=this.path[this.pi];const dx=wp[0]-p.x,dz=wp[2]-p.z,d=Math.hypot(dx,dz);
     if(d<.7||(this.pi+1<this.path.length&&d<1.6&&this.pi+1<this.path.length)){this.pi++}
     else{mvx=dx/d;mvz=dz/d}

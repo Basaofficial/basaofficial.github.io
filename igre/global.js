@@ -81,7 +81,7 @@ function gOnMe(changed){if(G.status==='off'){gStart();return}if(changed)gSend({t
 function gAnnounce(force){
  if(!G.peer||G.status!=='on')return;
  if(App.role==='host'&&App.lobby&&App.lobby.code){const lb=App.lobby;const n=Object.values(lb.players).filter(p=>p.online).length;
-  const m={t:'g_room',code:lb.code,game:lb.game,n,max:lb.game==='ludo'?4:lb.game==='bs'?10:lb.game==='pm'||lb.game==='p3'?2:5,playing:!!(App.game||App.sk||App.un||App.rm)};const key=JSON.stringify(m);
+  const m={t:'g_room',code:lb.code,game:lb.game,n,max:lb.game==='ludo'?4:lb.game==='bs'?(typeof maxP==='function'?maxP(lb):10):lb.game==='pm'||lb.game==='p3'?2:5,playing:!!(App.game||App.sk||App.un||App.rm)};const key=JSON.stringify(m);
   if(force||key!==G.lastAnn||Date.now()-G.annTs>20000){G.lastAnn=key;G.annTs=Date.now();gSend(m)}}
 }
 setInterval(()=>gAnnounce(),20000);

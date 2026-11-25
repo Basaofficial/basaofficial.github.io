@@ -7,7 +7,7 @@ const QS=new URLSearchParams(location.search),EMB=window.parent!==window;
 const MOB=matchMedia('(pointer:coarse)').matches||/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 if(MOB)document.body.classList.add('mob');
 const LSget=(k,d)=>{try{const v=JSON.parse(localStorage.getItem(k));return v==null?d:v}catch(e){return d}},LSset=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
-const SET=Object.assign({sens:1.2,tsens:1,fov:74,vol:.7,q:'auto',xc:'#7cff01',fps:0,nick:'',map:'dina',diff:1,team:'auto'},LSget('bs_set',{}));
+const SET=Object.assign({sens:1.2,tsens:1,fov:74,vol:.7,q:'auto',xc:'#7cff01',fps:0,nick:'',map:'dina',diff:1,team:'auto',size:5},LSget('bs_set',{}));
 const saveSet=()=>LSset('bs_set',SET);
 const qual=()=>SET.q==='auto'?(MOB?'low':'high'):SET.q;
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -38,7 +38,7 @@ function startSession(o){
   buyOpen:false,sbOpen:false,mode:'warmup',over:null,dropDone:{},planting:0,shake:0,lastStep:0,stepDist:0,deathT:0,loadedMap:null,ents:[],prevEnts:new Map(),hud:0,lastC4Beep:0,inspect:0};
  $('#menu').classList.add('hide');$('#hud').classList.add('on');if(MOB)$('#touch').classList.add('on');
  $('#feed').innerHTML='';$('#rlog').innerHTML='';
- if(S.isHost){const g=new SIM.Game({map:o.map||SET.map,diff:S.diff,hostId:myId});S.game=g;S.map=g.mapId;
+ if(S.isHost){const g=new SIM.Game({map:o.map||SET.map,diff:S.diff,hostId:myId,size:o.size||SET.size||5});S.game=g;S.map=g.mapId;
   const pref=S.teamPref==='T'||S.teamPref==='CT'?g.teamOfSide(S.teamPref):-1;const p=g.join({id:myId,n:nick(),ag:agPair(),skins:INV.skinsMap(),team:pref});g.balance();S.myIdx=p.idx;
   g.onEvent=e=>{S.seen.add(e.id);onEvent(e)};loadMap(g.mapId);S.info=g.info();onInfo(S.info)}
  else{$('#net').textContent='Spajam se na sobu #'+S.code+'…'}
@@ -84,6 +84,7 @@ function migrate(){if(!S||S.isHost||!S.info)return;const oldH=S.hostId;
 function demote(h){if(!S||!S.isHost)return;S.isHost=false;S.game=null;S.hostId=h;if(NETOK)BUS.unsub(TOP(S.code)+'/c',S.fnC);S.lastHost=perf();toast('Spojeno na postojećeg domaćina')}
 // ---------- snapshot / info ----------
 function onSnap(s){const now=perf();const sample=s.t-now;if(S.off==null)S.off=sample;else if(sample>S.off)S.off=S.off*.7+sample*.3;else S.off=S.off*.995+sample*.005;
+ if(S.lastArr){const iv=now-S.lastArr;S.iat=S.iat==null?iv:S.iat*.9+iv*.1;S.jit=S.jit==null?0:S.jit*.9+Math.abs(iv-S.iat)*.1;S.idelay=clamp(S.iat*1.15+S.jit*2.5+.012,.04,.16)}S.lastArr=now;
  S.snaps.push(s);if(S.snaps.length>40)S.snaps.shift();S.mode=s.md;
  for(const e of s.ev||[]){if(S.seen.has(e.id))continue;S.seen.add(e.id);onEvent(e)}if(S.seen.size>3000)S.seen=new Set([...S.seen].slice(-1500));
  const mine=s.p.find(q=>q[0]===S.myIdx);if(mine)ownFromSnap(mine[1]/100,mine[2]/100,mine[3]/100,mine[4]/1000,mine[7],mine[8],mine[10],mine[11]/10)}
@@ -177,7 +178,7 @@ document.addEventListener('pointerlockchange',()=>{if(!S)return;if(!locked()&&!a
 $('#c').addEventListener('mousedown',e=>{AU.resume();if(!S)return;if(!locked()&&!MOB){if(!anyOverlay())lockPointer();return}if(e.button===0)mouseAtk=1;if(e.button===2)mouseAtk2=1;e.preventDefault()});
 addEventListener('mouseup',e=>{if(e.button===0)mouseAtk=0;if(e.button===2)mouseAtk2=0});
 addEventListener('contextmenu',e=>{if(S)e.preventDefault()});
-addEventListener('mousemove',e=>{if(!S||!locked()||S.buyOpen)return;look(e.movementX,e.movementY,SET.sens*.0022)});
+const RAW='onpointerrawupdate' in window;addEventListener(RAW?'pointerrawupdate':'mousemove',e=>{if(!S||!locked()||S.buyOpen)return;look(e.movementX,e.movementY,SET.sens*.0022)});
 addEventListener('wheel',e=>{if(!S||!locked())return;cycleWeapon(e.deltaY>0?1:-1)},{passive:true});
 function look(dx,dy,k){const me=S.me;const z=zoomFov()/SET.fov;me.yaw-=dx*k*z;me.pitch=clamp(me.pitch-dy*k*z,-1.55,1.55);if(!me.alive&&Math.abs(dx)>40&&!MOB){}}
 function cycleWeapon(d){const me=S.me;if(!me.alive)return;const order=[1,2,3,6,4,5].filter(s=>SIM.hasSlot(me,s));let i=order.indexOf(me.cur);if(i<0)i=0;const n=order[(i+d+order.length)%order.length];if(n)selectLocal(n)}
@@ -249,7 +250,7 @@ function gameFrame(dt,now){const me=S.me;readInput();
   let left=dt;const wasG=me.onGround;while(left>1e-4){const h=Math.min(left,1/90);pmove(S.M,me,cmd,h);left-=h}
   if(!wasG&&me.onGround)AU.land(null,true);
   // koraci
-  const sp=Math.hypot(me.vx,me.vz);if(me.onGround&&sp>3.2&&!inp.walk&&me.duck<.5){S.stepDist+=sp*dt;if(S.stepDist>2.2){S.stepDist=0;AU.step(null,true)}}
+  const sp=Math.hypot(me.vx,me.vz);if(me.onGround&&sp>3.4&&!inp.walk&&me.duck<.5){S.stepDist+=sp*dt;if(S.stepDist>1.55+sp*.09){S.stepDist=0;AU.step(null,true)}}else if(me.onGround)S.stepDist=Math.min(S.stepDist,1.2)
   // oružje
   const out=[];const canFire=(mode==='live'||mode==='warmup'||mode==='end')&&!S.buyOpen&&!defusing&&!(anyOverlay());
   SIM.wTick(me,{atk:inp.atk&&!S.planting,atk2:inp.atk2,rl:press.rl,sel:0},now,dt,out,{canFire,rnd:Math.random});press.rl=0;SIM.flushLater&&SIM.flushLater();
@@ -257,7 +258,12 @@ function gameFrame(dt,now){const me=S.me;readInput();
   if(S.planting){if(!S.plantT)S.plantT=now;if(now-(S.lastPB||0)>.45){S.lastPB=now;AU.plantBeep()}}else S.plantT=0;
  }
  // spektator / kamera
- buildEnts(dt);R.syncPlayers(S.ents,me.alive?S.myIdx:(S.specIdx&&S.spec&&perf()-S.deathT>=2.2?S.specIdx:-1),me.side,dt,now);
+ buildEnts(dt);
+ // koraci i doskoci drugih igrača (trčanje se čuje, hodanje sa Shiftom i čučanj su tihi)
+ S.steps=S.steps||{};for(const e of S.ents){if(e.idx===S.myIdx||!e.alive)continue;const st=S.steps[e.idx]||(S.steps[e.idx]={d:Math.random(),og:true});const sp=Math.hypot(e.vx||0,e.vz||0);
+  if(e.og&&!st.og)AU.land([e.x,e.y,e.z],false);st.og=e.og;
+  if(e.og&&sp>3.4&&(e.duck||0)<.5){st.d+=sp*dt;if(st.d>1.55+sp*.09){st.d=0;AU.step([e.x,e.y,e.z],false)}}}
+ R.syncPlayers(S.ents,me.alive?S.myIdx:(S.specIdx&&S.spec&&perf()-S.deathT>=2.2?S.specIdx:-1),me.side,dt,now);
  const snapLast=S.isHost?null:S.snaps[S.snaps.length-1];
  R.syncNades(S.isHost?S.game.nades.map(n=>[n.id,n.w,n.x,n.y,n.z]):(snapLast?snapLast.n:[]));S.lastNades=S.isHost?S.game.nades.map(n=>[n.id,n.w,n.x,n.y,n.z]):(snapLast?snapLast.n:[]);
  R.syncDrops(S.isHost?S.game.drops:(S.info?S.info.drops:[]),bomb);
@@ -274,7 +280,7 @@ function gameFrame(dt,now){const me=S.me;readInput();
  R.frame(cam,dt,{speed:Math.hypot(me.vx,me.vz),og:me.onGround,yaw:cam.yaw,pitch:cam.pitch,hide:scoped&&me.alive||(!me.alive&&!S.specIdx),inspect:S.inspect&&now-S.inspect<2.5});
  hudFrame(dt,now,scoped,wd);if(S.buyOpen&&prev)prev.render(dt);}
 function curBomb(){if(S.isHost)return S.game.bomb;const s=S.snaps[S.snaps.length-1];if(!s)return null;const b=s.b;if(b[0]===1)return {st:'planted',x:b[1],y:b[2],z:b[3],t:b[4]-(hostNow()-s.t),def:b[5],dp:b[6],dlen:b[7]};if(b[0]===2)return {st:'dropped',x:b[1],y:b[2],z:b[3]};if(b[0]===3)return {st:'carried',c:b[1]};return {st:'none'}}
-function localAction(a,now){const me=S.me;const lt=S.isHost?S.game.t:hostNow()-.1;
+function localAction(a,now){const me=S.me;const lt=S.isHost?S.game.t:hostNow()-(S.idelay||.1);
  if(a.k==='shot'){a.lt=+lt.toFixed(3);S.pending.push(a);R.vmEvent('fire');AU.shot(a.w,null,true);
   const wd=W[a.w];const mz=R.vmMuzzleWorld();if(mz&&!wd.sil)R.muzzle(mz,wd.cat==='sniper');
   for(let i=0;i+2<a.ds.length;i+=3){const d=[a.ds[i],a.ds[i+1],a.ds[i+2]];const h=S.M.raycast(a.o[0],a.o[1],a.o[2],d[0],d[1],d[2],wd.range||200);let t=h?h.t:(wd.range||200);
@@ -295,12 +301,12 @@ function hostNet(now){const g=S.game;S.mode=g.mode;
  if(g.dirty&&now-S.lastInfoB>.15||now-S.lastInfoB>1){S.lastInfoB=now;g.dirty=0;const i=g.info();i.h=myId;S.info=i;onInfo(i);if(NETOK&&BUS.ready())BUS.pub(TOP(S.code)+'/h',i)}
  // vlastiti spawn/zdravlje direktno iz igre
  const p=g.byId(myId);if(p)ownFromSnap(p.x,p.y,p.z,p.yaw,(p.alive?1:0)|(p.planting?8:0)|(p.defusing?16:0),p.hp,p.sp,p.flash);
- if(NETOK&&BUS.ready()){if(now-S.lastSnapB>=.05){S.lastSnapB=now;const s=g.snap();s.h=myId;s.hi=S.myIdx;BUS.pub(TOP(S.code)+'/h',s)}
-  if(now-S.lastBeacon>3){S.lastBeacon=now;const hum=g.humans().length;BUS.pub(LIST(),{k:'room',code:S.code,map:g.mapId,n:hum,nb:g.players.length-hum,max:10,hn:nick(),sc:[g.scoreBySide().T,g.scoreBySide().CT],md:g.mode,h:myId,emb:EMB?1:0})}}}
+ if(NETOK&&BUS.ready()){if(now-S.lastSnapB>=(g.humans().length<=4?.033:.05)){S.lastSnapB=now;const s=g.snap();s.h=myId;s.hi=S.myIdx;BUS.pub(TOP(S.code)+'/h',s)}
+  if(now-S.lastBeacon>3){S.lastBeacon=now;const hum=g.humans().length;BUS.pub(LIST(),{k:'room',code:S.code,map:g.mapId,n:hum,nb:g.players.length-hum,max:2*g.size,fmt:g.size,hn:nick(),sc:[g.scoreBySide().T,g.scoreBySide().CT],md:g.mode,h:myId,emb:EMB?1:0})}}}
 function clientNet(now){
  if(perf()-S.helloT>1&&!(S.info&&S.info.pl.some(p=>p.id===myId))){S.helloT=perf();sendClient({k:'hello',id:myId,n:nick(),ag:agPair(),sk:INV.skinsMap(),tm:S.teamPref})}
  const joined=S.info&&S.info.pl.some(p=>p.id===myId);if(!joined)S.pending=[];
- if(joined&&(now-S.lastSend>=.05||(S.pending.length&&now-S.lastSend>.025))){S.lastSend=now;sendClient(buildPkt())}
+ if(joined&&(now-S.lastSend>=.033||S.pending.length)){S.lastSend=now;sendClient(buildPkt())}
  const silent=now-S.lastHost;
  if(!S.info&&now-S.startT>14){toast('Soba #'+S.code+' nije pronađena.',4000);leaveSession();return}
  if(S.info&&silent>2.5)$('#net').textContent='Veza s domaćinom je prekinuta… ('+Math.round(silent)+'s)';
@@ -311,7 +317,7 @@ function buildEnts(dt){const out=[];const info=S.info;const pl=info?info.pl:[];c
  if(S.isHost){for(const p of S.game.players){const ip=byI.get(p.idx);const [w,sk]=wOf(ip,p.cur,p.nsel||0);
    const pv=S.prevEnts.get(p.idx);const e={idx:p.idx,side:p.side,ag:p.ag,alive:p.alive,x:p.x,y:p.y,z:p.z,yaw:p.yaw,pitch:p.pitch,duck:p.duck,vx:p.vx,vz:p.vz,og:p.onGround,w,sk,name:p.n,plant:p.planting>0,defuse:p.defusing>0};
    if(pv&&p.bot&&Math.hypot(e.x-pv.x,e.z-pv.z)<2){const k=Math.min(1,dt*30);e.x=pv.x+(e.x-pv.x)*k;e.z=pv.z+(e.z-pv.z)*k;e.y=pv.y+(e.y-pv.y)*k}S.prevEnts.set(p.idx,{x:e.x,y:e.y,z:e.z});out.push(e)}}
- else{const sn=S.snaps;if(sn.length){const rt=hostNow()-.1;let a=sn[sn.length-1],b=a;for(let i=sn.length-1;i>0;i--){if(sn[i-1].t<=rt){a=sn[i-1];b=sn[i];break}}if(rt<sn[0].t){a=b=sn[0]}
+ else{const sn=S.snaps;if(sn.length){const rt=hostNow()-(S.idelay||.1);let a=sn[sn.length-1],b=a;for(let i=sn.length-1;i>0;i--){if(sn[i-1].t<=rt){a=sn[i-1];b=sn[i];break}}if(rt<sn[0].t){a=b=sn[0]}
    const f=b.t>a.t?clamp((rt-a.t)/(b.t-a.t),0,1.15):1;const am=new Map(a.p.map(q=>[q[0],q]));
    for(const q of b.p){const p0=am.get(q[0])||q;const ip=byI.get(q[0]);const L=(i,s)=>(p0[i]+(q[i]-p0[i])*f)/s;let dy=(q[4]-p0[4])/1000;while(dy>Math.PI)dy-=2*Math.PI;while(dy<-Math.PI)dy+=2*Math.PI;
     const [w,sk]=wOf(ip,q[9],q[14]|0);
@@ -438,7 +444,7 @@ function renderSB(){const info=S&&S.info;if(!info)return;const sb=$('#sb');const
  const tbl=sd=>`<div class="hdr"><b class="${sd}">${sideScore(sd)}</b><div><b class="${sd}" style="font-size:15px">${D.TEAMS[sd].n}</b><br><small>${D.TEAMS[sd].unit} · Loss bonus: $${lossOf(sd)}</small></div></div>
   <table><tr><th>Igrač</th><th>Novac</th><th>K</th><th>A</th><th>D</th><th>HS%</th><th>DMG</th><th>MVP</th><th>Bodovi</th></tr>${by(sd).map(p=>`<tr class="${p.i===S.myIdx?'me':''}${alive.get(p.i)?'':' dead'}"><td>${esc(p.n)}${p.b?'':' 🎮'}</td><td>${sd===me.side?'$'+p.$:'–'}</td><td>${p.st.k}</td><td>${p.st.a}</td><td>${p.st.d}</td><td>${p.st.k?Math.round(p.st.hs/p.st.k*100):0}%</td><td>${Math.round(p.st.dmg/played)}</td><td>${p.st.mvp?'★'+p.st.mvp:''}</td><td>${p.st.sc}</td></tr>`).join('')}</table>`;
  const halves=(info.halves||[]).map((h,i)=>`${i+1}. pol.: ${h[0]}:${h[1]}`).join(' · ');
- sb.innerHTML=`<div id="sbTop"><b>${esc(MP.MAPS[info.map].full)} · ${esc(MP.MAPS[info.map].n)}</b><small>Soba #${esc(S.code)} · Runda ${info.round||'-'} · ${info.mode==='warmup'?'Zagrijavanje':'MR12 – prvi do 13'}${halves?' · '+halves:''}</small></div>${tbl('CT')}${tbl('T')}`}
+ sb.innerHTML=`<div id="sbTop"><b>${esc(MP.MAPS[info.map].full)} · ${esc(MP.MAPS[info.map].n)}</b><small>Soba #${esc(S.code)} · Runda ${info.round||'-'} · ${info.mode==='warmup'?'Zagrijavanje':''+(({1:'1v1',2:'2v2 Wingman',5:'5v5'})[info.size||5])+' – prvi do '+(info.wr||13)}${halves?' · '+halves:''}</small></div>${tbl('CT')}${tbl('T')}`}
 // ======================= PAUZA =======================
 function openPause(){if(!S)return;$('#pCode').innerHTML=`Soba <b style="color:var(--g)">#${esc(S.code)}</b> · ${S.isHost?'ti si domaćin 👑':'domaćin: '+esc(((S.info&&S.info.pl.find(p=>p.id===S.hostId))||{}).n||'?')}`;$$('#pause .host').forEach(b=>b.style.display=S.isHost?'':'none');$('#pause').classList.add('on')}
 $('#pRes').onclick=()=>{$('#pause').classList.remove('on');lockPointer()};
@@ -460,11 +466,11 @@ $$('#nav .nb[data-p]').forEach(b=>b.onclick=()=>{AU.resume();AU.click();navTo(b.
 $('#bExit').onclick=()=>{if(EMB){try{parent.postMessage({pm:'exit'},'*')}catch(e){}}else location.href='index.html'};
 $('#nick').oninput=e=>{SET.nick=e.target.value.trim().slice(0,14);saveSet()};
 const rcode=()=>String(1000+Math.floor(Math.random()*9000));
-$('#bQuick').onclick=()=>{AU.resume();startSession({code:rcode(),host:true,map:SET.map||'dina',diff:SET.diff,team:SET.team})};
-$('#bCreate').onclick=()=>{AU.resume();startSession({code:rcode(),host:true,map:SET.map,diff:SET.diff,team:SET.team})};
+$('#bQuick').onclick=()=>{AU.resume();startSession({code:rcode(),host:true,map:SET.map||'dina',diff:SET.diff,team:SET.team,size:SET.size})};
+$('#bCreate').onclick=()=>{AU.resume();startSession({code:rcode(),host:true,map:SET.map,diff:SET.diff,team:SET.team,size:SET.size})};
 $('#bJoin').onclick=()=>{const c=$('#joinCode').value.replace(/\D/g,'');if(c.length!==4){toast('Upiši kod od 4 cifre');return}AU.resume();startSession({code:c,host:false,team:SET.team})};
 function seg(root,sel,key,conv,cb){const el=root.querySelector?root.querySelector(sel):$(sel);if(!el)return;el.querySelectorAll('button').forEach(b=>{b.classList.toggle('on',String(SET[key])===b.dataset.v);b.onclick=()=>{SET[key]=conv?conv(b.dataset.v):b.dataset.v;saveSet();el.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));AU.click();if(cb)cb()}})}
-seg(document,'#diffSeg','diff',v=>+v);seg(document,'#teamSeg','team');
+seg(document,'#diffSeg','diff',v=>+v);seg(document,'#sizeSeg','size',v=>+v,()=>seg(document,'#sizeSeg2','size',v=>+v));seg(document,'#sizeSeg2','size',v=>+v,()=>seg(document,'#sizeSeg','size',v=>+v));seg(document,'#teamSeg','team');
 function bindSettings(root){const rng=(id,key,fmt,cb)=>{const i=root.querySelector('#'+id);if(!i)return;i.value=SET[key];const lab=root.querySelector('#v'+id.slice(1));const up=()=>{if(lab)lab.textContent=fmt(SET[key])};up();i.oninput=()=>{SET[key]=+i.value;up();saveSet();if(cb)cb()}};
  rng('sSens','sens',v=>v.toFixed(2));rng('sTSens','tsens',v=>v.toFixed(2));rng('sFov','fov',v=>v+'°');rng('sVol','vol',v=>Math.round(v*100)+'%',()=>AU.setVol(SET.vol));
  seg(root,'#qSeg','q',null,()=>R.setQuality(qual()));seg(root,'#xcSeg','xc');seg(root,'#fpsSeg','fps',v=>+v)}
@@ -475,7 +481,7 @@ let listOn=false,rooms={};const onRoom=m=>{if(!m||m.k!=='room'||!/^\d{4}$/.test(
 function startListPoll(){if(!NETOK){$('#rooms').innerHTML='<small>Online nije dostupan.</small>';return}if(listOn)return;listOn=true;try{BUS.init();BUS.sub(LIST(),onRoom)}catch(e){}renderRooms();clearInterval(startListPoll.t);startListPoll.t=setInterval(renderRooms,2000)}
 function stopListPoll(){if(!listOn)return;listOn=false;try{BUS.unsub(LIST(),onRoom)}catch(e){}clearInterval(startListPoll.t)}
 function renderRooms(){const el=$('#rooms');const now=Date.now();const l=Object.values(rooms).filter(r=>now-r.seen<10000).sort((a,b)=>b.n-a.n);
- el.innerHTML=l.length?l.map(r=>`<div class="ri"><div><b>#${esc(r.code)} · ${esc((MP.MAPS[r.map]||{}).n||r.map)}</b><br><small>Domaćin: ${esc(r.hn)} · ${r.n}/10 igrača (+${r.nb} botova) · ${r.md==='warmup'?'zagrijavanje':r.sc.join(':')}</small></div><button class="btn g" data-j="${esc(r.code)}">Uđi</button></div>`).join(''):'<small>Trenutno nema otvorenih soba. Napravi svoju! '+(NETOK&&BUS.ready&&BUS.ready()?'':'(spajam se na servere…)')+'</small>';
+ el.innerHTML=l.length?l.map(r=>`<div class="ri"><div><b>#${esc(r.code)} · ${esc((MP.MAPS[r.map]||{}).n||r.map)}</b><br><small>Domaćin: ${esc(r.hn)} · ${({1:'1v1',2:'2v2',5:'5v5'})[r.fmt||5]} · ${r.n}/${r.max||10} igrača (+${r.nb} botova) · ${r.md==='warmup'?'zagrijavanje':r.sc.join(':')}</small></div><button class="btn g" data-j="${esc(r.code)}">Uđi</button></div>`).join(''):'<small>Trenutno nema otvorenih soba. Napravi svoju! '+(NETOK&&BUS.ready&&BUS.ready()?'':'(spajam se na servere…)')+'</small>';
  el.querySelectorAll('[data-j]').forEach(b=>b.onclick=()=>{AU.resume();startSession({code:b.dataset.j,host:false,team:SET.team})})}
 if(NETOK)window.onNetState=(n,t)=>{$('#netSt').textContent=n?'🟢 online ('+n+'/'+t+')':'🟠 spajam se…'};
 // ======================= INVENTAR =======================
@@ -526,7 +532,7 @@ function boot(){let done=false;const sm=$('#load small'),bar=$('#load .bar i');
  loadAssets(f=>{if(sm)sm.textContent='učitavam modele… '+Math.round(f*100)+'%';if(bar){bar.style.animation='none';bar.style.width=Math.round(5+f*95)+'%'}}).then(go,e=>{console.warn('Modeli nisu učitani',e);go()})}
 function start(){$('#load').style.opacity=0;setTimeout(()=>$('#load').remove(),500);
  const room=QS.get('room');
- if(room&&/^\d{3,6}$/.test(room)){const host=QS.get('host')==='1';startSession({code:room,host,map:QS.get('map')||SET.map,diff:QS.get('diff')!=null?+QS.get('diff'):SET.diff,team:'auto'})}
+ if(room&&/^\d{3,6}$/.test(room)){const host=QS.get('host')==='1';startSession({code:room,host,map:QS.get('map')||SET.map,diff:QS.get('diff')!=null?+QS.get('diff'):SET.diff,size:QS.get('size')!=null?+QS.get('size'):5,team:'auto'})}
  else showMenu();
  requestAnimationFrame(frame)}
 document.addEventListener('visibilitychange',()=>{last=perf()});

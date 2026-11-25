@@ -175,7 +175,7 @@ body.mob #buySide{display:none}body.mob #buyCols{grid-template-columns:repeat(5,
  </div>
  <div id="mbody">
   <div class="mp on" id="p-home">
-   <div class="card"><button class="big" id="bQuick">▶ Igraj odmah (botovi)</button><div class="row" style="margin-top:10px"><input type="text" id="nick" maxlength="14" placeholder="Tvoj nadimak"></div></div>
+   <div class="card"><button class="big" id="bQuick">▶ Igraj odmah (botovi)</button><div class="row" style="margin-top:10px"><span style="color:var(--mut);font-size:12px;text-transform:uppercase;letter-spacing:.08em">Format</span><div class="seg" id="sizeSeg2"><button data-v="1">1v1</button><button data-v="2">2v2</button><button data-v="5">5v5</button></div></div><div class="row" style="margin-top:10px"><input type="text" id="nick" maxlength="14" placeholder="Tvoj nadimak"></div></div>
    <div class="card"><h3>Novosti</h3>
     <div class="news"><i>🎯</i><div><b>BASH-STRIKE je stigao!</b><small>Taktička 5v5 pucačina: Teroristi (Pustinjski Škorpioni) protiv Specijalne jedinice SOKO.</small></div></div>
     <div class="news"><i>🗺️</i><div><b>3 originalne mape</b><small>Dina (pustinjski grad), Vinograd (talijansko selo) i Čaršija (bliskoistočna čaršija).</small></div></div>
@@ -187,6 +187,7 @@ body.mob #buySide{display:none}body.mob #buyCols{grid-template-columns:repeat(5,
   <div class="mp" id="p-create">
    <div class="card"><h3>Mapa</h3><div class="maps" id="mapPick"></div></div>
    <div class="card"><h3>Postavke sobe</h3>
+    <label class="l">Format meča</label><div class="seg" id="sizeSeg"><button data-v="1">1 na 1</button><button data-v="2">2 na 2</button><button data-v="5">5 na 5</button></div>
     <label class="l">Težina botova</label><div class="seg" id="diffSeg"><button data-v="0">Lako</button><button data-v="1">Normalno</button><button data-v="2">Teško</button></div>
     <label class="l">Tim</label><div class="seg" id="teamSeg"><button data-v="auto">Auto</button><button data-v="T">Teroristi</button><button data-v="CT">Anti-teroristi</button></div>
     <div style="height:14px"></div><button class="big" id="bCreate">Otvori sobu</button><small style="color:var(--mut);display:block;margin-top:8px">Prazna mjesta popunjavaju botovi do 5v5. Prijatelji ulaze preko koda sobe (max 10 igrača).</small>
@@ -258,14 +259,14 @@ body.mob #buySide{display:none}body.mob #buyCols{grid-template-columns:repeat(5,
 <div class="ovl" id="caseO"><div class="modal"><h2 id="caseT"></h2><div id="caseBody"></div></div></div>
 <div id="toast"></div><div id="fps"></div>
 
-<script src="err.js?v=20261129a"></script>
-<script src="net.js?v=20261129a"></script>
-<script src="bs-data.js?v=20261129a"></script>
-<script src="bs-maps.js?v=20261129a"></script>
-<script src="bs-sim.js?v=20261129a"></script>
-<script src="bs-inv.js?v=20261129a"></script>
-<script src="bs-audio.js?v=20261129a"></script>
+<script src="err.js?v=20261130a"></script>
+<script src="net.js?v=20261130a"></script>
+<script src="bs-data.js?v=20261130a"></script>
+<script src="bs-maps.js?v=20261130a"></script>
+<script src="bs-sim.js?v=20261130a"></script>
+<script src="bs-inv.js?v=20261130a"></script>
+<script src="bs-audio.js?v=20261130a"></script>
 <script type="importmap">{"imports":{"three":"../assets/vendor/three-0.160.0.module.min.js"}}</script>
-<script type="module" src="bs-main.js?v=20261129a"></script>
+<script type="module" src="bs-main.js?v=20261130a"></script>
 </body>
 </html>

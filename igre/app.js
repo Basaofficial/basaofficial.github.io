@@ -2,7 +2,7 @@
 'use strict';
 if(location.protocol==='http:'&&!/^(localhost|127\.0\.0\.1|192\.168\.|10\.)/.test(location.hostname))location.replace('https:'+location.href.slice(5));
 
-const APP_VER='20261128a';
+const APP_VER='20261130a';
 (async()=>{try{if(!/^https?:/.test(location.protocol))return;const r=await fetch('version.json?t='+Date.now(),{cache:'no-store'});const j=await r.json();
  if(j&&j.v&&j.v!==APP_VER){const k='nljc_rl_'+j.v;if(!sessionStorage.getItem(k)){sessionStorage.setItem(k,'1');location.replace(location.pathname+'?v='+j.v+location.hash)}}}catch(e){}})();
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
@@ -25,7 +25,7 @@ const ICE={iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun1.l
  {urls:'turn:openrelay.metered.ca:443',username:'openrelayproject',credential:'openrelayproject'},
  {urls:'turn:openrelay.metered.ca:443?transport=tcp',username:'openrelayproject',credential:'openrelayproject'}]};
 const STEP=170,MAXP=5;
-const maxP=lb=>lb&&lb.game==='bs'?10:MAXP;
+const maxP=lb=>lb&&lb.game==='bs'?2*([1,2,5].includes(+(lb.bs&&lb.bs.size))?+lb.bs.size:5):MAXP;
 const INSTA='https://instagram.com/basa.gtm',DONATE='https://paypal.me/basagtm';
 const SK_DEF={rounds:3,time:80,hints:true,cats:Object.keys(typeof WORD_CATS!=='undefined'?WORD_CATS:{})};
 
@@ -472,7 +472,7 @@ function readyState(lb){
 function lobbySummary(lb){
  if(lb.game==='remi'){const r=Object.assign({},RM_DEF,lb.rm);return `🂡 Remi · otvaranje ${r.open} · ${r.rounds} ${r.rounds===1?'runda':r.rounds<5?'runde':'rundi'} · ⏱ ${r.time?r.time+'s':'bez limita'}${r.bots?' · 🤖 '+r.bots+' bot'+(r.bots>1?'a':''):''}`}
  if(lb.game==='pm'){const ht=(lb.pm&&lb.pm.hostT)==='w'?'w':'f';return `🔥💧 Pido i Mico · 30 nivoa · domaćin je ${ht==='f'?'🔴 Mico':'🔵 Pido'}`}
- if(lb.game==='bs'){const b=Object.assign({},BS_DEF,lb.bs);return `🎯 BASH-STRIKE · 5v5 · mapa ${BS_MAPN[b.map]||'Dina'} · botovi: ${['lako','normalno','teško'][b.diff]} · do 10 igrača`}
+ if(lb.game==='bs'){const b=Object.assign({},BS_DEF,lb.bs);return `🎯 BASH-STRIKE · ${b.size}v${b.size} · mapa ${BS_MAPN[b.map]||'Dina'} · botovi: ${['lako','normalno','teško'][b.diff]} · do ${2*b.size} igrača`}
  if(lb.game==='p3'){return `🌀 Prolaz za dvoje 3D · 13 nivoa · domaćin je ${p3RoleOf(lb,lb.host)==='a'?'🔵 Plavi':'🟠 Narandžasti'}`}
  if(lb.game==='uno'){const u=Object.assign({},UN_DEF,lb.uno);return `🃏 ${u.start} karata · ⏱ ${u.time?u.time+'s':'bez limita'}${u.bots?' · 🤖 '+u.bots+' bot'+(u.bots>1?'a':''):''}${u.stack?' · slaganje +2/+4':''}${u.drawMatch?' · vuci dok ne možeš':''}`}
  if(lb.game==='sketch'){const s=lb.sk;return `🎨 ${s.rounds} ${s.rounds<5?'runde':'rundi'} · ⏱ ${s.time}s po crtanju · ${s.hints?'💡 nagovještaji':'bez nagovještaja'} · ${s.cats.length===Object.keys(WORD_CATS).length?'sve kategorije':s.cats.length+' kategorija'}`}
@@ -534,6 +534,7 @@ function renderSettings(){
   h+=`<p class="muted">Co-op za tačno 2 igrača. Mico ide kroz lavu, Pido kroz vodu, zelena kiselina ubija oba. Nivo birate u igri.</p>`;
  }else if(lb.game==='bs'){const b=lb.bs=Object.assign({},BS_DEF,lb.bs);
   h+=`<label class="l">🗺 Mapa</label><div class="seg" data-bsk="map">${Object.keys(BS_MAPN).map((k,i)=>`<button${b.map===k?' class="on"':''} data-v="${i}"${dis}>${BS_MAPN[k]}</button>`).join('')}</div>`;
+  h+=`<label class="l">👥 Format</label><div class="seg" data-bsk="size">${[1,2,5].map((v,i)=>`<button${b.size===v?' class="on"':''} data-v="${i}"${dis}>${v} na ${v}</button>`).join('')}</div>`;
   h+=`<label class="l">🤖 Težina botova</label><div class="seg" data-bsk="diff">${['Lako','Normalno','Teško'].map((l,i)=>`<button${b.diff===i?' class="on"':''} data-v="${i}"${dis}>${l}</button>`).join('')}</div>`;
   h+=`<p class="muted">Taktička 5v5 pucačina: Teroristi protiv anti-terorističke jedinice. Prazna mjesta popunjavaju botovi. MR12, ekonomija, C4. Do 10 igrača – i prijatelji koji uđu kasnije mogu ući preko koda sobe.</p>`;
  }else if(lb.game==='p3'){const ht=(lb.p3&&lb.p3.hostT)==='b'?1:0;
@@ -581,7 +582,7 @@ $('#setBody').addEventListener('input',e=>{const t=e.target;if(t.dataset.sname!=
 $('#setBody').addEventListener('click',e=>{if(App.role==='guest'||!App.lobby)return;const lb=App.lobby;
  const pr=e.target.closest('[data-preset]');if(pr){Object.assign(lb.rules,PRESETS[pr.dataset.preset]);if(pr.dataset.preset==='classic')lb.rules.turnTime=0;toast(pr.dataset.preset==='king'?'👑 Ludo King pravila':'🎲 Klasična pravila');lobbyChanged();return}
  const b=e.target.closest('.seg button');if(!b)return;const seg=b.parentNode,v=+b.dataset.v;
- if(seg.dataset.bsk){lb.bs=Object.assign({},BS_DEF,lb.bs,{[seg.dataset.bsk]:seg.dataset.bsk==='map'?Object.keys(BS_MAPN)[v]:v})}else if(seg.dataset.rmv){lb.rm=Object.assign({},RM_DEF,lb.rm,{[seg.dataset.rmv]:v})}else if(seg.dataset.pm){lb.pm=Object.assign({},lb.pm,{hostT:v?'w':'f'})}else if(seg.dataset.p3){lb.p3=Object.assign({},lb.p3,{hostT:v?'b':'a'})}else if(seg.dataset.sk)lb.sk[seg.dataset.sk]=v;else if(seg.dataset.un)lb.uno[seg.dataset.un]=v;else if(seg.dataset.time)lb.rules.turnTime=v;sfx.click();lobbyChanged()});
+ if(seg.dataset.bsk){lb.bs=Object.assign({},BS_DEF,lb.bs,{[seg.dataset.bsk]:seg.dataset.bsk==='map'?Object.keys(BS_MAPN)[v]:seg.dataset.bsk==='size'?[1,2,5][v]:v})}else if(seg.dataset.rmv){lb.rm=Object.assign({},RM_DEF,lb.rm,{[seg.dataset.rmv]:v})}else if(seg.dataset.pm){lb.pm=Object.assign({},lb.pm,{hostT:v?'w':'f'})}else if(seg.dataset.p3){lb.p3=Object.assign({},lb.p3,{hostT:v?'b':'a'})}else if(seg.dataset.sk)lb.sk[seg.dataset.sk]=v;else if(seg.dataset.un)lb.uno[seg.dataset.un]=v;else if(seg.dataset.time)lb.rules.turnTime=v;sfx.click();lobbyChanged()});
 // start / countdown / back
 function startGame(force){
  const lb=App.lobby;if(!lb||App.starting)return;
@@ -734,10 +735,10 @@ function p3Open(d,host){const lb=App.lobby;if(!lb||!d||!/^\d{3,6}$/.test(String(
  f.src='prolaz3d.html?v='+APP_VER+'&room='+d.code+'&me='+me+(host?'&host=1':'')+'&nick='+encodeURIComponent(App.me.nick||'')+'&s='+(d.s|0);
  $('#sPM').classList.add('on');App.pmOn=true}
 // ================= BASH-STRIKE (5v5, do 10 igrača) =================
-const BS_DEF={map:'dina',diff:1},BS_MAPN={dina:'Dina',vinograd:'Vinograd',carsija:'Čaršija'};
-function bsStart(){const lb=App.lobby;if(!lb||!lb.code)return;const b=Object.assign({},BS_DEF,lb.bs);const d={t:'bs',code:lb.code,map:b.map,diff:b.diff,s:Date.now()};bcast(d);bsOpen(d,true)}
+const BS_DEF={map:'dina',diff:1,size:5},BS_MAPN={dina:'Dina',vinograd:'Vinograd',carsija:'Čaršija'};
+function bsStart(){const lb=App.lobby;if(!lb||!lb.code)return;const b=Object.assign({},BS_DEF,lb.bs);const d={t:'bs',code:lb.code,map:b.map,diff:b.diff,size:b.size,s:Date.now()};bcast(d);bsOpen(d,true)}
 function bsOpen(d,host){const lb=App.lobby;if(!lb||!d||!/^\d{3,6}$/.test(String(d.code||'')))return;const f=$('#pmFrame');
- f.src='bashstrike.html?v='+APP_VER+'&room='+d.code+(host?'&host=1':'')+'&nick='+encodeURIComponent(App.me.nick||'')+'&map='+encodeURIComponent(BS_MAPN[d.map]?d.map:'dina')+'&diff='+((d.diff|0)%3)+'&s='+(d.s|0);
+ f.src='bashstrike.html?v='+APP_VER+'&room='+d.code+(host?'&host=1':'')+'&nick='+encodeURIComponent(App.me.nick||'')+'&map='+encodeURIComponent(BS_MAPN[d.map]?d.map:'dina')+'&diff='+((d.diff|0)%3)+'&size='+([1,2,5].includes(+d.size)?+d.size:5)+'&s='+(d.s|0);
  $('#sPM').classList.add('on');App.pmOn=true}
 function pmClose(){const p=$('#sPM');if(!p||!App.pmOn)return;App.pmOn=false;p.classList.remove('on');$('#pmFrame').src='about:blank'}
 window.addEventListener('message',e=>{if(e.source!==($('#pmFrame')||{}).contentWindow||!e.data||e.data.pm!=='exit')return;

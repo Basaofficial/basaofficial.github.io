@@ -59,6 +59,10 @@ const BUY=[
  {n:'Bombe',items:['flash','smoke','he','molotov','incgrenade','decoy']}];
 const RULES={startMoney:800,maxMoney:16000,otMoney:10000,winElim:3250,winBomb:3500,winDefuse:3500,winTime:3250,lossBase:1400,lossStep:500,lossMax:3400,plantLoss:800,plantRew:300,defuseRew:300,
  halfRounds:12,winRounds:13,otHalf:3,warmup:60,freeze:15,buyTime:20,roundTime:115,bombTime:40,plantTime:3.2,defuseTime:10,defuseKit:5,endDelay:6,maxNades:4};
+// formati meča: 1v1, 2v2 (wingman) i 5v5 (MR12)
+const FORMATS={1:{n:'1v1',size:1,winRounds:9,halfRounds:8,roundTime:75,freeze:8,buyTime:15,bombTime:35,warmup:30},
+ 2:{n:'2v2',size:2,winRounds:9,halfRounds:8,roundTime:90,freeze:10,buyTime:18,bombTime:40,warmup:40},
+ 5:{n:'5v5',size:5,winRounds:13,halfRounds:12,roundTime:115,freeze:15,buyTime:20,bombTime:40,warmup:60}};
 const TEAMS={T:{n:'Teroristi',unit:'Pustinjski Škorpioni',short:'T',col:'#e2b04a'},CT:{n:'Anti-teroristička jedinica',unit:'Specijalna jedinica SOKO',short:'CT',col:'#5d9cec'}};
 const AGENTS={T:[{n:'Kobra',c:['#6b5a3e','#3a3226','#2a2520'],mask:1},{n:'Šakal',c:['#7a3b2a','#3b2b22','#1f1a18'],mask:1},{n:'Gavran',c:['#2f2f33','#4a3b2e','#151515'],mask:1},{n:'Zmaj',c:['#5a6b3a','#3a3a2a','#202018'],mask:0},{n:'Pustinjak',c:['#9a7f55','#5a4a35','#2a2218'],mask:1}],
  CT:[{n:'Soko',c:['#2c3e5c','#1f2a3a','#111821'],helm:1},{n:'Orao',c:['#3d4a3a','#26301f','#121612'],helm:1},{n:'Ris',c:['#4a5560','#2b323a','#14181c'],helm:1},{n:'Medvjed',c:['#1d2b3f','#2a3340','#0d1117'],helm:1},{n:'Jastreb',c:['#5a5f66','#353a40','#191b1e'],helm:0}]};
@@ -106,5 +110,5 @@ function rollCase(caseId,rnd){rnd=rnd||Math.random;const c=CASES.find(x=>x.id===
 const DROPS={keyWin:.03,caseWin:.18,caseLoss:.06};
 function skinName(id){const k=SK[id];if(!k)return '';const wn=k.knife?'★ '+KNIVES[k.knife]:W[k.w].n;return wn+' | '+k.n}
 
-G.BS_DATA={U,W,EQUIP,BUY,RULES,TEAMS,AGENTS,BOT_NAMES,RADIO,RAR,WEAR,wearOf,KNIVES,SK,CASES,ODDS,rollCase,DROPS,skinName};
+G.BS_DATA={U,W,EQUIP,BUY,RULES,FORMATS,TEAMS,AGENTS,BOT_NAMES,RADIO,RAR,WEAR,wearOf,KNIVES,SK,CASES,ODDS,rollCase,DROPS,skinName};
 })(typeof window!=='undefined'?window:globalThis);
