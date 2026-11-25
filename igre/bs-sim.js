@@ -82,10 +82,10 @@ function rayCyl(ox,oy,oz,dx,dy,dz,cx,cz,r,y0,y1){const px=ox-cx,pz=oz-cz;const a
  return best}
 function raySph(ox,oy,oz,dx,dy,dz,cx,cy,cz,r){const px=ox-cx,py=oy-cy,pz=oz-cz;const b=px*dx+py*dy+pz*dz,c=px*px+py*py+pz*pz-r*r,disc=b*b-c;if(disc<0)return -1;const t=-b-Math.sqrt(disc);return t>0?t:-1}
 function hitTest(o,d,maxT,x,y,z,duck){const h=PH.H-(PH.H-PH.HC)*duck;
- const th=raySph(o[0],o[1],o[2],d[0],d[1],d[2],x,y+h-.15,z,.16);
- const tb=rayCyl(o[0],o[1],o[2],d[0],d[1],d[2],x,z,.3,y,y+h-.3);
+ const th=raySph(o[0],o[1],o[2],d[0],d[1],d[2],x,y+h-.27,z,.21);
+ const tb=rayCyl(o[0],o[1],o[2],d[0],d[1],d[2],x,z,.3,y,y+h-.46);
  let t=-1,hg='chest';
- if(th>0&&(tb<0||th<=tb+.05)){t=th;hg='head'}else if(tb>0){t=tb;const f=(o[1]+d[1]*tb-y)/(h-.3);hg=f<.47?'legs':f<.62?'stomach':'chest'}
+ if(th>0&&(tb<0||th<=tb+.05)){t=th;hg='head'}else if(tb>0){t=tb;const f=(o[1]+d[1]*tb-y)/(h-.46);hg=f<.47?'legs':f<.62?'stomach':'chest'}
  return t>0&&t<=maxT?{t,hg}:null}
 function segSmoke(smokes,o,e){for(const s of smokes){if(s.t<1)continue;const r=s.r||3.3;const dx=e[0]-o[0],dy=e[1]-o[1],dz=e[2]-o[2],L=Math.hypot(dx,dy,dz)||1;
  const t=clamp(((s.x-o[0])*dx+(s.y-o[1])*dy+(s.z-o[2])*dz)/(L*L),0,1);const px=o[0]+dx*t-s.x,py=o[1]+dy*t-s.y,pz=o[2]+dz*t-s.z;if(px*px+py*py*1.6+pz*pz<r*r)return true}return false}
@@ -531,7 +531,7 @@ class Bot{
   // borba
   if(this.tgt&&this.tgt.alive&&now>=this.flashT){const q=this.tgt;
    if(p.cur===4){c.sel=want}
-   const head=this.g.rnd()<D_.hs;const ty=q.y+(this.aimHead!=null?(this.aimHead?pHeight(q)-.18:pHeight(q)*.62):pHeight(q)*.65);
+   const head=this.g.rnd()<D_.hs;const ty=q.y+(this.aimHead!=null?(this.aimHead?pHeight(q)-.27:pHeight(q)*.55):pHeight(q)*.55);
    if(this.aimHead==null)this.aimHead=head;
    const e=pEye(p);let [yy,pp]=angTo(q.x-p.x,ty-e,q.z-p.z);
    // kompenzacija trzaja

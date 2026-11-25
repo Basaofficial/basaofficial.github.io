@@ -1,5 +1,7 @@
 // BASH-STRIKE – 3D prikaz (three.js): svijet, likovi, oružja, viewmodel, efekti
 import * as THREE from 'three';
+import {GLTFLoader} from '../assets/vendor/three-addons/loaders/GLTFLoader.js';
+import {clone as skClone} from '../assets/vendor/three-addons/utils/SkeletonUtils.js';
 const D=window.BS_DATA,MP=window.BS_MAPS,INV=window.BS_INV;
 const {PH}=MP;
 const rnd=INV.srand(12345);
@@ -82,7 +84,7 @@ const _mats=new Map();
 function mat(key,mk){if(!_mats.has(key))_mats.set(key,mk());return _mats.get(key)}
 function skinMat(sk,wear,def){if(!sk)return mat('def|'+def,()=>new THREE.MeshLambertMaterial({color:def||'#3a3c40'}));
  return mat('sk|'+sk+'|'+Math.round((wear||0)*20),()=>{const t=texFrom(INV.paintSkin(sk,256,wear),6,6);return new THREE.MeshLambertMaterial({map:t})})}
-function makeGun(w,sk){// sk = [skinId,wear] ili 0
+function makeGunP(w,sk){// proceduralno (rezerva) – sk = [skinId,wear] ili 0
  const wd=D.W[w];const g=new THREE.Group();if(!wd)return g;g.userData.w=w;
  if(wd.slot===4){const col=wd.col||'#556';let m;
   if(wd.model==='molotov'){m=new THREE.Mesh(new THREE.CylinderGeometry(.035,.04,.16,10),mat('glass',()=>new THREE.MeshLambertMaterial({color:'#6a4a20',transparent:true,opacity:.85})));const n=new THREE.Mesh(new THREE.CylinderGeometry(.012,.014,.06,6),mat('rag',()=>new THREE.MeshLambertMaterial({color:'#ddd'})));n.position.y=.1;g.add(n)}
@@ -105,7 +107,7 @@ const _cg={};function cgeo(){if(_cg.ok)return _cg;_cg.ok=1;
  _cg.limb=new THREE.CapsuleGeometry(.07,.3,3,8);_cg.limbS=new THREE.CapsuleGeometry(.06,.28,3,8);_cg.foot=new THREE.BoxGeometry(.12,.08,.26);_cg.hand=new THREE.BoxGeometry(.08,.08,.1);
  _cg.visor=new THREE.BoxGeometry(.2,.05,.06);_cg.pelvis=new THREE.BoxGeometry(.36,.18,.22);_cg.pouch=new THREE.BoxGeometry(.1,.12,.06);_cg.blob=new THREE.CircleGeometry(.45,16);return _cg}
 function lam(c){return mat('c|'+c,()=>new THREE.MeshLambertMaterial({color:c}))}
-function makeChar(side,ag){const g=cgeo();const A=D.AGENTS[side][ag%5];const [c0,c1,c2]=A.c;const root=new THREE.Group();
+function makeCharP(side,ag){const g=cgeo();const A=D.AGENTS[side][ag%5];const [c0,c1,c2]=A.c;const root=new THREE.Group();
  const hips=new THREE.Group();hips.position.y=.95;root.add(hips);
  const pel=new THREE.Mesh(g.pelvis,lam(c1));hips.add(pel);
  const spine=new THREE.Group();spine.position.y=.08;hips.add(spine);
@@ -128,6 +130,106 @@ function makeChar(side,ag){const g=cgeo();const A=D.AGENTS[side][ag%5];const [c0
  aR.sh.rotation.x=1.2;aR.el.rotation.x=.25;aL.sh.rotation.x=1.25;aL.sh.rotation.z=.55;aL.el.rotation.x=.3;
  root.traverse(o=>{if(o.isMesh&&o!==blob)o.castShadow=false});
  root.userData={hips,spine,neck,aR,aL,lR,lL,hand,blob,phase:0,side,ag};return root}
+// ================= PRAVI 3D MODELI (CC0 – Quaternius: Toon Shooter Kit, Ultimate Guns) =================
+const AS={ok:false,char:{},guns:{},props:{},proto:{},uvDone:new WeakSet()};
+const ASSET_DIR='../assets/bashstrike/';
+// model, dužina (m), drška (udio od zadnjeg kraja), visina drške (udio odozdo), prigušivač, optika
+const GM={glock:['Pistol_4',.2,.24,.62],usps:['Pistol_6',.21,.22,.62,'Silencer_Short'],p2000:['Pistol_5',.2,.24,.6],dualies:['Pistol_5',.2,.24,.6],p250:['Pistol_3',.2,.24,.6],
+ tec9:['SubmachineGun_4',.3,.3,.55],fiveseven:['Pistol_2',.21,.24,.62],deagle:['Pistol_1',.27,.22,.62],
+ nova:['Shotgun_2',1,.28,.5],xm1014:['Shotgun_1',1,.28,.5],mag7:['Shotgun_SawedOff',.62,.22,.5],
+ mac10:['SubmachineGun_1',.42,.5,.55],mp9:['SubmachineGun_3',.55,.5,.55],mp5sd:['SubmachineGun_5',.6,.45,.5,'Silencer_long'],ump45:['SubmachineGun_2',.65,.47,.5],p90:['Bullpup_2',.52,.45,.45],
+ galil:['AssaultRifle_4',.95,.33,.45],famas:['Bullpup_3',.76,.45,.45],ak47:['AssaultRifle_2',.88,.35,.45],m4a4:['AssaultRifle2_1',.9,.38,.45],m4a1s:['AssaultRifle2_2',.86,.38,.45,'Silencer_long'],
+ sg553:['AssaultRifle_1',.88,.3,.45,null,'Scope_1'],aug:['Bullpup_1',.8,.47,.45,null,'Scope_2'],ssg08:['SniperRifle_4',1.1,.3,.45],awp:['SniperRifle_3',1.18,.3,.45]};
+const SKIN_MATS=new Set(['Main','MainDark','Black','DarkMetal','Metal','Green','Wood','DarkWood','Black2']);
+export function loadAssets(onProgress){
+ const L=new GLTFLoader();const files=['bs-ct.glb','bs-t.glb','bs-guns.glb','bs-props.glb'];const prog=new Array(files.length).fill(0);
+ const one=f=>new Promise((res,rej)=>L.load(ASSET_DIR+f,res,e=>{if(e.total){prog[files.indexOf(f)]=e.loaded/e.total;onProgress&&onProgress(prog.reduce((a,b)=>a+b,0)/files.length)}},rej));
+ return Promise.all(files.map(one)).then(([ct,t,guns,props])=>{
+  AS.char.CT=ct;AS.char.T=t;
+  for(const n of guns.scene.children)AS.guns[n.name]=n;for(const n of props.scene.children)AS.props[n.name]=n;
+  // poravnaj lica u sjeni / bez frustum cullinga za skinned
+  AS.ok=true;return true})}
+export function assetsOk(){return AS.ok}
+function boxOf(o){o.updateMatrixWorld(true);return new THREE.Box3().setFromObject(o)}
+function genUV(geo){if(AS.uvDone.has(geo))return;AS.uvDone.add(geo);const pos=geo.attributes.position;geo.computeBoundingBox();const b=geo.boundingBox;const sz=Math.max(b.max.x-b.min.x,b.max.y-b.min.y,b.max.z-b.min.z)||1;
+ const uv=new Float32Array(pos.count*2);for(let i=0;i<pos.count;i++){uv[i*2]=(pos.getX(i)-b.min.x)/sz*.6+(pos.getZ(i)-b.min.z)/sz*.15;uv[i*2+1]=(pos.getY(i)-b.min.y)/sz*.6}geo.setAttribute('uv',new THREE.BufferAttribute(uv,2))}
+function gunProto(w){if(AS.proto[w]!==undefined)return AS.proto[w];const cfg=GM[w];const src=cfg&&AS.guns[cfg[0]];if(!src){AS.proto[w]=null;return null}
+ const g=src.clone(true);g.position.set(0,0,0);g.rotation.set(0,0,0);g.scale.set(1,1,1);
+ const bb=boxOf(g);const len=bb.max.x-bb.min.x,h=bb.max.y-bb.min.y;const k=cfg[1]/len;
+ // y cijevi: prosjek vrhova blizu prednjeg kraja
+ let sy=0,n=0;const v=new THREE.Vector3();g.traverse(m=>{if(!m.isMesh)return;const p=m.geometry.attributes.position;for(let i=0;i<p.count;i++){v.fromBufferAttribute(p,i).applyMatrix4(m.matrixWorld);if(v.x>bb.max.x-len*.04){sy+=v.y;n++}}});
+ const gx=bb.min.x+len*cfg[2],gy=bb.min.y+h*cfg[3],cz=(bb.min.z+bb.max.z)/2;const muzY=n?sy/n:bb.min.y+h*.7;
+ const root=new THREE.Group();g.scale.setScalar(k);g.position.set(-gx*k,-gy*k,-cz*k);root.add(g);
+ let tipX=(bb.max.x-gx)*k,tipY=(muzY-gy)*k;
+ const addAcc=(name,place)=>{const a=AS.guns[name];if(!a)return;const c=a.clone(true);c.position.set(0,0,0);c.rotation.set(0,0,0);c.scale.set(1,1,1);const ab=boxOf(c);const al=ab.max.x-ab.min.x;
+  const ks=place.len/al;c.scale.setScalar(ks);c.position.set(place.x-ab.min.x*ks,place.y-(ab.min.y+ab.max.y)/2*ks*(place.bottom?0:1)-(place.bottom?ab.min.y*ks:0),-(ab.min.z+ab.max.z)/2*ks);root.add(c);return {al:al*ks}};
+ if(cfg[4]){const r=addAcc(cfg[4],{x:tipX-.005,y:tipY,len:cfg[1]<.3?.13:.2});if(r)tipX+=r.al-.005}
+ if(cfg[5]){const topY=(bb.max.y-gy)*k;addAcc(cfg[5],{x:cfg[1]*.02,y:topY-.005,len:cfg[1]*.3,bottom:1})}
+ root.userData.tip=[tipX,tipY];AS.proto[w]=root;return root}
+function makeGun(w,sk){const wd=D.W[w];const pr=wd&&AS.ok&&wd.model!=='knife'?gunProto(w):null;if(!pr)return makeGunP(w,sk);
+ const g=new THREE.Group();g.userData.w=w;const inner=new THREE.Group();inner.rotation.y=Math.PI/2;const c=pr.clone(true);
+ if(sk&&D.SK[sk[0]]){const m=skinMat(sk[0],sk[1]);c.traverse(o=>{if(o.isMesh&&SKIN_MATS.has(o.material.name)){genUV(o.geometry);o.material=m}})}
+ inner.add(c);g.add(inner);g.userData.tip=pr.userData.tip;return g}
+// ---------- likovi ----------
+const _cm=new Map();
+function charMat(src,col){const k=src.uuid+col;if(!_cm.has(k)){const m=new THREE.MeshLambertMaterial({color:col});m.name=src.name;_cm.set(k,m)}return _cm.get(k)}
+const _lm=new Map();function lamOf(src){if(!_lm.has(src.uuid)){const m=new THREE.MeshLambertMaterial({color:src.color,map:src.map||null});m.name=src.name;_lm.set(src.uuid,m)}return _lm.get(src.uuid)}
+function makeChar(side,ag){if(!AS.ok||!AS.char[side])return makeCharP(side,ag);const src=AS.char[side];const A=D.AGENTS[side][ag%5];
+ const root=new THREE.Group();const m=skClone(src.scene);m.scale.setScalar(.83);m.rotation.y=Math.PI;root.add(m);
+ m.traverse(o=>{if(!o.isMesh)return;o.frustumCulled=false;o.castShadow=false;const n=o.material.name;
+  if(n==='Character_Main'||n==='Enemy_Red')o.material=charMat(o.material,A.c[0]);else if(n==='Pants'||n==='Grey'&&side==='T')o.material=charMat(o.material,A.c[1]);else o.material=lamOf(o.material)});
+ const mixer=new THREE.AnimationMixer(m);const acts={};for(const c of src.animations)acts[c.name]=mixer.clipAction(c);
+ if(acts.Death){acts.Death.setLoop(THREE.LoopOnce);acts.Death.clampWhenFinished=true}if(acts.Jump_Idle)acts.Jump_Idle.setLoop(THREE.LoopRepeat);
+ const anchor=m.getObjectByName('GunAnchor');const hand=new THREE.Group();hand.rotation.y=-Math.PI/2;(anchor||m).add(hand);
+ m.updateMatrixWorld(true);const ws=new THREE.Vector3();(anchor||m).getWorldScale(ws);hand.scale.setScalar(1/(ws.x||1));
+ const blob=new THREE.Mesh(cgeo().blob,mat('blob',()=>new THREE.MeshBasicMaterial({color:0,transparent:true,opacity:.35,depthWrite:false})));blob.rotation.x=-Math.PI/2;blob.position.y=.02;root.add(blob);
+ root.userData={glb:true,model:m,mixer,acts,cur:null,hand,anchor,anchorQ:anchor?anchor.quaternion.clone():null,torso:m.getObjectByName('Torso'),blob,side,ag};playAnim(root.userData,'Idle_Shoot',0);mixer.update(0);return root}
+function playAnim(U,name,fade){if(U.cur===name)return;const a=U.acts[name];if(!a)return;const old=U.cur&&U.acts[U.cur];
+ a.reset();a.enabled=true;a.setEffectiveWeight(1);a.timeScale=1;a.play();if(old&&fade)old.crossFadeTo(a,fade,false);else if(old)old.stop();U.cur=name}
+const _q=new THREE.Quaternion(),_qp=new THREE.Quaternion(),_ax=new THREE.Vector3();
+function animChar(R,p,dt){const U=R.userData;let a;const sp=Math.hypot(p.vx||0,p.vz||0);const du=p.duck||0;
+ if(!p.alive)a='Death';else if(p.plant||p.defuse||du>.5)a='Duck';else if(p.og===false)a='Jump_Idle';else if(sp>4.2)a='Run_Shoot';else if(sp>.35)a='Walk_Shoot';else a='Idle_Shoot';
+ playAnim(U,a,a==='Death'?.08:.18);const act=U.acts[a];if(act){if(a==='Walk_Shoot')act.timeScale=Math.max(.6,Math.min(1.6,sp/2.4));else if(a==='Run_Shoot')act.timeScale=Math.max(.7,Math.min(1.4,sp/5.6))}
+ U.mixer.update(dt);
+ // nišanjenje gore/dolje: rotiraj trup oko desne ose lika
+ if(p.alive&&U.torso&&p.pitch){R.updateMatrixWorld(true);_ax.set(1,0,0).applyQuaternion(R.getWorldQuaternion(_q));const par=U.torso.parent;par.getWorldQuaternion(_qp).invert();_ax.applyQuaternion(_qp).normalize();
+  _q.setFromAxisAngle(_ax,Math.max(-1,Math.min(1,p.pitch))*.75);U.torso.quaternion.premultiply(_q)}
+ // oružje uvijek gleda tamo gdje igrač nišani
+ if(p.alive&&U.anchor&&p.yaw!=null){const a=U.anchor;a.quaternion.copy(U.anchorQ);R.updateMatrixWorld(true);a.getWorldQuaternion(_q);_ax.set(1,0,0).applyQuaternion(_q);
+  const pt=Math.max(-1.2,Math.min(1.2,p.pitch||0)),cp=Math.cos(pt);_tv.set(-Math.sin(p.yaw)*cp,Math.sin(pt),-Math.cos(p.yaw)*cp);_qd.setFromUnitVectors(_ax,_tv);
+  _q.premultiply(_qd);a.parent.getWorldQuaternion(_qp).invert();a.quaternion.copy(_qp.multiply(_q))}}
+const _tv=new THREE.Vector3(),_qd=new THREE.Quaternion();
+// ---------- rekviziti (instancirani modeli) ----------
+function propParts(name){const src=AS.props[name];if(!src)return null;if(src.userData.parts)return src.userData.parts;
+ const c=src.clone(true);c.position.set(0,0,0);c.rotation.set(0,0,0);c.scale.set(1,1,1);const bb=boxOf(c);const size=bb.getSize(new THREE.Vector3());
+ const norm=new THREE.Matrix4().makeTranslation(-(bb.min.x+bb.max.x)/2,-bb.min.y,-(bb.min.z+bb.max.z)/2);const parts=[];
+ c.updateMatrixWorld(true);c.traverse(o=>{if(o.isMesh)parts.push({geo:o.geometry,mat:lamOf(o.material),m:norm.clone().multiply(o.matrixWorld)})});
+ src.userData.parts={parts,size};return src.userData.parts}
+function propInstances(W,name,list,cast){// list: [x,y,z,rotY,sx,sy,sz] u metrima (sx.. = ciljna veličina ili null)
+ const P=propParts(name);if(!P||!list.length)return;const tmp=new THREE.Matrix4(),q=new THREE.Quaternion(),e=new THREE.Euler(),s=new THREE.Vector3(),p=new THREE.Vector3();
+ for(const part of P.parts){const im=new THREE.InstancedMesh(part.geo,part.mat,list.length);im.castShadow=!!cast;im.receiveShadow=true;
+  list.forEach((it,i)=>{const [x,y,z,ry,sx,sy,sz]=it;s.set(sx?sx/P.size.x:1,sy?sy/P.size.y:1,sz?sz/P.size.z:1);if(it.uni)s.setScalar(it.uni);q.setFromEuler(e.set(0,ry||0,0));p.set(x,y,z);
+   tmp.compose(p,q,s).multiply(part.m);im.setMatrixAt(i,tmp)});im.instanceMatrix.needsUpdate=true;im.computeBoundingSphere();W.add(im)}}
+function placeProps(M,W,style,shadows,q){const L=MP.LEG;const r=INV.srand(7);const ls={Crate:[],ExplodingBarrel:[],SackTrench:[],Container_Small:[],Debris_Tires:[],Pallet:[],TrafficCone:[],CardboardBoxes_1:[],WoodPlanks:[],Debris_Pile:[],StreetLight:[],Tree_2:[],Tree_1:[],GasTank:[]};
+ const base=i=>{const nb=[i-1,i+1,i-M.W,i+M.W].map(j=>L[M.ch[j]]).filter(o=>o&&o.k==='level');let b=nb.length?Math.max(...nb.map(o=>o.h)):0;return b};
+ for(let i=0;i<M.ch.length;i++){const l=L[M.ch[i]];const x=(i%M.W)*2,z=((i/M.W)|0)*2;
+  if(l.k==='crate'){let b=base(i);if(b>=l.h)b=0;let y=b;
+   if(l.h-b>1.6){const ch=Math.min(2.1,l.h-b);ls.Container_Small.push([x+1,y,z+1,(r()<.5?0:Math.PI/2),1.98,ch,1.98]);y+=ch}
+   if(l.h-y>.3){const hh=l.h-y;for(const [ox,oz] of [[.5,.5],[1.5,.5],[.5,1.5],[1.5,1.5]])ls.Crate.push([x+ox,y-.03,z+oz,(r()-.5)*.12,.97,hh+.03,.97])}}
+  else if(l.k==='barrel'){for(const [bx,bz] of [[.55,.55],[1.45,.6],[1,1.42]])ls.ExplodingBarrel.push([x+bx,0,z+bz,r()*6.28,.84,1.15,.84])}
+  else if(l.k==='lowwall'){const horiz=L[M.ch[i-1]].k==='lowwall'||L[M.ch[i+1]].k==='lowwall'||!(L[M.ch[i-M.W]].k==='lowwall'||L[M.ch[i+M.W]].k==='lowwall');
+   ls.SackTrench.push([x+1,0,z+1,horiz?0:Math.PI/2,2.05,1.08,1.5])}}
+ // dekoracija bez kolizije (mala) na podu uz zidove
+ const many=q==='low'?.5:1;
+ for(let i=0;i<M.ch.length;i++){const l=L[M.ch[i]];if(l.k!=='floor'||l.roof)continue;const x=(i%M.W)*2,z=((i/M.W)|0)*2;
+  const wl=[[-M.W,0,-1],[M.W,0,1],[-1,-1,0],[1,1,0]].filter(([d])=>{const k=L[M.ch[i+d]];return k&&k.k==='wall'});if(!wl.length)continue;
+  const v=r();if(v>.12*many)continue;const [,nx,nz]=wl[0];const px=x+1+nx*.55+(nz?(r()-.5)*1.2:0),pz=z+1+nz*.55+(nx?(r()-.5)*1.2:0),ry=r()*6.28;const k=r();
+  if(k<.18)ls.Debris_Tires.push(Object.assign([px,0,pz,ry],{uni:.62}));else if(k<.34)ls.Pallet.push(Object.assign([px,0,pz,ry],{uni:.8}));else if(k<.46)ls.TrafficCone.push(Object.assign([px,0,pz,ry],{uni:.75}));
+  else if(k<.62)ls.CardboardBoxes_1.push(Object.assign([px,0,pz,ry],{uni:.9}));else if(k<.72)ls.WoodPlanks.push(Object.assign([px,0,pz,ry],{uni:1}));else if(k<.8)ls.Debris_Pile.push(Object.assign([px,.01,pz,ry],{uni:.6}));
+  else if(k<.9&&wl.length===1)ls.StreetLight.push(Object.assign([x+1+nx*.75,0,z+1+nz*.75,Math.atan2(-nx,-nz)+Math.PI/2],{uni:.85}));
+  else if(style==='italy'&&wl.length===1)ls[r()<.5?'Tree_2':'Tree_1'].push(Object.assign([x+1+nx*.4,0,z+1+nz*.4,ry],{uni:.7}));
+  else ls.GasTank.push(Object.assign([px,0,pz,ry],{uni:.8}))}
+ for(const n in ls)propInstances(W,n,ls[n],shadows&&!['Pallet','WoodPlanks','Debris_Pile'].includes(n))}
 function nameSprite(txt,col){const c=cv(256,48),x=c.getContext('2d');x.font='bold 26px Arial';x.textAlign='center';x.textBaseline='middle';x.lineWidth=5;x.strokeStyle='rgba(0,0,0,.8)';x.strokeText(txt,128,24);x.fillStyle=col;x.fillText(txt,128,24);
  const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;const s=new THREE.Sprite(new THREE.SpriteMaterial({map:t,depthTest:false,transparent:true}));s.scale.set(1.3,.24,1);s.renderOrder=10;return s}
 
@@ -182,15 +284,16 @@ export class BSRender{
    const tall=l.tall||l.k==='border';(tall?geos.facT:geos.fac).push(boxGeo(x0,0,z0,x1,l.h,z1,4,tall?10:8,c,{top:false},.75));
    geos.top.push(boxGeo(x0,l.h-.001,z0,x1,l.h,z1,4,4,[.85,.8,.75],{s:false}))}
   // platforme i niski zidovi
-  const keyLvl=i=>{const l=L[M.ch[i]];return l.k==='level'||l.k==='lowwall'?M.ch[i]:null};
+  const keyLvl=i=>{const l=L[M.ch[i]];return l.k==='level'||(l.k==='lowwall'&&!AS.ok)?M.ch[i]:null};
   for(const r of greedy(M,keyLvl)){const l=L[r.k];geos.stone.push(boxGeo(r.x*2,0,r.z*2,(r.x+r.w)*2,l.h,(r.z+r.h)*2,2,2,l.k==='lowwall'?[.85,.85,.85]:[1,1,1],null,.8))}
   // sanduci, bačve
   for(let i=0;i<M.ch.length;i++){const l=L[M.ch[i]];const x=(i%M.W)*2,z=((i/M.W)|0)*2;
-   if(l.k==='crate'){const lvl=[0,.5,1,1.5,2];let base=0;// sanduk na platformi
+   if(l.k==='crate'&&AS.ok){const nb=[i-1,i+1,i-M.W,i+M.W].map(j=>L[M.ch[j]]).filter(q=>q&&q.k==='level');const b=nb.length?Math.max(...nb.map(q=>q.h)):0;if(b>0&&b<l.h)geos.stone.push(boxGeo(x,0,z,x+2,b,z+2,2,2,[1,1,1],null,.8))}
+   else if(l.k==='crate'){const lvl=[0,.5,1,1.5,2];let base=0;// sanduk na platformi
     const nb=[i-1,i+1,i-M.W,i+M.W].map(j=>L[M.ch[j]]).filter(q=>q&&q.k==='level');if(nb.length)base=Math.max(...nb.map(q=>q.h));if(base>=l.h)base=0;
     const t=.92+rnd()*.12;let y=base;if(base>0){geos.stone.push(boxGeo(x,0,z,x+2,base,z+2,2,2,[1,1,1],null,.8))}
     while(y<l.h-.01){const hh=Math.min(l.h-y,y===base&&l.h-y>1.2?1.05:l.h-y);geos.crate.push(boxGeo(x+.04,y,z+.04,x+1.96,y+hh,z+1.96,1.92,hh,[t,t*.97,t*.92],null,.85));y+=hh}}
-   else if(l.k==='barrel'){for(const [bx,bz] of [[.55,.55],[1.45,.6],[1,1.4]]){const g=new THREE.CylinderGeometry(.42,.42,1.15,12);g.translate(x+bx,.575,z+bz);geos.barrel.push(g)}}
+   else if(l.k==='barrel'&&!AS.ok){for(const [bx,bz] of [[.55,.55],[1.45,.6],[1,1.4]]){const g=new THREE.CylinderGeometry(.42,.42,1.15,12);g.translate(x+bx,.575,z+bz);geos.barrel.push(g)}}
    if(l.roof)geos.roof.push(boxGeo(x,l.roof[0],z,x+2,l.roof[1],z+2,2,2,[.9,.9,.9],{bottom:true,top:true}))}
   // tlo
   const keyFl=i=>{const l=L[M.ch[i]];if(l.k!=='floor')return null;return l.alt===1?1:l.alt===2?2:0};
@@ -210,6 +313,7 @@ export class BSRender{
   for(const k of ['A','B']){const p=M.def.plant[k];const c=M.cellC(p[0],p[1]);const y=M.groundAt(c[0],c[1])+.02;const m=new THREE.Mesh(new THREE.PlaneGeometry(5,5),new THREE.MeshBasicMaterial({map:letterTex(k,k==='A'?'#d23a2a':'#d8a020'),transparent:true,depthWrite:false}));
    m.rotation.x=-Math.PI/2;m.position.set(c[0],y,c[1]);m.renderOrder=2;W.add(m)}
   this.decor(M,W,style,shadows);
+  if(AS.ok)placeProps(M,W,style,shadows,this.q);
   if(shadows)this.r.shadowMap.needsUpdate=true}
  decor(M,W,style,shadows){const L=MP.LEG;const r=INV.srand(99);const many=this.q==='low'?.5:1;
   const cloth=['#b83a2a','#2a6ab8','#d8a020','#3a8a4a','#8a2a7a','#e06a20'];const parts={trunk:[],leaf:[],cloth:[],lamp:[],pot:[],green:[],wire:[]};
@@ -242,6 +346,7 @@ export class BSRender{
    // ime (samo saigrači)
    const showName=p.side===mySide&&p.alive;const nk=p.name+p.side;if(showName&&e.nameKey!==nk){if(e.name)R.remove(e.name);e.name=nameSprite(p.name,p.side==='T'?'#f0c060':'#8ec5ff');e.name.position.y=2.15;R.add(e.name);e.nameKey=nk}
    if(e.name)e.name.visible=showName;
+   if(U.glb){if(!p.alive){e.dead+=dt;U.blob.visible=false;if(e.gun)e.gun.visible=false}else{e.dead=0;U.blob.visible=true;if(e.gun)e.gun.visible=true}if(e.dead<3)animChar(R,p,dt);continue}
    if(!p.alive){e.dead+=dt;const t=Math.min(1,e.dead/.45);R.rotation.x=0;U.hips.rotation.x=-t*1.45;U.hips.position.y=.95-t*.72;U.spine.rotation.x=-t*.2;U.lL.hp.rotation.x=t*.3;U.lR.hp.rotation.x=t*.2;U.lL.kn.rotation.x=0;U.lR.kn.rotation.x=0;U.blob.visible=false;if(e.gun)e.gun.visible=false;continue}
    e.dead=0;U.blob.visible=true;if(e.gun)e.gun.visible=true;
    const sp=Math.hypot(p.vx||0,p.vz||0);U.phase+=dt*sp*1.55;const sw=Math.min(1,sp/4)*.75;const ph=U.phase;
@@ -262,6 +367,13 @@ export class BSRender{
   if(wd.slot===4||wd.model==='c4'){mkA(0,-.03,.06,.1,.2);gun.position.set(0,.02,-.02)}
   else if(wd.model==='knife'){mkA(0,-.02,.08,0,0);gun.rotation.set(0,0,0);gun.position.set(0,0,0)}
   else if(wd.model==='dual'){mkA(0,-.02,.08,0,0);mkA(-.24,-.02,.06,0,0)}
+  else if(gun.userData.tip&&GM[w]&&AS.ok){// pravi model: ruke po tačkama (drška i prednji dio)
+   const V=(x,y,z)=>new THREE.Vector3(x,y,z);const limb=(a,b2,r)=>{const v=b2.clone().sub(a);const len=v.length();const m=new THREE.Mesh(new THREE.CylinderGeometry(r,r*1.18,len,10),sleeve);m.position.copy(a).addScaledVector(v,.5);m.quaternion.setFromUnitVectors(V(0,1,0),v.normalize());g.add(m)};
+   const glv=(p,sx,sy,sz)=>{const m=new THREE.Mesh(new THREE.CapsuleGeometry(Math.min(sx,sy)/2,Math.max(sz-Math.min(sx,sy),.01),3,8),glove);m.rotation.x=Math.PI/2;m.scale.set(sx/Math.min(sx,sy),1,sy/Math.min(sx,sy));m.position.copy(p);g.add(m)};
+   const tip=gun.userData.tip;const pistol=wd.cat==='pistol'||wd.cat==='zeus';
+   glv(V(0,-.045,.012),.05,.08,.075);limb(V(.005,-.085,.03),V(.08,-.26,.34),.034);
+   if(pistol){glv(V(-.03,-.07,.02),.05,.06,.08);limb(V(-.04,-.1,.04),V(-.2,-.3,.3),.033)}
+   else{const fz=-Math.min(tip[0]*.55,.34);glv(V(0,tip[1]*.4-.035,fz),.055,.05,.09);limb(V(-.02,tip[1]*.4-.06,fz+.03),V(-.2,-.26,.12),.033)}}
   else{mkA(0,-.03,.08,0,0);const fw=(INV.GS[wd.model]&&INV.GS[wd.model].handguard)?INV.GS[wd.model].handguard[0]/100+.08:.16;mkA(-.06,-.02,-fw,-.5,.1)}
   vm.base=wd.model==='knife'?[.2,-.24,-.4]:wd.slot===4?[.2,-.25,-.36]:wd.model==='c4'?[.05,-.3,-.42]:wd.cat==='pistol'||wd.cat==='zeus'?[.16,-.19,-.44]:[.19,-.2,-.46];
   vm.g=g;this.vmScene.add(g);vm.w=w}
@@ -335,7 +447,7 @@ export class BSRender{
    const ring=new THREE.Mesh(new THREE.RingGeometry(2.1,2.18,48),new THREE.MeshBasicMaterial({color:'#7cff01',transparent:true,opacity:.5}));ring.rotation.x=-Math.PI/2;ring.position.y=.01;s.add(ring);
    this.menuScene=s;this.menuCam=new THREE.PerspectiveCamera(36,1,.1,100);this.menuT=0}
   const s=this.menuScene;const key=side+ag+(w||'')+(sk?sk.join(','):'');if(this.menuKey!==key){if(this.menuChar)s.remove(this.menuChar);this.menuChar=makeChar(side,ag);const U=this.menuChar.userData;const gun=makeGun(w||(side==='T'?'ak47':'m4a4'),sk);U.hand.add(gun);s.add(this.menuChar);this.menuKey=key}
-  this.menuT+=dt;const ch=this.menuChar;ch.rotation.y=Math.PI*1.18+Math.sin(this.menuT*.4)*.35;const U=ch.userData;U.spine.rotation.x=Math.sin(this.menuT*1.3)*.02;
+  this.menuT+=dt;const ch=this.menuChar;ch.rotation.y=Math.PI*1.18+Math.sin(this.menuT*.4)*.35;const U=ch.userData;if(U.glb)animChar(ch,{alive:true,og:true},dt);else U.spine.rotation.x=Math.sin(this.menuT*1.3)*.02;
   const wide=innerWidth/innerHeight;const mc=this.menuCam;mc.aspect=wide;mc.updateProjectionMatrix();const off=wide>1.2?-1.25:0;mc.position.set(off+0,1.25,5.2);mc.lookAt(off,1.0,0);
   this.r.autoClear=true;this.r.render(s,mc)}
  shadowsDirty(){if(this.r.shadowMap.enabled)this.r.shadowMap.needsUpdate=true}
@@ -347,6 +459,6 @@ export class BSPreview{
   this.cam=new THREE.PerspectiveCamera(30,1,.1,50);this.cam.position.set(0,1.15,4.6);this.cam.lookAt(0,.95,0);this.t=0;this.key=''}
  show(side,ag,w,sk){const key=side+ag+w+(sk?sk.join(','):'');if(key===this.key)return;this.key=key;if(this.ch)this.s.remove(this.ch);this.ch=makeChar(side,ag);const gun=makeGun(w||'knife',sk);this.ch.userData.hand.add(gun);this.s.add(this.ch)}
  render(dt){const w=this.c.clientWidth,h=this.c.clientHeight;if(!w||!h)return;if(this.c.width!==Math.floor(w*this.r.getPixelRatio())){this.r.setSize(w,h,false);this.cam.aspect=w/h;this.cam.updateProjectionMatrix()}
-  this.t+=dt;if(this.ch)this.ch.rotation.y=Math.PI+.5+Math.sin(this.t*.6)*.4;this.r.render(this.s,this.cam)}
+  this.t+=dt;if(this.ch){this.ch.rotation.y=Math.PI+.5+Math.sin(this.t*.6)*.4;if(this.ch.userData.glb)animChar(this.ch,{alive:true,og:true},dt)}this.r.render(this.s,this.cam)}
 }
 export {makeGun};

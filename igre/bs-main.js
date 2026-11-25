@@ -1,5 +1,5 @@
 // BASH-STRIKE – glavni modul: meniji, mreža (host/klijent), kontrole, HUD, buy meni, inventar
-import {BSRender,BSPreview} from './bs-render.js';
+import {BSRender,BSPreview,loadAssets} from './bs-render.js';
 const D=window.BS_DATA,MP=window.BS_MAPS,SIM=window.BS_SIM,BI=window.BS_INV,INV=BI.INV,AU=window.BS_AUDIO;
 const {W,RULES:RL}=D,{pmove,pEye}=MP;
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
@@ -521,7 +521,10 @@ let menuSide='T';setInterval(()=>{menuSide=menuSide==='T'?'CT':'T'},8000);
 function menuFrame(dt){const d=INV.load();const ag=d.ag||{T:0,CT:0};const sm=INV.skinsMap();const w=menuSide==='T'?'ak47':'m4a1s';R.menu(menuSide,ag[menuSide]|0,dt,w,sm[w]||0)}
 
 // ======================= START =======================
-function boot(){$('#load').style.opacity=0;setTimeout(()=>$('#load').remove(),500);
+function boot(){let done=false;const sm=$('#load small'),bar=$('#load .bar i');
+ const go=()=>{if(done)return;done=true;clearTimeout(to);start()};const to=setTimeout(go,30000);
+ loadAssets(f=>{if(sm)sm.textContent='učitavam modele… '+Math.round(f*100)+'%';if(bar){bar.style.animation='none';bar.style.width=Math.round(5+f*95)+'%'}}).then(go,e=>{console.warn('Modeli nisu učitani',e);go()})}
+function start(){$('#load').style.opacity=0;setTimeout(()=>$('#load').remove(),500);
  const room=QS.get('room');
  if(room&&/^\d{3,6}$/.test(room)){const host=QS.get('host')==='1';startSession({code:room,host,map:QS.get('map')||SET.map,diff:QS.get('diff')!=null?+QS.get('diff'):SET.diff,team:'auto'})}
  else showMenu();
