@@ -1,0 +1,15 @@
+BASH-STRIKE – 3D modeli
+
+Svi modeli u ovom folderu su od autora Quaternius (https://quaternius.com)
+i objavljeni su pod licencom Creative Commons Zero 1.0 (CC0 – javno vlasništvo):
+https://creativecommons.org/publicdomain/zero/1.0/
+
+  bs-ct.glb    – "Character_Soldier"  iz Toon Shooter Game Kit (quaternius.com/packs/toonshootergamekit.html)
+  bs-t.glb     – "Character_Enemy"    iz Toon Shooter Game Kit
+  bs-props.glb – sanduci, kontejneri, bačve, vreće s pijeskom, gume, palete, lampe, drveće
+                 iz Toon Shooter Game Kit
+  bs-guns.glb  – oružja i dodaci (prigušivači, optika) iz Ultimate Gun Pack
+                 (quaternius.com/packs/ultimategun.html)
+
+Modeli su optimizovani (spojeni u GLB, kvantizovani, uklonjeni nekorišteni dijelovi i animacije)
+pomoću glTF-Transform. Autor nije dužan biti naveden (CC0), ali hvala Quaterniusu!
