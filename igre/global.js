@@ -49,7 +49,7 @@ function gHandle(id,d){
   case 'g_upd':{u.nick=String(d.nick||u.nick).slice(0,14);u.av=String(d.av||u.av).slice(0,4);if(d.roses)u.roses=mergeRoses(u.roses,cleanRoses(d.roses));
    u.room=d.room?String(d.room).slice(0,4):null;gBState();break}
   case 'g_room':{const code=String(d.code||'').replace(/\D/g,'').slice(0,4);if(code.length!==4)return;
-   G.rooms[code]={code,host:id,nick:u.nick,av:u.av,game:['sketch','uno'].includes(d.game)?d.game:'ludo',n:Math.min(9,d.n|0),max:Math.min(9,d.max|0)||5,playing:!!d.playing,ts:now};u.room=code;gBState();break}
+   G.rooms[code]={code,host:id,nick:u.nick,av:u.av,game:['sketch','uno','remi','pm','p3','bs'].includes(d.game)?d.game:'ludo',n:Math.min(10,d.n|0),max:Math.min(10,d.max|0)||5,playing:!!d.playing,ts:now};u.room=code;gBState();break}
   case 'g_room_del':{const r=G.rooms[d.code];if(r&&r.host===id){delete G.rooms[d.code];u.room=null;gBState()}break}
  }
 }
@@ -81,7 +81,7 @@ function gOnMe(changed){if(G.status==='off'){gStart();return}if(changed)gSend({t
 function gAnnounce(force){
  if(!G.peer||G.status!=='on')return;
  if(App.role==='host'&&App.lobby&&App.lobby.code){const lb=App.lobby;const n=Object.values(lb.players).filter(p=>p.online).length;
-  const m={t:'g_room',code:lb.code,game:lb.game,n,max:lb.game==='ludo'?4:5,playing:!!(App.game||App.sk||App.un||App.rm)};const key=JSON.stringify(m);
+  const m={t:'g_room',code:lb.code,game:lb.game,n,max:lb.game==='ludo'?4:lb.game==='bs'?10:lb.game==='pm'||lb.game==='p3'?2:5,playing:!!(App.game||App.sk||App.un||App.rm)};const key=JSON.stringify(m);
   if(force||key!==G.lastAnn||Date.now()-G.annTs>20000){G.lastAnn=key;G.annTs=Date.now();gSend(m)}}
 }
 setInterval(()=>gAnnounce(),20000);
@@ -95,8 +95,8 @@ function gRender(){
   return `<div class="gu${id===me?' me':''}" data-gid="${esc(id)}"><div class="ga">${esc(u.av)}${rz?`<span class="gr">🌹${rz}</span>`:''}</div><small>${esc(id===me?'ti':u.nick)}</small></div>`}).join('');
  const rooms=Object.values(G.rooms).sort((a,b)=>a.playing-b.playing||b.ts-a.ts);
  $('#gRooms').innerHTML=rooms.length?rooms.map(r=>{const mine=App.lobby&&App.lobby.code===r.code;
-  return `<div class="room-i"><span class="ri">${{sketch:'🎨',uno:'🃏'}[r.game]||'🎲'}</span><div class="rn"><b>${esc(r.av)} Soba od ${esc(r.nick)}</b>
-   <small>#${esc(r.code)} · ${{sketch:'Crtaj & pogađaj',uno:'Jedna!'}[r.game]||'Ne ljuti se'} · ${r.n}/${r.max}${r.playing?' · u igri':''}</small></div>
+  return `<div class="room-i"><span class="ri">${{sketch:'🎨',uno:'🃏',remi:'🂡',pm:'🔥',p3:'🌀',bs:'🎯'}[r.game]||'🎲'}</span><div class="rn"><b>${esc(r.av)} Soba od ${esc(r.nick)}</b>
+   <small>#${esc(r.code)} · ${{sketch:'Crtaj & pogađaj',uno:'Jedna!',remi:'Remi',pm:'Pido i Mico',p3:'Prolaz 3D',bs:'BASH-STRIKE'}[r.game]||'Ne ljuti se'} · ${r.n}/${r.max}${r.playing?' · u igri':''}</small></div>
    ${mine?'<span class="tag g">tvoja</span>':`<button class="btn" data-join="${esc(r.code)}">Uđi</button>`}</div>`}).join('')
   :'<p class="muted" style="margin:0">Nema otvorenih soba – napravi svoju i pojaviće se ovdje za sve u kanalu 👇</p>';
  gRenderFeed();
