@@ -2,6 +2,31 @@
    group: "games" | "apps"   cat: games | health | social | prod | tools   c: boje ikone */
 window.PROJECTS = [
 {
+  id: "auto", name: "Bash Auto", tags: ["apk"], status: "live", isNew: true,
+  group: "apps", cat: "tools", icon: "car", c: ["#00e676", "#0b3d2a"],
+  apk: "https://github.com/Basaofficial/bashauto/releases/latest", code: "https://github.com/Basaofficial/bashauto",
+  gh: { repo: "Basaofficial/bashauto", release: true },
+  shots: ["auto-1", "auto-2"],
+  platform: "Android 8+ · Android Auto",
+  t: {
+    bs: { sub: "Dash ekran za Android Auto",
+          short: "Muzika, mini navigacija i radari na ekranu auta.",
+          long: "Ekran auta u stilu instrument table: lijevo strelice skretanja iz Google Mapsa, brzinomjer i trip kilometri, u sredini player sa slikom albuma, a desno sve tvoje pjesme. Isti izgled radi i na telefonu u držaču.",
+          more: "Pušta MP3 s telefona i ex-YU radio stanice iz BiH, Srbije, Hrvatske i Crne Gore, a upravlja i pjesmama iz YMusica. Dugme CILJ pokreće rutu u Google Mapsu i pamti nedavne ciljeve. Fiksni radari iz OpenStreetMapa vide se na kompasu i javljaju se zvukom (u Njemačkoj ih u vožnji isključi). Aplikacija se sama ažurira.",
+          feats: ["Izgled instrument table: crno i zeleno", "Strelice i metri iz Google Maps navigacije", "Brzinomjer, trip km i smjer", "MP3, ex-YU radio i kontrola YMusica", "CILJ s nedavnim ciljevima", "Radari na kompasu sa zvučnim upozorenjem", "Radi na ekranu auta i na telefonu", "Sama se ažurira"] },
+    de: { sub: "Dash-Screen für Android Auto",
+          short: "Musik, Mini-Navigation und Blitzer auf dem Autodisplay.",
+          long: "Das Autodisplay im Stil eines Kombiinstruments: links Abbiegepfeile aus Google Maps, Tacho und Tageskilometer, in der Mitte der Player mit Albumcover, rechts alle deine Songs. Das gleiche Design läuft auch auf dem Handy in der Halterung.",
+          more: "Spielt MP3s vom Handy und Ex-YU-Radiosender aus Bosnien, Serbien, Kroatien und Montenegro und steuert Songs aus YMusic. Der ZIEL-Knopf startet die Route in Google Maps und merkt sich die letzten Ziele. Feste Blitzer aus OpenStreetMap erscheinen auf dem Kompass mit Warnton (in Deutschland während der Fahrt verboten, § 23 Abs. 1c StVO – abschaltbar). Die App aktualisiert sich selbst.",
+          feats: ["Kombiinstrument-Look: Schwarz und Grün", "Pfeile und Meter aus Google-Maps-Navigation", "Tacho, Tageskilometer und Richtung", "MP3, Ex-YU-Radio und YMusic-Steuerung", "ZIEL mit letzten Zielen", "Blitzer auf dem Kompass mit Warnton", "Auf dem Autodisplay und dem Handy", "Automatische Updates"] },
+    en: { sub: "Dash screen for Android Auto",
+          short: "Music, mini navigation and speed cameras on your car screen.",
+          long: "Your car screen styled like an instrument cluster: turn arrows from Google Maps, a speedometer and trip meter on the left, a player with album art in the middle and all your songs on the right. The same design also runs on your phone in a holder.",
+          more: "Plays MP3s from your phone and Ex-YU radio stations from Bosnia, Serbia, Croatia and Montenegro, and controls songs from YMusic. The DESTINATION button starts a route in Google Maps and remembers recent places. Fixed speed cameras from OpenStreetMap show up on the compass with a warning tone (illegal while driving in Germany – can be switched off). The app updates itself.",
+          feats: ["Instrument-cluster look: black and green", "Turn arrows and distance from Google Maps", "Speedometer, trip meter and heading", "MP3, Ex-YU radio and YMusic control", "Destination with recent places", "Speed cameras on the compass with a warning tone", "Works on the car screen and the phone", "Updates itself"] }
+  }
+},
+{
   id: "deutsch", name: "Bash Deutsch", tags: ["web"], status: "live", isNew: true, featured: true,
   group: "apps", cat: "edu", icon: "book", c: ["#58cc02", "#1cb0f6"],
   web: "deutsch/",
